@@ -1,4 +1,4 @@
-# coral_simulation
+[![Live Demo](https://img.shields.io/badge/Live-Demo-00b4d8)](https://tugbatuanakaygisiz-web.github.io/coral_simulation/)
 
 # 🪸 Mercan Resifi Stres & Ağarma Simülasyonu
 
