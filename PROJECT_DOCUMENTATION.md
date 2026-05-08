@@ -437,7 +437,7 @@ graph TD
 | `bleachThreshold` | number | 29 | Ağarma sıcaklık eşiği |
 | `tourismLevel` | number | 2 | 0–3 turizm düzeni |
 | `fishingQuota` | number | 1 | 0–2 balıkçılık kotası |
-| `imfFund` | number | 0 | Uluslararası fonlama |
+| `gefFund` | number | 0 | GEF uluslararası fonlama |
 | `ewsActive` | bool | false | Erken uyarı sistemi |
 | `industrialCO2` | number | 50 | Endüstriyel emisyon |
 | `simLog[]` | Array | [] | CSV veri kaydı |
@@ -493,6 +493,20 @@ Renk kodlaması: %40+ yeşil, %20-40 sarı, %20 altı kırmızı.
 4. **IPCC AR6** — SSP2-4.5 orta emisyon senaryosu
 
 Sayfa altında footer olarak gösterilir: `Data: NOAA NCRMP · NOAA NCEI · IPCC SSP2-4.5`
+
+---
+
+## 22. Onboarding Sistemi
+
+### 22.1 12 Adımlı Tanıtım Turu
+- Simülasyona ilk girişte zorunlu olarak başlar (`localStorage`'da `tourSeen` kontrolü).
+- Ekrandaki UI elemanlarını `scrollIntoView` ve özel bir spot ışığı (`box-shadow` hack) ile vurgular.
+- "Turu Atla" seçeneği yoktur, bilgi aktarımını garantilemek için turun bitirilmesi zorunludur.
+- `restart-tour-btn` (❓ Tur) ile istenildiği zaman sıfırlanabilir.
+
+### 22.2 MPA Çizim Eğitimi
+- `grid-container` üzerine ilk kez gelindiğinde (`mouseenter`) tetiklenir (`localStorage`'da `mpaTutorialSeen` kontrolü).
+- Sürükle-bırak işlemini CSS animasyonları (el ikonu ve seçim kutusu) ile öğretir.
 
 ---
 
