@@ -46,6 +46,10 @@ Bu simülasyon, **NOAA NCRMP** ve **NOAA NCEI** veri setlerinden beslenen gerçe
 - **Bulaşma modeli**: Stres komşu hücrelere organik olarak yayılır
 - **3 okyanus akıntısı merkezi** sıcaklık dağılımını etkiler
 
+### 🎓 Kapsamlı Onboarding Sistemi
+- **12 Adımlı Tanıtım Turu:** Kullanıcıları tüm paneller, simülasyon mantığı ve metrikler hakkında bilgilendiren detaylı zorunlu rehber.
+- **İnteraktif MPA Çizim Eğitimi:** Harita üzerine ilk gelindiğinde aktifleşen görsel yönlendirme ile deniz koruma alanı oluşturma öğreticisi.
+
 ### 📊 Gerçek Zamanlı Grafikler
 - **SST & DHW**: Deniz yüzey sıcaklığı ve Derece Isıtma Haftası
 - **Coral Cover**: Mercan örtüsü yüzdesi
@@ -267,6 +271,16 @@ yeniStres = eskiStres
 - Offscreen canvas ile render optimizasyonu
 - SimplexNoise ile prosedürel doku oluşturma
 - Mini harita arka planı cache'lenerek tekrar render edilmez
+
+---
+
+## 📜 Lisans
+
+Bu proje eğitim amaçlı geliştirilmiştir. Kullanılan veriler NOAA açık veri politikası kapsamındadır.
+
+---
+
+*Son güncelleme: Mayıs 2026*
 
 ---
 
