@@ -2,7 +2,7 @@
 
 > **Dosya:** `coral_simulation_final.html`  
 > **Teknolojiler:** HTML5, CSS3, JavaScript (vanilla), Chart.js 4.4.1, Google Fonts (Inter)  
-> **Toplam Satır:** ~3050  
+> **Toplam Satır:** ~3430  
 > **Tek dosya uygulaması** — harici bağımlılık yok (CDN hariç)  
 > **Ek Dosyalar:** `coral_simulation_dataset.csv`, `pacific_map_bg.png`, `README.md`
 
@@ -17,6 +17,7 @@ Bu uygulama, mercan resiflerinin iklim değişikliği altındaki davranışını
 - Gerçek zamanlı IDW (Inverse Distance Weighting) interpolasyonlu ısı haritası
 - Lotka-Volterra av-avcı balık popülasyonu dinamikleri
 - Kapsamlı iklim politikası kontrol paneli (14 kaldıraç)
+- 13 adımlı interaktif tanıtım turu (Senaryo butonları dahil)
 - Deniz Koruma Alanları (MPA) çizim sistemi
 - Erken Uyarı Sistemi (EWS)
 - CSV veri dışa aktarma (canlı satır sayacı)
@@ -26,6 +27,9 @@ Bu uygulama, mercan resiflerinin iklim değişikliği altındaki davranışını
 - **Mini Dünya Haritası** — Uydu arka planlı, tıklanabilir bölge noktaları
 - **2100 Projeksiyon Tahmini** — Canlı hesaplanan sağlık yüzdesi
 - **Simülasyon Sonu Değerlendirmesi** — Türkçe puan ve sonuç ekranı
+- **Anlık Analiz Paneli** — En yüksek ağarma yüzdesi, kritik yıl ve korunan alan oranını canlı izleyen panel
+- **Senaryo Seçim Butonları** — Hızlı başlangıç için 3 hazır politika senaryosu (BAU, Optimal, MPA Only)
+- **Gerçek NOAA Veri Entegrasyonu** — Coral Cover grafiği üzerinde altın yıldız şeklinde gösterilen gözlemlenmiş NOAA verileri
 - **Veri Kaynağı Footer** — NOAA NCRMP · NOAA NCEI · IPCC SSP2-4.5
 
 ---
@@ -34,7 +38,7 @@ Bu uygulama, mercan resiflerinin iklim değişikliği altındaki davranışını
 
 ```
 mercanbeyaz/
-├── coral_simulation_final.html  # Ana simülasyon (monolitik HTML/CSS/JS, ~3050 satır)
+├── coral_simulation_final.html  # Ana simülasyon (monolitik HTML/CSS/JS, ~3430 satır)
 ├── coral_simulation_dataset.csv # NOAA kaynak veri seti (21 kayıt, 5 bölge)
 ├── pacific_map_bg.png           # Mini harita uydu arka plan görseli
 ├── PROJECT_DOCUMENTATION.md     # Bu dosya
@@ -56,6 +60,7 @@ coral_simulation_final.html iç yapısı:
 │   │   │   ├── .policy-panel — Politika kontrol paneli
 │   │   │   └── .grid-container — Harita canvas + timeline
 │   │   └── .right-panel — Sağ panel (grafikler + ısı haritası)
+│   │       ├── #analysis-panel — Anlık analiz paneli (HTML)
 │   │       ├── .charts-stack — 4 adet Chart.js grafiği (tooltip'li)
 │   │       └── .heatmap-overlay — Isı haritası modu
 │   ├── Info Button (?) — Sağ alt köşe
@@ -440,6 +445,8 @@ graph TD
 | `gefFund` | number | 0 | GEF uluslararası fonlama |
 | `ewsActive` | bool | false | Erken uyarı sistemi |
 | `industrialCO2` | number | 50 | Endüstriyel emisyon |
+| `apPeakBleach` | number | 0 | Simülasyonda kaydedilen en yüksek ağarma % |
+| `apWorstYear` | number | 2013 | En yüksek ağarmanın gerçekleştiği yıl |
 | `simLog[]` | Array | [] | CSV veri kaydı |
 
 ---
@@ -498,8 +505,10 @@ Sayfa altında footer olarak gösterilir: `Data: NOAA NCRMP · NOAA NCEI · IPCC
 
 ## 22. Onboarding Sistemi
 
-### 22.1 12 Adımlı Tanıtım Turu
+### 22.1 13 Adımlı Tanıtım Turu
 - Simülasyona ilk girişte zorunlu olarak başlar (`localStorage`'da `tourSeen` kontrolü).
+- **Adım 6/13** olarak **Hızlı Senaryo Butonları** tanıtımı eklenmiştir.
+- **Adım 13/13** olan grafikler adımının vurgu hedefi hem grafik stack'ini hem de anlık analiz panelini kapsayacak şekilde `#analysis-panel,#charts-stack` olarak güncellenmiştir.
 - Ekrandaki UI elemanlarını `scrollIntoView` ve özel bir spot ışığı (`box-shadow` hack) ile vurgular.
 - "Turu Atla" seçeneği yoktur, bilgi aktarımını garantilemek için turun bitirilmesi zorunludur.
 - `restart-tour-btn` (❓ Tur) ile istenildiği zaman sıfırlanabilir.
@@ -507,6 +516,40 @@ Sayfa altında footer olarak gösterilir: `Data: NOAA NCRMP · NOAA NCEI · IPCC
 ### 22.2 MPA Çizim Eğitimi
 - `grid-container` üzerine ilk kez gelindiğinde (`mouseenter`) tetiklenir (`localStorage`'da `mpaTutorialSeen` kontrolü).
 - Sürükle-bırak işlemini CSS animasyonları (el ikonu ve seçim kutusu) ile öğretir.
+
+---
+
+## 23. Anlık Analiz Paneli ve Hızlı Senaryolar
+
+### 23.1 Anlık Analiz Paneli Mekanizması
+Analiz paneli, simülasyon akışındaki anlık kritik bilgileri tek bir ekranda derleyip sunar. Her tick güncellemesinde (`processGrid` sonrasında) şu veriler toplanır:
+- **Mevcut Mercan Örtüsü (%)**: `((healthyCount + bleachedCount + recoveringCount) / (ROWS * COLS) * 100).toFixed(1)`
+- **En Yüksek Ağarma (%)**: O ana kadar gözlenen maksimum ağarmış hücre oranı (`apPeakBleach`). Eğer o anki oran eskisinden yüksekse `apWorstYear = exactYear` olarak güncellenir.
+- **Toplam Ölü Hücre (%)**: `(deadCount / (ROWS * COLS) * 100).toFixed(1)`
+- **Korunan Alan (%)**: Grid üzerinde çizilen toplam koruma hücresi yüzdesi.
+
+### 23.2 Hızlı Senaryo Seçim Ayarları
+Hızlı senaryo butonlarına tıklanmasıyla `applyScenario()` fonksiyonu tetiklenir ve aşağıdaki yapılandırma değerleri ilgili slider/düğmelere atanarak ilgili girdi event'leri (`input` / `change` / `click`) tetiklenir:
+
+1. **Business as Usual (BAU)**:
+   - Emisyonlar (`sl-ind`, `sl-trans`, `sl-agr`, `sl-def`) = `100`
+   - Temiz Enerji (`sl-ren`) = `0`, CCS (`sl-ccs`) = `0`
+   - Bütçe (`budget-slider`) = `0`, IMF Fonu (`sl-imf`) = `0`, Alkalinite (`sl-ph`) = `0`
+   - Politika anlaşmaları (`US`, `CN`, `EU`) = Hepsi pasif (toggled off)
+   - Turizm = Kontrolsüz (`0`), Balıkçılık = Kontrolsüz (`0`), EWS (`cb-ews`) = Kapalı
+
+2. **Optimal Policies**:
+   - Emisyonlar = `0`
+   - Temiz Enerji = `100`, CCS = `100`
+   - Bütçe = `100`, IMF Fonu = `100`, Alkalinite = `100`
+   - Politika anlaşmaları = Hepsi aktif (toggled on)
+   - Turizm = Sıkı Düzenleme (`3`), Balıkçılık = Sıkı Düzenleme (`2`), EWS = Açık
+
+3. **MPA Only**:
+   - Emisyonlar = `50` (ortalama), Temiz Enerji = `30`, CCS = `0`
+   - Bütçe = `100`, IMF Fonu = `100`, Alkalinite = `0`
+   - Politika anlaşmaları = Hepsi aktif (toggled on)
+   - Turizm = Sıkı Düzenleme (`3`), Balıkçılık = Sıkı Düzenleme (`2`), EWS = Açık
 
 ---
 

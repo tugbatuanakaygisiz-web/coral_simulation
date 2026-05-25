@@ -45,12 +45,21 @@ Bu simülasyon, **NOAA NCRMP** ve **NOAA NCEI** veri setlerinden beslenen gerçe
 - **3 okyanus akıntısı merkezi** sıcaklık dağılımını etkiler
 
 ### 🎓 Kapsamlı Onboarding Sistemi
-- **12 Adımlı Tanıtım Turu:** Kullanıcıları tüm paneller, simülasyon mantığı ve metrikler hakkında bilgilendiren detaylı zorunlu rehber.
+- **13 Adımlı Tanıtım Turu:** Kullanıcıları tüm paneller, simülasyon mantığı ve metrikler hakkında bilgilendiren detaylı zorunlu rehber (Senaryo butonları turu dahil).
 - **İnteraktif MPA Çizim Eğitimi:** Harita üzerine ilk gelindiğinde aktifleşen görsel yönlendirme ile deniz koruma alanı oluşturma öğreticisi.
+
+### 📊 Anlık Analiz Paneli
+- Grafiklerin hemen üstünde yer alan panel, simülasyon boyunca **En Yüksek Ağarma**, **En Kritik Yıl**, **Mevcut Mercan Örtüsü**, **Toplam Ölü Hücre**, **Korunan Alan (%)** ve **2100 Tahmini** metriklerini canlı ve anlık olarak hesaplayıp raporlar.
+
+### 🎛️ Hızlı Senaryo Butonları
+- Kullanıcının tek tıkla önceden tanımlanmış emisyon ve politika senaryolarını simülasyona uygulamasını sağlar:
+  - 🔥 **Business as Usual**: Maksimum emisyon, sıfır politika ve koruma.
+  - 🌿 **Optimal Policies**: Sıfır emisyon, maksimum politika, alkalinite, fon ve koruma.
+  - 🏝️ **MPA Only**: Standart emisyon, maksimum yerel koruma, fon ve bütçe.
 
 ### 📊 Gerçek Zamanlı Grafikler
 - **SST & DHW**: Deniz yüzey sıcaklığı ve Derece Isıtma Haftası
-- **Coral Cover**: Mercan örtüsü yüzdesi
+- **Coral Cover**: Mercan örtüsü yüzdesi (Seçilen bölgenin gerçek NOAA NCRMP gözlem verileri altın yıldız noktaları [⭐] şeklinde grafik üzerinde gösterilir)
 - **Prey Fish**: Av balık popülasyonu (Lotka-Volterra modeli)
 - **Predator Fish**: Avcı balık popülasyonu
 
@@ -150,6 +159,13 @@ Stres, komşu mercan kolonilerine IDW (Inverse Distance Weighting) tabanlı yay�
 | ↺ Reset | Simülasyonu sıfırla |
 | ⚖ Compare | İki bölgeyi yan yana karşılaştır |
 | ⬇ CSV | Simülasyon verilerini CSV olarak indir |
+
+### Hızlı Senaryo Seçim Butonları
+| Buton | İşlev / Açıklama |
+|-------|------------------|
+| 🔥 Business as Usual | Tüm emisyonları maksimuma çıkarır, tüm politikaları ve korumaları devre dışı bırakır. |
+| 🌿 Optimal Policies | Tüm emisyonları sıfırlar, tüm yeşil politikaları, alkaliniteyi ve bütçeyi maksimuma çıkarır. |
+| 🏝️ MPA Only | Emisyonları orta seviyede tutarken yerel koruma (MPA, bütçe) ve erken uyarıyı maksimize eder. |
 
 ### Emisyon Kaynakları (Policy Controls)
 | Kaynak | Varsayılan | Etkisi |
