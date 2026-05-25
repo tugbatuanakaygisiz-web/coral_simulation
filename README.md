@@ -1,5 +1,7 @@
 # 🪸 Mercan Resifi Stres & Ağarma Simülasyonu
 
+### 🔗 Canlı Demo: [https://tugbatuanakaygisiz-web.github.io/coral_simulation/](https://tugbatuanakaygisiz-web.github.io/coral_simulation/)
+
 Pasifik Okyanusu'ndaki mercan resiflerinin iklim değişikliği, insan politikaları ve çevresel faktörler altındaki tepkisini modelleyen **interaktif ekolojik simülasyon**.
 
 ---
