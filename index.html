@@ -3117,6 +3117,7 @@
     requestAnimationFrame(loop);
     drawMiniMap(region);
     update2100Projection();
+    setTimeout(updateCoralRealPoints, 200);
 
     document.getElementById('timeline-scrubber').addEventListener('input', (e) => {
       const targetTick = parseInt(e.target.value);
