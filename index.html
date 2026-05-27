@@ -2441,20 +2441,20 @@
               if (tourismLevel === 0) stressAccMult += 0.3;
               else if (tourismLevel === 1) stressAccMult += 0.15;
               else if (tourismLevel === 3) stressAccMult -= 0.1;
-              recoveryMult += (imfFund / 100) * 0.5;
+              recoveryMult += (imfFund / 100) * 0.25;
 
               if (protectedCells.has(idx)) {
                 stressAccMult = 0.23;
-                recoveryMult = 3.25 + (imfFund / 100) * 0.75;
+                recoveryMult = 1.8 + (imfFund / 100) * 0.4;
                 neighborMult = 0.3;
-                if (localTemp < bleachThreshold + 1.5) newStress -= 0.001 * recoveryMult;
+                if (localTemp < bleachThreshold + 1.5) newStress -= 0.00022 * recoveryMult;
               } else if (tempProtected.has(idx)) {
                 stressAccMult *= 0.55;
               }
             }
 
             if (localTemp > bleachThreshold) newStress += (localTemp - bleachThreshold) * 0.0008 * stressAccMult;
-            else newStress -= 0.0008 * recoveryMult;
+            else newStress -= 0.00018 * recoveryMult;
             let incomingStress = 0;
             let healthyNeighbors = 0;
             for (let ny = y - 1; ny <= y + 1; ny++) {
@@ -2469,7 +2469,7 @@
               }
             }
             newStress += incomingStress;
-            if (c.state === 'DEAD' && localTemp < 27 && healthyNeighbors >= 1) newStress -= 0.0005 * recoveryMult;
+            if (c.state === 'DEAD' && localTemp < 27 && healthyNeighbors >= 2) newStress -= 0.00012 * recoveryMult;
             nextStress[idx] = Math.max(0, Math.min(1, newStress));
           }
         }
@@ -2532,7 +2532,7 @@
             if (protectedCells.has(i)) restorationChance *= 2;
             if (Math.random() < restorationChance) {
               grid[i].state = 'RECOVERING';
-              grid[i].stressLevel = 0.75;
+              grid[i].stressLevel = 0.88;
               res1.deadCount--;
               res1.recoveringCount++;
             }
