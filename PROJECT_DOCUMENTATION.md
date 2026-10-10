@@ -130,22 +130,27 @@ NOAA NCRMP verisinden alınan gerçek koordinatlar:
 | Pacific Remote Island Areas | 5.09° | -164.03° |
 
 ### 4.3 Projeksiyon Çapaları (`PROJ_ANCHORS`)
-IPCC SSP2-4.5 senaryosuna dayanan 9 veri noktası (2024–2100):
+IPCC SSP2-4.5 senaryosuna dayanan 9 veri noktası (2024–2100). Sıcaklık, 2013–2023 ortalamasına göre tropikal SST anomalisidir:
 
 ```
-2024: +0.1°C, sağlık: 0.68
-2050: +1.2°C, sağlık: 0.38
-2100: +3.0°C, sağlık: 0.04
+2024: +0.1°C,  sağlık: 0.68
+2050: +0.8°C,  sağlık: 0.38
+2100: +1.75°C, sağlık: 0.04
 ```
+
+Emisyon kaydırıcılarının etkisi `emissionRamp(year)` ile 2024–2060 arasında kademeli devreye girer (iklim gecikmesi).
+
+### 4.3.1 Bölgesel İklim (`REGION_CLIMATE`)
+Her bölge için yıllık ortalama SST (`mean`), mevsimsel yarı genlik (`amp`) ve en sıcak ay (`peakMonth`).
+MMM = mean + amp. Sıcaklık kaydırıcısı seçili bölgenin yıllık ortalamasını temsil eder ve bölge seçildiğinde bu değere ayarlanır.
 
 ### 4.4 Tarihsel Ağartma Olayları (`BLEACHING_EVENTS`)
-6 gerçek küresel ağartma olayı spike değerleriyle:
-- 1998 (+2.1°C) — İlk küresel ağartma
-- 2010 (+1.4°C)
-- 2016 (+2.8°C) — Tarihin en kötüsü
-- 2017 (+1.2°C)
-- 2020 (+1.8°C)
-- 2024 (+2.5°C) — Son büyük olay
+Spike değerleri, mevsimsel döngünün üstündeki tepe SST anomalisidir ve her bölgenin sıcak mevsiminde (±6 ay üçgen profil) zirve yapar:
+- 2014 (+1.0°C), 2015 (+1.2°C), 2016 (+1.0°C), 2017 (+0.7°C) — 3. küresel ağarma olayı
+- 2020 (+0.7°C)
+- 2024 (+1.2°C) — 4. küresel ağarma olayı
+
+2026–2099 arası için her sıfırlamada rastgele sıcak dalgalar (`futureEvents`, yılda ~%20 olasılık, +0.5–1.2°C) üretilir.
 
 ---
 
@@ -153,7 +158,9 @@ IPCC SSP2-4.5 senaryosuna dayanan 9 veri noktası (2024–2100):
 
 ### 5.1 Grid Yapısı
 - **Boyut:** 24 sütun × 18 satır = 432 hücre
-- **Her hücre:** `{ state, stressLevel, localTemp }`
+- **Her hücre:** `{ state, stressLevel, localTemp, dhw, hs, regrowing }`
+  - `hs`: son 7 tick'in HotSpot katkıları (12 haftalık DHW halka tamponu)
+  - `regrowing`: ölmüş ve larva yerleşimiyle yeniden büyüyen hücre
 - **Durumlar:** HEALTHY → STRESSED → BLEACHED → DEAD → RECOVERING
 
 ### 5.2 Durum Geçiş Eşikleri
@@ -166,24 +173,25 @@ stressLevel > 0.82  →  DEAD
 
 ### 5.3 Sıcaklık Hesaplama Zinciri
 ```
-globalTemp = sliderTemp + projDelta + emissionDelta
-seasonalTemp = globalTemp + sin(month) × 1.5
-finalTemp = seasonalTemp + eventSpike
-localTemp = finalTemp + SimplexNoise × 3.0 + currentEffects
+anomaly    = sliderTemp - REGION_CLIMATE[region].mean
+projDelta  = (PROJ_ANCHORS(year) + emissionEffect × emissionRamp(year)) × policyMult
+regionTemp = mean + anomaly + projDelta + cos(2π(month - peakMonth)/12) × amp
+finalTemp  = regionTemp + eventSpike
+localTemp  = finalTemp + SimplexNoise(kayan) × 0.8 + currentEffects (±0.5°C)
 ```
 
 ### 5.4 Stres Yayılım Modeli (`processGrid`)
 Her tick'te her hücre için:
-1. **Lokal sıcaklık** hesaplanır (gürültü + okyanus akıntıları)
-2. **Stres çarpanları** belirlenir (turizm, MPA, EWS, GEF fon)
-3. `localTemp > bleachThreshold` ise stres artar
-4. Komşu hücrelerden **bulaşma** stresi eklenir
-5. Ölü hücrelerin düşük sıcaklıkta **iyileşme** şansı
+1. **Lokal sıcaklık** hesaplanır (zamanla kayan gürültü + okyanus akıntıları)
+2. **DHW** güncellenir: `HotSpot = localTemp − MMM`, ≥1°C ise × 1.74 hafta, 7 tick'lik pencerede toplanır
+3. **Stres çarpanları** belirlenir (turizm, MPA, EWS, GEF fon, Recovery Speed)
+4. `DHW > eşik − 1` ise stres `(DHW − eşik + 1) × 0.0045` oranında artar; ağarmış komşular hastalık stresi ekler
+5. `DHW < 1` ise yaşayan koloniler `0.008`/tick ile toparlanır, ölü hücreler sağlıklı komşu başına `0.0003`/tick ile yeniden büyür
 
 ### 5.5 Okyanus Akıntıları
 3 akıntı merkezi sinüs/kosinüs ile hareket eder:
-- 2 akıntı ısıtıcı (+1.5°C etki, 8 hücre yarıçap)
-- 1 akıntı soğutucu (-1.5°C etki)
+- 2 akıntı ısıtıcı (+0.5°C etki, 8 hücre yarıçap)
+- 1 akıntı soğutucu (-0.5°C etki)
 
 ### 5.6 Lotka-Volterra Balık Dinamikleri
 ```javascript
@@ -196,9 +204,9 @@ Balıkçılık kotası `dPrey` üzerine ek etki yapar.
 
 ### 5.7 Restorasyon Mekanizması
 ```javascript
-restorationChance = (budget/100) × 0.025 × (1 + gefFund/100)
+restorationChance = (budget/100) × 0.003 × (1 + gefFund/100)
 // MPA içindeyse ×2 çarpan
-// Başarılı ise: DEAD → RECOVERING (stress=0.75)
+// Başarılı ise: DEAD → RECOVERING (stress=0.78, regrowing) — dikilen fragmanlar yıllar içinde büyür
 ```
 
 ---
@@ -228,7 +236,7 @@ restorationChance = (budget/100) × 0.025 × (1 + gefFund/100)
 
 | Mod | Palet | Aralık |
 |-----|-------|--------|
-| SST | Mor→Mavi→Yeşil→Sarı→Kırmızı→Beyaz | 26–32°C |
+| SST | Mor→Mavi→Yeşil→Sarı→Kırmızı→Beyaz | Bölge MMM'sinin ±3°C'si |
 | Coral | Mavi→Teal→Sarı→Kırmızı→Siyah | Sağlıklı→Ölü |
 | Prey | Siyah→Lacivert→Mavi→Cyan | Yok→Yoğun |
 | Predator | Siyah→Mor→Leylak→Pembe | Yok→Yüksek |
@@ -264,11 +272,11 @@ Balık haritalarında min-max normalizasyon + gamma düzeltme uygulanır.
 | 🇺🇸 US Policy | Toggle | Devre dışı: `projDelta × 1.4` |
 | 🇨🇳 CN Policy | Toggle | Devre dışı: `projDelta × 1.27` |
 | 🇪🇺 EU Policy | Toggle | Devre dışı: `projDelta × 1.08` |
-| 🌊 Alkalinity Enh. | Slider 0–100 | `bleachThreshold = 29 + (val/100)×2` |
+| 🌊 Alkalinity Enh. | Slider 0–100 | Ağarma DHW eşiği `4 + (val/100)×3` |
 | ✈️ Tourism Reg | Select (4) | Stres çarpanı: +0.3 ~ -0.1 |
 | 🐟 Fishing Quota | Select (3) | Prey: -0.003 ~ +0.001 |
-| 💰 GEF Reef Finance | Slider 0–100 | `recoveryMult += (val/100)×0.5` |
-| 🚨 EWS | Checkbox | DHW>6 → 10 hücre otomatik koruma |
+| 💰 GEF Reef Finance | Slider 0–100 | `recoveryMult ×= 1 + (val/100)×0.25` |
+| 🚨 EWS | Checkbox | Bölgesel DHW≥4 → 10 hücre otomatik koruma |
 
 ### 7.3 Politika Özet Çubuğu
 4 canlı rozet: Net Warming, pH Risk, Fish, Policies — her tick güncellenir.
@@ -296,12 +304,10 @@ protectedCells = new Set()  // Tüm korunan hücre indeksleri
 | Parametre | Normal | MPA İçi | Etki |
 |-----------|--------|---------|------|
 | stressAccMult | 1.0 | 0.23 | Stres birikimi %77 azalır |
-| recoveryMult | 1.0 | 3.25 + GEF bonusu (×0.75) | İyileşme 3.25x hızlı |
+| recoveryMult | 1.0 | 1.8 + GEF bonusu (×0.4) | İyileşme 1.8x hızlı |
 | neighborMult | 1.0 | 0.3 | Bulaşma %70 azalır |
 | restorationChance | ×1 | ×2 | Restorasyon şansı 2 kat |
-| Aktif iyileşme | yok | `newStress -= 0.001 × recoveryMult` | Hafif ısınmada kendiliğinden iyileşir |
 
-**Aktif iyileşme koşulu:** `localTemp < bleachThreshold + 1.5°C`
 
 ### 8.4 Silme
 - **Hover:** Kırmızı overlay + 🗑️ ikonu
@@ -314,10 +320,10 @@ protectedCells = new Set()  // Tüm korunan hücre indeksleri
 
 ```
 Her tick sonunda:
-  avgDHW > 6 → En stresli 10 hücreyi bul (ölü ve MPA hariç)
+  avgDHW ≥ 4 → En stresli 10 hücreyi bul (ölü ve MPA hariç)
                 tempProtected Set'ine ekle
                 Bu hücrelerde stressAccMult × 0.55
-  avgDHW < 4 → tempProtected temizle
+  avgDHW < 2 → tempProtected temizle
 ```
 Haritada cyan overlay ile gösterilir.
 
@@ -328,7 +334,7 @@ Haritada cyan overlay ile gösterilir.
 "⚖ Compare" butonuyla aktifleşir:
 - Canvas ikiye bölünür
 - İkinci bölge otomatik seçilir
-- Aynı sıcaklık/politika koşullarında paralel simülasyon
+- Aynı politika koşullarında, her bölge kendi iklimiyle (ortalama SST, mevsim, MMM) paralel simülasyon
 - Her iki grid ayrı `processGrid()` çağrısıyla güncellenir
 
 ---
@@ -384,7 +390,7 @@ Tamamen inline, bağımlılıksız 2D Simplex Noise:
 | Model | Kaynak | Uygulama |
 |-------|--------|----------|
 | DHW Eşik Modeli | NOAA Coral Reef Watch | DHW < 4: güvenli, 4–8: ağarma, ≥8: ölüm |
-| Kontagyon Yayılımı | Orijinal | Komşu hücrelerden stres bulaşması |
+| Kontagyon Yayılımı | Orijinal | Isı stresi altında ağarmış komşulardan hastalık yayılımı |
 | Lotka-Volterra | Klasik ekoloji | Av-avcı popülasyon dengesi |
 | SSP2-4.5 | IPCC AR6 | 2024–2100 sıcaklık projeksiyonu |
 | IDW İnterpolasyon | Shepard (1968) | Uzaysal yumuşatma |
