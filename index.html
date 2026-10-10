@@ -929,9 +929,9 @@
           </select>
         </div>
         <div class="control-group">
-          <label>Temperature (°C) <span class="range-val" id="temp-val">28</span></label>
-          <input type="range" id="temp-slider" min="26" max="34" step="0.1" value="28"
-            title="Başlangıç deniz yüzey sıcaklığını ayarlayın. 29°C üzeri mercanlar için tehlikeli.">
+          <label>Temperature (°C) <span class="range-val" id="temp-val">28.6</span></label>
+          <input type="range" id="temp-slider" min="22" max="34" step="0.1" value="28.6"
+            title="Bölgenin yıllık ortalama deniz yüzey sıcaklığı. Bölge seçildiğinde NOAA iklimsel ortalamasına ayarlanır; artırmak kalıcı bir sıcaklık anomalisi ekler.">
         </div>
         <div class="control-group">
           <label>Coral Cover (%) <span class="range-val" id="cover-val">80</span></label>
@@ -1070,7 +1070,7 @@
                 id="val-imf">0</span></div>
             <div style="display:flex; justify-content:space-between; align-items:center; margin-top:2px;">
               <label style="font-size:0.65rem;color:#a0c0d8;display:flex;align-items:center;gap:4px;"
-                title="Aktif olduğunda DHW 6'yı aşarsa en stresli 10 hücreyi otomatik olarak koruma altına alır.">
+                title="Aktif olduğunda bölgesel DHW 4'ü (NOAA Uyarı Seviyesi 1) aşarsa en stresli 10 hücreyi otomatik olarak koruma altına alır.">
                 <input type="checkbox" id="cb-ews" style="accent-color:#00d4aa;cursor:pointer;"
                   title="Erken Uyarı Sistemini aç/kapat"> 🚨 Early Warning System
               </label>
@@ -1194,52 +1194,92 @@
 
   <script>
     // â”€â”€ Real dataset â”€â”€
+    // Values from coral_simulation_dataset.csv (NOAA NCRMP). PRIA 2016 is left out:
+    // its healthy_count exceeds total_colonies (healthy_pct 139%), so the record is invalid.
     const DATA = [
-      { year: 2013, region: "American Samoa", healthy_pct: 82.1, bleached_pct: 3.2, dead_pct: 4.1, coral_health_index: 0.821, global_bleaching_avg_pct: 12.4 },
-      { year: 2015, region: "American Samoa", healthy_pct: 61.3, bleached_pct: 18.7, dead_pct: 9.2, coral_health_index: 0.613, global_bleaching_avg_pct: 38.6 },
-      { year: 2017, region: "American Samoa", healthy_pct: 74.5, bleached_pct: 8.1, dead_pct: 6.8, coral_health_index: 0.745, global_bleaching_avg_pct: 21.3 },
-      { year: 2019, region: "American Samoa", healthy_pct: 70.2, bleached_pct: 11.4, dead_pct: 7.9, coral_health_index: 0.702, global_bleaching_avg_pct: 28.1 },
-      { year: 2021, region: "American Samoa", healthy_pct: 68.9, bleached_pct: 13.2, dead_pct: 8.4, coral_health_index: 0.689, global_bleaching_avg_pct: 31.5 },
-      { year: 2013, region: "Main Hawaiian Islands", healthy_pct: 79.4, bleached_pct: 4.1, dead_pct: 5.2, coral_health_index: 0.794, global_bleaching_avg_pct: 12.4 },
-      { year: 2015, region: "Main Hawaiian Islands", healthy_pct: 58.7, bleached_pct: 21.3, dead_pct: 11.4, coral_health_index: 0.587, global_bleaching_avg_pct: 38.6 },
-      { year: 2017, region: "Main Hawaiian Islands", healthy_pct: 71.2, bleached_pct: 9.8, dead_pct: 8.1, coral_health_index: 0.712, global_bleaching_avg_pct: 21.3 },
-      { year: 2019, region: "Main Hawaiian Islands", healthy_pct: 66.8, bleached_pct: 14.7, dead_pct: 9.8, coral_health_index: 0.668, global_bleaching_avg_pct: 28.1 },
-      { year: 2021, region: "Main Hawaiian Islands", healthy_pct: 64.3, bleached_pct: 16.9, dead_pct: 11.2, coral_health_index: 0.643, global_bleaching_avg_pct: 31.5 },
-      { year: 2014, region: "Mariana Archipelago", healthy_pct: 90.1, bleached_pct: 0.8, dead_pct: 9.2, coral_health_index: 0.901, global_bleaching_avg_pct: 13.5 },
-      { year: 2017, region: "Mariana Archipelago", healthy_pct: 86.5, bleached_pct: 2.9, dead_pct: 11.1, coral_health_index: 0.865, global_bleaching_avg_pct: 8.1 },
-      { year: 2022, region: "Mariana Archipelago", healthy_pct: 87.9, bleached_pct: 0.5, dead_pct: 11.8, coral_health_index: 0.879, global_bleaching_avg_pct: 25.0 },
-      { year: 2014, region: "Northwestern Hawaiian Islands", healthy_pct: 79.8, bleached_pct: 12.7, dead_pct: 9.3, coral_health_index: 0.798, global_bleaching_avg_pct: 13.5 },
-      { year: 2015, region: "Northwestern Hawaiian Islands", healthy_pct: 95.1, bleached_pct: 2.7, dead_pct: 2.4, coral_health_index: 0.951, global_bleaching_avg_pct: 15.7 },
-      { year: 2016, region: "Northwestern Hawaiian Islands", healthy_pct: 84.9, bleached_pct: 4.6, dead_pct: 11.5, coral_health_index: 0.849, global_bleaching_avg_pct: 19.5 },
-      { year: 2017, region: "Northwestern Hawaiian Islands", healthy_pct: 81.3, bleached_pct: 11.8, dead_pct: 8.3, coral_health_index: 0.813, global_bleaching_avg_pct: 8.1 },
-      { year: 2015, region: "Pacific Remote Island Areas", healthy_pct: 93.7, bleached_pct: 1.9, dead_pct: 4.6, coral_health_index: 0.937, global_bleaching_avg_pct: 15.7 },
-      { year: 2017, region: "Pacific Remote Island Areas", healthy_pct: 84.3, bleached_pct: 11.1, dead_pct: 10.7, coral_health_index: 0.843, global_bleaching_avg_pct: 8.1 },
-      { year: 2018, region: "Pacific Remote Island Areas", healthy_pct: 85.7, bleached_pct: 7.5, dead_pct: 8.1, coral_health_index: 0.857, global_bleaching_avg_pct: 20.0 },
-      { year: 2023, region: "Pacific Remote Island Areas", healthy_pct: 96.6, bleached_pct: 0.4, dead_pct: 3.1, coral_health_index: 0.966, global_bleaching_avg_pct: 30.0 }
+      { year: 2015, region: "American Samoa", healthy_pct: 89.06, bleached_pct: 5.01, dead_pct: 6.21, coral_health_index: 0.8906, global_bleaching_avg_pct: 15.68 },
+      { year: 2016, region: "American Samoa", healthy_pct: 82.34, bleached_pct: 14.26, dead_pct: 3.88, coral_health_index: 0.8234, global_bleaching_avg_pct: 19.53 },
+      { year: 2018, region: "American Samoa", healthy_pct: 93.95, bleached_pct: 1.68, dead_pct: 4.5, coral_health_index: 0.9395, global_bleaching_avg_pct: null },
+      { year: 2023, region: "American Samoa", healthy_pct: 94.89, bleached_pct: 1.04, dead_pct: 4.15, coral_health_index: 0.9489, global_bleaching_avg_pct: null },
+      { year: 2013, region: "Main Hawaiian Islands", healthy_pct: 91.08, bleached_pct: 1.19, dead_pct: 8.16, coral_health_index: 0.9108, global_bleaching_avg_pct: 3.95 },
+      { year: 2016, region: "Main Hawaiian Islands", healthy_pct: 77.19, bleached_pct: 7.19, dead_pct: 16.43, coral_health_index: 0.7719, global_bleaching_avg_pct: 19.53 },
+      { year: 2019, region: "Main Hawaiian Islands", healthy_pct: 75.27, bleached_pct: 6.73, dead_pct: 19.45, coral_health_index: 0.7527, global_bleaching_avg_pct: null },
+      { year: 2014, region: "Mariana Archipelago", healthy_pct: 90.12, bleached_pct: 0.84, dead_pct: 9.15, coral_health_index: 0.9012, global_bleaching_avg_pct: 13.47 },
+      { year: 2017, region: "Mariana Archipelago", healthy_pct: 86.48, bleached_pct: 2.94, dead_pct: 11.09, coral_health_index: 0.8648, global_bleaching_avg_pct: 8.06 },
+      { year: 2022, region: "Mariana Archipelago", healthy_pct: 87.86, bleached_pct: 0.49, dead_pct: 11.8, coral_health_index: 0.8786, global_bleaching_avg_pct: null },
+      { year: 2014, region: "Northwestern Hawaiian Islands", healthy_pct: 79.81, bleached_pct: 12.68, dead_pct: 9.28, coral_health_index: 0.7981, global_bleaching_avg_pct: 13.47 },
+      { year: 2015, region: "Northwestern Hawaiian Islands", healthy_pct: 95.13, bleached_pct: 2.71, dead_pct: 2.42, coral_health_index: 0.9513, global_bleaching_avg_pct: 15.68 },
+      { year: 2016, region: "Northwestern Hawaiian Islands", healthy_pct: 84.85, bleached_pct: 4.64, dead_pct: 11.45, coral_health_index: 0.8485, global_bleaching_avg_pct: 19.53 },
+      { year: 2017, region: "Northwestern Hawaiian Islands", healthy_pct: 81.3, bleached_pct: 11.78, dead_pct: 8.33, coral_health_index: 0.813, global_bleaching_avg_pct: 8.06 },
+      { year: 2014, region: "Pacific Remote Island Areas", healthy_pct: 93.97, bleached_pct: 2.48, dead_pct: 3.7, coral_health_index: 0.9397, global_bleaching_avg_pct: 13.47 },
+      { year: 2015, region: "Pacific Remote Island Areas", healthy_pct: 93.71, bleached_pct: 1.91, dead_pct: 4.63, coral_health_index: 0.9371, global_bleaching_avg_pct: 15.68 },
+      { year: 2017, region: "Pacific Remote Island Areas", healthy_pct: 84.29, bleached_pct: 11.06, dead_pct: 10.68, coral_health_index: 0.8429, global_bleaching_avg_pct: 8.06 },
+      { year: 2018, region: "Pacific Remote Island Areas", healthy_pct: 85.74, bleached_pct: 7.54, dead_pct: 8.06, coral_health_index: 0.8574, global_bleaching_avg_pct: null },
+      { year: 2023, region: "Pacific Remote Island Areas", healthy_pct: 96.58, bleached_pct: 0.41, dead_pct: 3.08, coral_health_index: 0.9658, global_bleaching_avg_pct: null }
     ];
 
     // â”€â”€ Config â”€â”€
     const COLS = 24, ROWS = 18;
-    const BLEACH_THRESHOLD = 28.5; // °C above which DHW accumulates
     const STATES = ['HEALTHY', 'STRESSED', 'BLEACHED', 'DEAD', 'RECOVERING'];
-    const RECOVERY_RATES = { slow: 0.005, medium: 0.015, fast: 0.03 };
+    // Multiplier on natural recovery, chosen by the Recovery Speed control
+    const RECOVERY_RATES = { slow: 0.6, medium: 1.0, fast: 1.6 };
+
+    // ── Regional SST climatology (approximate NOAA Coral Reef Watch 5km virtual stations) ──
+    // mean: annual mean SST (°C), amp: seasonal half-range (°C), peakMonth: warmest month (0 = Jan).
+    // MMM (Maximum Monthly Mean) = mean + amp. Southern-hemisphere and equatorial reefs peak in Mar–Apr,
+    // northern-hemisphere reefs in Aug–Sep.
+    const REGION_CLIMATE = {
+      'American Samoa': { mean: 28.6, amp: 0.9, peakMonth: 2.5 },
+      'Main Hawaiian Islands': { mean: 25.9, amp: 1.4, peakMonth: 8.5 },
+      'Mariana Archipelago': { mean: 28.5, amp: 0.9, peakMonth: 8.5 },
+      'Northwestern Hawaiian Islands': { mean: 24.6, amp: 2.5, peakMonth: 8.0 },
+      'Pacific Remote Island Areas': { mean: 28.3, amp: 0.6, peakMonth: 3.5 }
+    };
+    function climateOf(r) { return REGION_CLIMATE[r] || REGION_CLIMATE['American Samoa']; }
+    function mmmOf(r) { const c = climateOf(r); return c.mean + c.amp; }
+
+    // ── Degree Heating Weeks (NOAA CRW): HotSpots ≥ 1°C above MMM, summed over a rolling 12-week window ──
+    const WEEKS_PER_TICK = 365.25 / 30 / 7;                     // 1 tick ≈ 12.2 days ≈ 1.74 weeks
+    const DHW_WINDOW = Math.round(12 / WEEKS_PER_TICK);          // 7 ticks ≈ 12 weeks
+    const DHW_BLEACH = 4;                                        // CRW Alert Level 1: significant bleaching
+    const HEAT_STRESS_RATE = 0.0045;                             // stress gained per tick per DHW above (DHW_BLEACH - 1)
+    const SYMBIONT_RECOVERY = 0.008;                             // stress lost per tick once heat stress is gone (bleached → healthy in ~6–12 months)
+    const RECRUIT_RECOVERY = 0.0003;                             // per healthy neighbour per tick for dead cells (regrowth over ~10–15 years)
+    const SPATIAL_SST_VAR = 0.8;                                 // ± °C of within-reef SST variation
 
     // ── Ocean Currents Simulation Variables ──
     let currentX = [0, 0, 0];
     let currentY = [0, 0, 0];
 
     // ── Projection Data (2024-2100) ──
+    // temp: tropical SST anomaly (°C) relative to the 2013–2023 baseline under SSP2-4.5
+    // (IPCC AR6 WG1: ~+1.5–2°C ocean surface warming by 2100 relative to the recent past)
     const PROJ_ANCHORS = [
       { year: 2024, temp: 0.1, health: 0.68 },
-      { year: 2030, temp: 0.3, health: 0.61 },
-      { year: 2040, temp: 0.7, health: 0.50 },
-      { year: 2050, temp: 1.2, health: 0.38 },
-      { year: 2060, temp: 1.6, health: 0.27 },
-      { year: 2070, temp: 2.0, health: 0.18 },
-      { year: 2080, temp: 2.4, health: 0.11 },
-      { year: 2090, temp: 2.7, health: 0.07 },
-      { year: 2100, temp: 3.0, health: 0.04 }
+      { year: 2030, temp: 0.25, health: 0.61 },
+      { year: 2040, temp: 0.5, health: 0.50 },
+      { year: 2050, temp: 0.8, health: 0.38 },
+      { year: 2060, temp: 1.05, health: 0.27 },
+      { year: 2070, temp: 1.25, health: 0.18 },
+      { year: 2080, temp: 1.45, health: 0.11 },
+      { year: 2090, temp: 1.6, health: 0.07 },
+      { year: 2100, temp: 1.75, health: 0.04 }
     ];
+    // Emission policy changes act on the climate with a lag: their effect phases in over 2024–2060
+    function emissionRamp(year) { return Math.max(0, Math.min(1, (year - 2024) / 36)); }
+
+    // Future marine heatwaves (El Niño-like years) after the observed record ends.
+    // Regenerated on every reset; both regions in compare mode share the same global events.
+    let futureEvents = [];
+    function generateFutureEvents() {
+      futureEvents = [];
+      for (let y = 2026; y < 2100; y++) {
+        if (Math.random() < 0.2) {
+          futureEvents.push({ year: y, spike: 0.5 + Math.random() * 0.7, label: `Marine Heatwave ${y}` });
+          y++; // at most one heatwave every other year
+        }
+      }
+    }
 
     function lerp(a, b, t) { return a + (b - a) * t; }
 
@@ -1281,18 +1321,24 @@
     let seasonalTemp = 28;
     let eventSpike = 0;
     let activeEventLabel = null;
+    // spike = peak SST anomaly (°C) above the seasonal cycle, centred on each region's warm season
     const BLEACHING_EVENTS = [
       { year: 1998, spike: 2.1, label: 'Mass Bleaching 1998' },
       { year: 2010, spike: 1.4, label: 'Mass Bleaching 2010' },
-      { year: 2016, spike: 2.8, label: 'Global Bleaching 2016' },
-      { year: 2017, spike: 1.2, label: 'Bleaching 2017' },
-      { year: 2020, spike: 1.8, label: 'Mass Bleaching 2020' },
-      { year: 2024, spike: 2.5, label: 'Global Bleaching 2024' }
+      { year: 2014, spike: 1.0, label: 'Global Bleaching 2014' },
+      { year: 2015, spike: 1.2, label: 'Global Bleaching 2015' },
+      { year: 2016, spike: 1.0, label: 'Global Bleaching 2016' },
+      { year: 2017, spike: 0.7, label: 'Bleaching 2017' },
+      { year: 2020, spike: 0.7, label: 'Mass Bleaching 2020' },
+      { year: 2024, spike: 1.2, label: 'Global Bleaching 2024' }
     ];
+    let eventSpike2 = 0, activeEventLabel2 = null, temperature2 = 28;
+    let lastRes1 = null;
     let tick = 0, dhw = 0, simSpeed = 1, running = true;
     let apPeakBleach = 0, apWorstYear = 2013, apWorstBleach = 0;
     let exactYear = 2013;
     let temperature = 28, coralCover = 80, recoverySpeed = 'medium';
+    let dhwSlot = 0;
     let prey = 50, predator = 10;
     let region = 'American Samoa';
     let dataIdx = 0;
@@ -1379,6 +1425,7 @@
     function renderGridToCtx(targetGrid, targetCtx, targetW, targetH, mapW, offCv, targetOffCtx, noiseOff) {
       const cellW = mapW / COLS, cellH = targetH / ROWS;
       const sc = 0.25, hw = (mapW * sc) | 0, hh = (targetH * sc) | 0, invSc = 1 / sc;
+      if (hw <= 0 || hh <= 0) return { offCv, targetOffCtx }; // canvas not laid out yet
       if (!offCv || offCv.width !== hw || offCv.height !== hh) { offCv = document.createElement('canvas'); offCv.width = hw; offCv.height = hh; targetOffCtx = offCv.getContext('2d'); }
       const img = targetOffCtx.createImageData(hw, hh), d = img.data;
       const nvTime = noiseTime * 2;
@@ -1610,14 +1657,14 @@
         ctx2.fillStyle = '#fff'; ctx2.textBaseline = 'top'; ctx2.textAlign = 'left';
         ctx2.fillText(`${sm} ${displayYear}`, 12, 11);
         ctx2.fillText(region2, 12, 27);
-        ctx2.fillStyle = '#FFD700'; ctx2.fillText(`SST: ${temperature.toFixed(1)}°C`, 12, 43);
+        ctx2.fillStyle = '#FFD700'; ctx2.fillText(`SST: ${temperature2.toFixed(1)}°C`, 12, 43);
         ctx2.restore();
 
-        if (eventSpike > 0.1 && activeEventLabel) {
+        if (eventSpike2 > 0.1 && activeEventLabel2) {
           ctx2.save();
-          ctx2.globalAlpha = Math.min(1, eventSpike / 0.5);
+          ctx2.globalAlpha = Math.min(1, eventSpike2 / 0.5);
           ctx2.font = '10px "Courier New",monospace';
-          const text = '⚠️ ' + activeEventLabel;
+          const text = '⚠️ ' + activeEventLabel2;
           const tw = ctx2.measureText(text).width;
           ctx2.fillStyle = 'rgba(180,0,0,0.7)';
           ctx2.beginPath();
@@ -1635,30 +1682,13 @@
 
     // ── Grid init ──
 
-    function initGrid2() {
-      grid2 = [];
-      const rd = DATA.filter(d => d.region === region2);
-      const d0 = rd[0] || { healthy_pct: 80, bleached_pct: 5, dead_pct: 5 };
-      const hF = d0.healthy_pct / 100;
-      const bF = d0.bleached_pct / 100;
-      const dF = d0.dead_pct / 100;
-      const cF = coralCover / 100;
-      for (let i = 0; i < ROWS * COLS; i++) {
-        const r = Math.random();
-        let state, stressLevel;
-        if (r < cF * hF) { state = 'HEALTHY'; stressLevel = 0.1; }
-        else if (r < cF * (hF + bF)) { state = 'BLEACHED'; stressLevel = 0.65; }
-        else if (r < cF * (hF + bF + dF)) { state = 'DEAD'; stressLevel = 0.9; }
-        else if (r < cF) { state = 'STRESSED'; stressLevel = 0.35; }
-        else { state = 'DEAD'; stressLevel = 0.9; }
-        grid2.push({ state, stressLevel, localTemp: temperature });
-      }
-    }
-    function initGrid() {
-      grid = [];
-      const rd = DATA.filter(d => d.region === region);
+    // Initial reef seeded from the region's first NOAA survey. Cells beyond the coral cover
+    // are bare substrate (dead) that can be recolonised by recruitment.
+    function buildGrid(regionName) {
+      const rd = DATA.filter(d => d.region === regionName);
       const d0 = rd[0] || { healthy_pct: 80, bleached_pct: 5, dead_pct: 5 };
       const hF = d0.healthy_pct / 100, bF = d0.bleached_pct / 100, dF = d0.dead_pct / 100, cF = coralCover / 100;
+      const cells = [];
       for (let i = 0; i < ROWS * COLS; i++) {
         const r = Math.random(); let state, stressLevel;
         if (r < cF * hF) { state = 'HEALTHY'; stressLevel = 0.1; }
@@ -1666,8 +1696,17 @@
         else if (r < cF * (hF + bF + dF)) { state = 'DEAD'; stressLevel = 0.9; }
         else if (r < cF) { state = 'STRESSED'; stressLevel = 0.35; }
         else { state = 'DEAD'; stressLevel = 0.9; }
-        grid.push({ state, stressLevel, localTemp: temperature });
+        cells.push({ state, stressLevel, localTemp: temperature, dhw: 0, hs: new Float32Array(DHW_WINDOW), regrowing: state === 'DEAD' });
       }
+      return cells;
+    }
+    function initGrid2() {
+      grid2 = buildGrid(region2);
+    }
+    function initGrid() {
+      grid = buildGrid(region);
+      generateFutureEvents();
+      lastRes1 = null;
 
       // Randomize initial current centers within grid bounds
       for (let k = 0; k < 3; k++) {
@@ -1931,8 +1970,8 @@
     function getCellValue(cell, idx, type) {
       switch (type) {
         case 'sst': {
-          // Normalize localTemp from 26-32 to 0-1
-          return Math.max(0, Math.min(1, (cell.localTemp - 26) / 6));
+          // Normalize localTemp to a 6°C window centred on the region's MMM
+          return Math.max(0, Math.min(1, (cell.localTemp - sstScaleMin()) / 6));
         }
         case 'coral': {
           return cell.stressLevel; // already 0-1
@@ -1950,6 +1989,8 @@
         default: return 0;
       }
     }
+
+    function sstScaleMin() { return Math.round(mmmOf(region)) - 3; }
 
     function drawHeatmapColorBar(ctx2d, cfg, x, y, bw, bh) {
       // Draw gradient bar
@@ -1983,7 +2024,8 @@
       ctx2d.font = '9px "Courier New", monospace';
       ctx2d.textAlign = 'left';
       ctx2d.textBaseline = 'middle';
-      const stops = cfg.stops;
+      const lo = sstScaleMin();
+      const stops = activeHeatmapType === 'sst' ? [0, 2, 4, 6].map(d => `${lo + d}°C`) : cfg.stops;
       for (let i = 0; i < stops.length; i++) {
         const pos = i / (stops.length - 1);
         const ty = y + pos * bh;
@@ -2025,6 +2067,7 @@
 
       // Half-res IDW rendering
       const sc = 0.5, hw = (mapW * sc) | 0, hh = (h * sc) | 0, invSc = 1 / sc;
+      if (hw <= 0 || hh <= 0) return;
       if (!hmOffCanvas || hmOffCanvas.width !== hw || hmOffCanvas.height !== hh) {
         hmOffCanvas = document.createElement('canvas');
         hmOffCanvas.width = hw; hmOffCanvas.height = hh;
@@ -2295,11 +2338,9 @@
       // Net temperature delta at 2100
       const netTempDelta = (lastAnchor.temp + emEffect) * policyMult;
 
-      // Estimate health: more warming = less health
-      // Baseline SSP2-4.5 gives 4% at 2100; better policies improve this
-      let estimatedHealth = Math.max(0, Math.min(100, 
-        (1 - (netTempDelta / 5)) * 30  // rough mapping: 0°C = 30%, 5°C = 0%
-      ));
+      // Estimate health: more warming = less health. Calibrated against full simulation runs:
+      // reefs are lost to annual severe bleaching once 2100 warming exceeds ~1.6°C (SSP2-4.5 baseline ≈ 1.75°C)
+      let estimatedHealth = Math.max(0, Math.min(1, (1.6 - netTempDelta) / 1.2)) * 80;
 
       // Boost from restoration, MPA, and alkalinity
       const phVal = parseInt(document.getElementById('sl-ph').value) || 0;
@@ -2335,8 +2376,8 @@
           const banner = document.createElement('div');
           banner.id = 'sim-complete-banner';
           banner.style.cssText = 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:100;background:linear-gradient(135deg,#0a1628,#0d2137);border:1px solid #00d4aa;border-radius:14px;padding:28px 40px;text-align:center;box-shadow:0 0 40px rgba(0,212,170,0.2),0 0 80px rgba(0,212,170,0.08);animation:fadeInUp 0.6s ease;';
-          const finalHealthy = res1 ? (res1.healthyCount / (ROWS*COLS) * 100).toFixed(1) : '?';
-          const finalDead = res1 ? (res1.deadCount / (ROWS*COLS) * 100).toFixed(1) : '?';
+          const finalHealthy = lastRes1 ? (lastRes1.healthyCount / (ROWS*COLS) * 100).toFixed(1) : '?';
+          const finalDead = lastRes1 ? (lastRes1.deadCount / (ROWS*COLS) * 100).toFixed(1) : '?';
           const activePol = (usPolicyActive?1:0) + (chinaPolicyActive?1:0) + (euPolicyActive?1:0);
           let scoreEmoji = '💀', scoreText = 'EKOSİSTEM ÇÖKTÜ', scoreColor = '#f87171';
           if (parseFloat(finalHealthy) >= 40) { scoreEmoji = '🏆'; scoreText = 'MERCANLARI KURTARDIN!'; scoreColor = '#00d4aa'; }
@@ -2375,31 +2416,36 @@
         (renewableShare / 100) * 0.6 -
         (carbonCapture / 100) * 0.4;
       const emissionBaseline = 0.75;
-      projDelta += (emissionDelta - emissionBaseline) * 0.5;
+      projDelta += (emissionDelta - emissionBaseline) * 0.5 * emissionRamp(exactYear);
 
       if (!usPolicyActive) projDelta *= 1.4;
       if (!chinaPolicyActive) projDelta *= 1.27;
       if (!euPolicyActive) projDelta *= 1.08;
 
-
-      const globalTemp = parseFloat($tempSlider.value) + projDelta;
-
-      // Seasonality
+      // The temperature slider sets the selected region's annual mean SST; its offset from the
+      // regional climatology is applied as a persistent anomaly to both regions in compare mode.
+      const userAnomaly = parseFloat($tempSlider.value) - climateOf(region).mean;
       monthInYear = (exactYear % 1) * 12;
-      const seasonalDelta = Math.sin((monthInYear / 12) * 2 * Math.PI) * 1.5;
-      seasonalTemp = globalTemp + seasonalDelta;
 
-      // Bleaching event spikes
-      eventSpike = 0;
-      activeEventLabel = null;
-      for (const ev of BLEACHING_EVENTS) {
-        const dist = Math.abs(exactYear - ev.year);
-        if (dist < 0.5) {
-          eventSpike = ev.spike * (1 - dist / 0.5);
-          activeEventLabel = ev.label;
+      // Regional SST: climatology + seasonal cycle (hemisphere-aware) + warming + bleaching-event spike
+      function regionTemp(r) {
+        const clim = climateOf(r);
+        const seasonalDelta = Math.cos(((monthInYear - clim.peakMonth) / 12) * 2 * Math.PI) * clim.amp;
+        let spike = 0, label = null;
+        for (const ev of BLEACHING_EVENTS.concat(futureEvents)) {
+          const dist = Math.abs(exactYear - (ev.year + clim.peakMonth / 12));
+          if (dist < 0.5) {
+            spike = ev.spike * (1 - dist / 0.5);
+            label = ev.label;
+          }
         }
+        return { temp: clim.mean + userAnomaly + projDelta + seasonalDelta, spike, label };
       }
 
+      const rt1 = regionTemp(region);
+      seasonalTemp = rt1.temp;
+      eventSpike = rt1.spike;
+      activeEventLabel = rt1.label;
       const finalTemp = seasonalTemp + eventSpike;
       temperature = finalTemp;
 
@@ -2412,64 +2458,86 @@
         currentY[k] = ((currentY[k] % ROWS) + ROWS) % ROWS;
       }
 
+      const speedMult = RECOVERY_RATES[$recoverySel.value] || 1;
+      // Alkalinity enhancement raises the DHW corals can tolerate before bleaching (up to +3 DHW)
+      const bleachDHW = DHW_BLEACH + (bleachThreshold - 29) * 1.5;
+      dhwSlot = tick % DHW_WINDOW;
 
-      function processGrid(targetGrid, noiseOffset = 0) {
+      function processGrid(targetGrid, regionTempC, mmm, noiseOffset = 0) {
         const nextStress = new Float32Array(ROWS * COLS);
-        let totalTemp = 0, totalStress = 0, healthyCount = 0, totalAlive = 0;
+        let totalTemp = 0, totalStress = 0, healthyCount = 0, totalAlive = 0, totalDHW = 0;
         let deadCount = 0, bleachedCount = 0, recoveringCount = 0;
+        // Slowly drifting within-reef temperature pattern
+        const drift = tick * 0.004;
 
         for (let y = 0; y < ROWS; y++) {
           for (let x = 0; x < COLS; x++) {
             const idx = y * COLS + x;
             const c = targetGrid[idx];
-            let localTemp = finalTemp + SimplexNoise(x * 0.15 + noiseOffset, y * 0.15 + noiseOffset, tick * 0.005) * 3.0;
+            let localTemp = regionTempC + SimplexNoise(x * 0.15 + noiseOffset + drift, y * 0.15 + noiseOffset - drift * 0.6) * SPATIAL_SST_VAR;
             for (let k = 0; k < 3; k++) {
               const dx = x - currentX[k];
               const dy = y - currentY[k];
               const dist = Math.sqrt(dx * dx + dy * dy);
-              const effect = (k === 1 ? -1.5 : 1.5) * Math.max(0, 1 - dist / 8);
+              const effect = (k === 1 ? -0.5 : 0.5) * Math.max(0, 1 - dist / 8);
               localTemp += effect;
             }
             c.localTemp = localTemp;
             totalTemp += localTemp;
+
+            // Per-cell Degree Heating Weeks over the rolling 12-week window
+            const hotspot = localTemp - mmm;
+            const contrib = hotspot >= 1 ? hotspot * WEEKS_PER_TICK : 0;
+            c.dhw = Math.max(0, c.dhw - c.hs[dhwSlot] + contrib);
+            c.hs[dhwSlot] = contrib;
+            totalDHW += c.dhw;
+
             let newStress = c.stressLevel;
 
             let stressAccMult = 1.0;
-            let recoveryMult = 1.0;
+            let recoveryMult = speedMult;
             let neighborMult = 1.0;
             if (targetGrid === grid) {
               if (tourismLevel === 0) stressAccMult += 0.3;
               else if (tourismLevel === 1) stressAccMult += 0.15;
               else if (tourismLevel === 3) stressAccMult -= 0.1;
-              recoveryMult += (imfFund / 100) * 0.25;
+              recoveryMult *= 1 + (imfFund / 100) * 0.25;
 
               if (protectedCells.has(idx)) {
                 stressAccMult = 0.23;
-                recoveryMult = 1.8 + (imfFund / 100) * 0.4;
+                recoveryMult = speedMult * (1.8 + (imfFund / 100) * 0.4);
                 neighborMult = 0.3;
-                if (localTemp < bleachThreshold + 1.5) newStress -= 0.00022 * recoveryMult;
               } else if (tempProtected.has(idx)) {
                 stressAccMult *= 0.55;
               }
             }
 
-            if (localTemp > bleachThreshold) newStress += (localTemp - bleachThreshold) * 0.0008 * stressAccMult;
-            else newStress -= 0.00018 * recoveryMult;
-            let incomingStress = 0;
-            let healthyNeighbors = 0;
+            let healthyNeighbors = 0, bleachedNeighbors = 0;
             for (let ny = y - 1; ny <= y + 1; ny++) {
               for (let nx = x - 1; nx <= x + 1; nx++) {
                 if (nx === x && ny === y) continue;
                 if (nx >= 0 && nx < COLS && ny >= 0 && ny < ROWS) {
-                  const nIdx = ny * COLS + nx;
-                  const neighbor = targetGrid[nIdx];
-                  if (neighbor.stressLevel > 0.4) incomingStress += neighbor.stressLevel * 0.0004 * neighborMult;
+                  const neighbor = targetGrid[ny * COLS + nx];
                   if (neighbor.state === 'HEALTHY') healthyNeighbors++;
+                  else if (neighbor.state === 'BLEACHED') bleachedNeighbors++;
                 }
               }
             }
-            newStress += incomingStress;
-            if (c.state === 'DEAD' && localTemp < 27 && healthyNeighbors >= 2) newStress -= 0.00012 * recoveryMult;
+
+            const heatExcess = c.dhw - (bleachDHW - 1);
+            if (heatExcess > 0) {
+              // Thermal bleaching, plus disease spread from bleached neighbours while heat-stressed
+              newStress += heatExcess * HEAT_STRESS_RATE * stressAccMult;
+              newStress += bleachedNeighbors * 0.0015 * neighborMult;
+            } else if (c.dhw < 1) {
+              if (c.regrowing) {
+                // Dead reef regrows only through recruitment from nearby healthy colonies
+                newStress -= RECRUIT_RECOVERY * healthyNeighbors * recoveryMult;
+              } else {
+                // Surviving colonies regain their symbionts
+                newStress -= SYMBIONT_RECOVERY * recoveryMult;
+              }
+            }
             nextStress[idx] = Math.max(0, Math.min(1, newStress));
           }
         }
@@ -2477,15 +2545,13 @@
         for (let i = 0; i < ROWS * COLS; i++) {
           const c = targetGrid[i];
           const stress = nextStress[i];
-          const prevState = c.state;
           c.stressLevel = stress;
           totalStress += stress;
-          if (stress <= 0.25) c.state = 'HEALTHY';
+          if (stress > 0.82) { c.state = 'DEAD'; c.regrowing = true; }
+          else if (c.regrowing && stress > 0.25) c.state = 'RECOVERING';
+          else if (stress <= 0.25) { c.state = 'HEALTHY'; c.regrowing = false; }
           else if (stress <= 0.55) c.state = 'STRESSED';
-          else if (stress <= 0.82) {
-            if ((prevState === 'DEAD' || prevState === 'RECOVERING') && stress < 0.7) c.state = 'RECOVERING';
-            else c.state = 'BLEACHED';
-          } else c.state = 'DEAD';
+          else c.state = 'BLEACHED';
           if (c.state !== 'DEAD') totalAlive++;
           if (c.state === 'HEALTHY' || c.state === 'RECOVERING') healthyCount++;
           if (c.state === 'DEAD') deadCount++;
@@ -2514,13 +2580,17 @@
           }
         }
 
-        return { totalTemp, totalStress, healthyCount, deadCount, bleachedCount, recoveringCount, hotZone };
+        return { totalTemp, totalStress, totalDHW, healthyCount, deadCount, bleachedCount, recoveringCount, hotZone };
       }
 
-      const res1 = processGrid(grid, 0);
+      const res1 = processGrid(grid, finalTemp, mmmOf(region), 0);
       let res2 = null;
       if (isCompareMode) {
-        res2 = processGrid(grid2, 1000);
+        const rt2 = regionTemp(region2);
+        eventSpike2 = rt2.spike;
+        activeEventLabel2 = rt2.label;
+        temperature2 = rt2.temp + rt2.spike;
+        res2 = processGrid(grid2, temperature2, mmmOf(region2), 1000);
       }
 
       const $budgetSlider = document.getElementById('budget-slider');
@@ -2528,25 +2598,29 @@
       if (budgetValue > 0) {
         for (let i = 0; i < grid.length; i++) {
           if (grid[i].state === 'DEAD') {
-            let restorationChance = (budgetValue / 100) * 0.025 * (1 + (imfFund / 100));
+            let restorationChance = (budgetValue / 100) * 0.003 * (1 + (imfFund / 100));
             if (protectedCells.has(i)) restorationChance *= 2;
             if (Math.random() < restorationChance) {
+              // Outplanted fragments: alive but still need years of growth (and survive heatwaves) to become healthy
               grid[i].state = 'RECOVERING';
-              grid[i].stressLevel = 0.88;
+              grid[i].stressLevel = 0.78;
+              grid[i].regrowing = true;
               res1.deadCount--;
               res1.recoveringCount++;
             }
           }
         }
       }
+      lastRes1 = res1;
 
       const totalCells = ROWS * COLS;
       const avgTemp = res1.totalTemp / totalCells;
       const avgStress = res1.totalStress / totalCells;
-      const avgDHW = Math.max(0, avgTemp - 28) * 4;
+      const avgDHW = res1.totalDHW / totalCells;
 
       if (ewsActive) {
-        if (avgDHW > 6) {
+        // Triggers at NOAA CRW Alert Level 1 (DHW ≥ 4), stands down when heat stress fades
+        if (avgDHW >= 4) {
           let candidates = [];
           for (let i = 0; i < grid.length; i++) {
             if (grid[i].state !== 'DEAD' && !protectedCells.has(i)) {
@@ -2558,7 +2632,7 @@
           for (let i = 0; i < Math.min(10, candidates.length); i++) {
             tempProtected.add(candidates[i].idx);
           }
-        } else if (avgDHW < 4) {
+        } else if (avgDHW < 2) {
           tempProtected.clear();
         }
         const badge = document.getElementById('ews-badge');
@@ -2572,7 +2646,6 @@
         const badge = document.getElementById('ews-badge');
         if (badge) badge.style.display = 'none';
       }
-
       const coralHealthIndex = res1.healthyCount / totalCells;
 
 
@@ -2782,8 +2855,13 @@
 
     $tempSlider.addEventListener('input', () => { $tempVal.textContent = parseFloat($tempSlider.value).toFixed(1); });
     $coverSlider.addEventListener('input', () => { $coverVal.textContent = $coverSlider.value; });
+    function setTempToClimatology() {
+      $tempSlider.value = climateOf(region).mean;
+      $tempVal.textContent = climateOf(region).mean.toFixed(1);
+    }
     $regionSel.addEventListener('change', () => {
       region = $regionSel.value;
+      setTempToClimatology();
       updateCoralRealPoints();
       const sub = document.getElementById('region-subtitle');
       if (sub) sub.textContent = region;
@@ -3200,12 +3278,15 @@
       <div style="font-size:0.71rem;color:#a0c0d8;line-height:1.7;margin-bottom:16px;">
         <b style="color:#00d4aa;">DHW Eşik Modeli</b> — NOAA Coral Reef Watch metodolojisi. DHW &lt; 4 = ağarma yok,
         4–8 = ağarma başlar, ≥ 8 = ciddi ağarma ve ölüm riski.<br><br>
-        <b style="color:#00d4aa;">Bulaşma Yayılımı</b> — Stres komşu kolonilere yayılarak organik uzaysal ağarma
-        cepheleri oluşturur. İyileşme için daha düşük sıcaklık ve sağlıklı komşular gerekir.<br><br>
+        <b style="color:#00d4aa;">Bölgesel İklim</b> — Her bölgenin kendi ortalama SST'si, mevsimsel genliği ve en sıcak ayı
+        vardır (Samoa ve ekvator resifleri Mart–Nisan, Hawaii ve Marianalar Ağustos–Eylül). DHW, bölgenin MMM değerine göre hesaplanır.<br><br>
+        <b style="color:#00d4aa;">Bulaşma Yayılımı</b> — Isı stresi altındayken ağarmış komşular hastalık yoluyla stresi artırır.
+        Ağarmış koloniler ısı geçince aylar içinde toparlanır; ölü resif ise yalnızca sağlıklı komşulardan larva yerleşimiyle
+        10–15 yılda yeniden canlanır.<br><br>
         <b style="color:#00d4aa;">Lotka-Volterra Balık Dinamikleri</b> — Av/avcı popülasyonları, mercan sağlık indeksinin taşıma
         kapasitesi (K) olarak kullanıldığı av-avcı denklemlerini takip eder.<br><br>
         <b style="color:#00d4aa;">IPCC SSP2-4.5 Projeksiyonu</b> — 2023 sonrası sıcaklıklar orta emisyon senaryosunu takip
-        eder (+3.0°C baz çizgisinin üstü, 2100 itibarıyla).
+        eder (2013–2023 ortalamasının ~+1.75°C üstü, 2100 itibarıyla). 2024 sonrası rastgele deniz sıcak dalgaları (El Niño benzeri) eklenir; emisyon politikalarının etkisi iklim gecikmesi nedeniyle 2024–2060 arasında kademeli olarak devreye girer.
       </div>
 
       <div style="font-size:0.72rem;color:#7ab8db;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px;border-bottom:1px solid #1a3a5c;padding-bottom:4px;">
@@ -3234,13 +3315,16 @@
       <div style="font-size:0.72rem;color:#7ab8db;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px;border-bottom:1px solid #1a3a5c;padding-bottom:4px;">
         Stres Hesaplama Formülü</div>
       <div class="info-code">
-newStress = oldStress<br>
-&nbsp;&nbsp;+ (temp - threshold) × 0.0008 × stressMultiplier<br>
-&nbsp;&nbsp;+ neighborStress × 0.0004 × contagionMultiplier<br>
-&nbsp;&nbsp;- 0.0008 × recoveryMultiplier<br>
+HotSpot = SST − MMM (bölgesel En Yüksek Aylık Ortalama)<br>
+DHW = Σ HotSpot (HotSpot ≥ 1°C) × hafta, son 12 hafta<br>
 <br>
-DHW += max(0, SST - bleach_threshold) / 7<br>
-bleach_threshold = 29°C + alkalinity_offset
+DHW &gt; eşik − 1 ise:<br>
+&nbsp;&nbsp;stres += (DHW − eşik + 1) × 0.0045 × stresÇarpanı<br>
+DHW &lt; 1 ise (ısı stresi geçti):<br>
+&nbsp;&nbsp;yaşayan koloni: stres −= 0.008 × iyileşmeÇarpanı<br>
+&nbsp;&nbsp;ölü resif: stres −= 0.0003 × sağlıklıKomşu × iyileşmeÇarpanı<br>
+<br>
+eşik = 4 DHW + alkalinite bonusu (en fazla +3)
       </div>
 
       <div style="font-size:0.72rem;color:#7ab8db;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px;border-bottom:1px solid #1a3a5c;padding-bottom:4px;">
@@ -3352,13 +3436,13 @@ bleach_threshold = 29°C + alkalinity_offset
       {sel:'#badges,#stat-cards',title:'📊 1/13 — Simülasyon Durumu',desc:'Durum paneli simülasyonun tüm kritik metriklerini gösterir. <b>Year</b>: simülasyon yılı (2013–2100, 2024 sonrası IPCC SSP2-4.5 projeksiyonu). <b>SST</b>: Deniz Yüzey Sıcaklığı (°C). <b>DHW</b>: Derece Isıtma Haftası — ağarma eşiği üzerinde biriken termal stres (NOAA Coral Reef Watch metodolojisi). <b>Stress</b>: ortalama ızgara stresi (0–1). <b>Tick</b>: simülasyon adımı (30 tick ≈ 1 yıl). <b>Protected</b>: MPA kapsamı (%). Kartlar gerçek zamanlı güncellenir.'},
       {sel:'#mini-map-wrap',title:'🗺️ 2/13 — Pasifik Mini Haritası',desc:'5 NOAA NCRMP izleme bölgesini Pasifik Okyanusu üzerinde gösterir. Her nokta gerçek bir izleme istasyonudur — noktaya tıklayarak bölge değiştirebilirsiniz. Mevcut bölge yeşil ile vurgulanır.'},
       {sel:'#region-sel',title:'🌏 3/13 — Bölge Seçimi',desc:'5 gerçek NOAA NCRMP izleme bölgesinden birini seçin. Her bölgenin farklı başlangıç SST, mercan örtüsü ve ağarma geçmişi vardır. Bölge değiştirmek simülasyonu o bölgenin gerçek gözlenen başlangıç değerleriyle sıfırlar.'},
-      {sel:'#temp-slider,#cover-slider',title:'🌡️ 4/13 — Başlangıç Koşulları',desc:'Sıcaklık aralığı 26–34°C gerçek Pasifik SST değişkenliğini temsil eder. Mercan örtüsü 0–100% başlangıçtaki canlı mercan oranıdır. Bunlar başlangıç koşullarıdır — simülasyon fizik modellerine göre evrimleştirir.'},
+      {sel:'#temp-slider,#cover-slider',title:'🌡️ 4/13 — Başlangıç Koşulları',desc:'Sıcaklık, seçili bölgenin yıllık ortalama SST değeridir ve bölge seçildiğinde NOAA iklimsel ortalamasına ayarlanır (ör. Hawaii ~26°C, Amerikan Samoası ~28.6°C). Artırmak kalıcı bir ısınma anomalisi ekler. Mercan örtüsü 0–100% başlangıçtaki canlı mercan oranıdır. Bunlar başlangıç koşullarıdır — simülasyon fizik modellerine göre evrimleştirir.'},
       {sel:'#recovery-sel,#budget-slider',title:'🔬 5/13 — İyileşme Parametreleri',desc:'İyileşme Hızı (Yavaş/Orta/Hızlı) doğal mercan iyileşme oranını kontrol eder — gerçek mercan iyileşmesi ağarmadan sonra 10–15 yıl sürer. Restorasyon bütçesi aktif müdahaleyi modeller.'},
       {sel:'#btn-scenario-bau,#btn-scenario-optimal,#btn-scenario-mpa',title:'🔥 6/13 — Senaryo Butonları',desc:'Hızlıca önceden tanımlanmış senaryoları uygulayabilirsiniz: <b>Business as Usual</b> (tüm emisyonlar maksimum, politikalar kapalı), <b>Optimal Policies</b> (emisyonlar sıfır, tam politika ve koruma) ve <b>MPA Only</b> (emisyonlar standart, koruma bütçesi maksimum).'},
       {sel:'.btn-group',title:'⏯️ 7/13 — Simülasyon Kontrolleri',desc:'<b>Pause</b>: Duraklatır, haritayı inceleyin. <b>Play</b>: Normal hızda başlatır. <b>Fast</b>: 3x hız. <b>Reset</b>: Her şeyi sıfırlar. <b>Compare</b>: İki bölgeyi yan yana çalıştırır. <b>CSV</b>: Her tick\'i kaydeder — yıl, ay, bölge, SST, DHW, stres, mercan %, sağlıklı/ağarmış/ölü/iyileşen %, balık popülasyonları, koruma % ve tüm politika değerleri.'},
       {sel:'#policy-body .policy-col:first-child',title:'🏭 8/13 — Emisyon Kaynakları',desc:'Her kaydırıcının bilimsel temeli: <b>Kömür & Sanayi</b> — küresel CO₂\'nin ~%35\'i. <b>Havacılık & Gemi</b> — uluslararası taşımacılık ~%2.5. <b>Hayvancılık & Pirinç</b> — tarımsal CH₄ metan ~%14.5, 20 yılda CO₂\'den 80x güçlü. <b>Orman Kaybı</b> — karbon yutaklarını yok eder. <b>Temiz Enerji</b> — payı arttıkça net emisyonlar düşer. <b>CCS</b> — karbon yakalama ve depolama teknolojisi.'},
       {sel:'#btn-us-policy,#btn-cn-policy,#btn-eu-policy',title:'🌍 9/13 — İklim Anlaşmaları',desc:'<b>US</b>: Paris Anlaşması/IRA katılımı. <b>CN</b>: Çin\'in 2060 karbon nötrlük taahhüdü. <b>EU</b>: Avrupa Yeşil Mutabakat hedefleri. Kapatıldığında ısınma hızı o bloğun modellenen katkısı kadar artar. Üçü birden kapatılırsa 2100\'e kadar ~+0.8°C ek ısınma oluşur.'},
-      {sel:'#policy-body .policy-col:last-child',title:'🌊 10/13 — Okyanus & Resif Politikaları',desc:'<b>Alkalinite Güçlendirme</b>: Deniz suyuna alkalin mineral ekleyerek pH\'ı yükseltir, ağarma eşiğini ~0.5°C artırabilir. <b>Turizm Düzenleme</b>: Kontrolsüz turizm fiziksel hasar ve kirlilik yaratır. <b>Balıkçılık Kotası</b>: Aşırı avlanma alg büyümesini tetikler, mercanları boğar. <b>GEF Reef Finance</b>: BM mercan koruma fonu. <b>Erken Uyarı</b>: DHW>4 olunca otomatik MPA genişletme tetikler.'},
+      {sel:'#policy-body .policy-col:last-child',title:'🌊 10/13 — Okyanus & Resif Politikaları',desc:'<b>Alkalinite Güçlendirme</b>: Deniz suyuna alkalin mineral ekleyerek pH\'ı yükseltir, ağarma eşiğini ~0.5°C artırabilir. <b>Turizm Düzenleme</b>: Kontrolsüz turizm fiziksel hasar ve kirlilik yaratır. <b>Balıkçılık Kotası</b>: Aşırı avlanma alg büyümesini tetikler, mercanları boğar. <b>GEF Reef Finance</b>: BM mercan koruma fonu. <b>Erken Uyarı</b>: Bölgesel DHW≥4 olunca otomatik MPA genişletme tetikler.'},
       {sel:'#grid-container',wide:true,title:'🪸 11/13 — Mercan Haritası',desc:'24×18 ızgara = 432 bağımsız mercan koloni hücresi. Her hücrenin kendi stres değeri her tick güncellenir. <b>5 durum</b>: Healthy (stres 0–0.25), Stressed (0.25–0.55), Bleached (0.55–0.82), Dead (0.82–1.00), Recovering. Stres bulaşması: her hücre 8 komşusundan IDW ağırlıklı stres alır. 3 okyanus akıntı merkezi ısı dağılımını etkiler. Korunan hücreler (MPA) stresi %77 daha yavaş biriktirir. <b>Sürükleyerek kendi MPA\'nızı çizin!</b>'},
       {sel:'#heatmap-overlay,.chart-header',title:'🌡️ 12/13 — Isı Haritası Modu',desc:'Herhangi bir grafik başlığına tıklayarak canvas\'ı ısı haritasına geçirin. SST ısı haritası okyanus akıntılarından etkilenen sıcaklık gradyanını gösterir. Stres ısı haritası termal basıncın en yüksek olduğu yerleri gösterir. Geri dönmek için "← CHARTS" butonuna tıklayın.'},
       {sel:'#analysis-panel,#charts-stack',title:'📈 13/13 — Veri Grafikleri & Gerçek NOAA Verileri',desc:'<b>SST/DHW</b>: 2013–2023 NOAA NCRMP gözlem bazçizgisi, 2024 sonrası IPCC SSP2-4.5 projeksiyonu. <b>Coral Cover</b>: Simülasyon çizgisinin üzerindeki <b style="color:#FFD700">⭐ altın yıldız noktalar</b> seçili bölgenin gerçek NOAA ölçümleridir — modelin gerçek veriye ne kadar yakın kaldığını gösterir. <b>Prey/Predator Fish</b>: Lotka-Volterra av-avcı dinamiği, taşıma kapasitesi mercan örtüsüne bağlı.'}

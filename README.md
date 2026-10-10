@@ -43,7 +43,9 @@ Bu simülasyon, **NOAA NCRMP** ve **NOAA NCEI** veri setlerinden beslenen gerçe
 - **24×18 hücrelik** mercan koloni grid'i
 - Her hücre bağımsız stres seviyesine sahip
 - 5 farklı durum: Sağlıklı → Stresli → Ağarmış → Ölü → İyileşen
-- **Bulaşma modeli**: Stres komşu hücrelere organik olarak yayılır
+- **Gerçek DHW modeli**: Her hücre için NOAA Coral Reef Watch yöntemiyle 12 haftalık Derece Isıtma Haftası birikir
+- **Bölgesel iklim**: Her bölgenin kendi ortalama SST'si, mevsimsel genliği ve en sıcak ayı (yarımküreye göre) vardır
+- **Bulaşma modeli**: Isı stresi altında ağarmış komşular stresi artırır (hastalık yayılımı)
 - **3 okyanus akıntısı merkezi** sıcaklık dağılımını etkiler
 
 ### 🎓 Kapsamlı Onboarding Sistemi
@@ -122,6 +124,10 @@ Tüm veriler gerçek bilimsel kaynaklardan alınmıştır:
 ## 🔬 Bilimsel Modeller
 
 ### DHW Eşik Modeli (NOAA Coral Reef Watch)
+Her hücre için **HotSpot = SST − MMM** (bölgenin En Yüksek Aylık Ortalaması) hesaplanır. Yalnızca **≥ 1°C** olan HotSpot'lar,
+son **12 haftalık** kayan pencerede toplanarak DHW'yi oluşturur. Mercan stresi doğrudan bu birikmiş DHW'den türetilir;
+böylece kısa süreli sıcaklık zirveleri değil, **süregelen ısı stresi** ağarmaya yol açar.
+
 | DHW Değeri | Anlam |
 |-----------|-------|
 | < 4 | Ağarma riski düşük |
@@ -133,11 +139,29 @@ Av balık (prey) ve avcı balık (predator) popülasyonları mercan sağlık ind
 - Mercan örtüsü azaldığında → av balık yaşam alanı daralır → popülasyon düşer
 - Av azaldığında → avcı popülasyonu da düşer
 
-### Bulaşma Yayılım Modeli
-Stres, komşu mercan kolonilerine IDW (Inverse Distance Weighting) tabanlı yayılır. Korunan alanlarda bu yayılım %70 azaltılır.
+### Bölgesel İklim Modeli
+| Bölge | Yıllık Ort. SST | Mevsimsel Genlik | En Sıcak Ay | MMM |
+|-------|----------------|------------------|-------------|-----|
+| American Samoa | 28.6°C | ±0.9°C | Mart | 29.5°C |
+| Main Hawaiian Islands | 25.9°C | ±1.4°C | Eylül | 27.3°C |
+| Mariana Archipelago | 28.5°C | ±0.9°C | Eylül | 29.4°C |
+| Northwestern Hawaiian Islands | 24.6°C | ±2.5°C | Ağustos | 27.1°C |
+| Pacific Remote Island Areas | 28.3°C | ±0.6°C | Nisan | 28.9°C |
+
+Değerler NOAA Coral Reef Watch 5 km sanal istasyonlarına dayanan yaklaşık iklimsel ortalamalardır. Tarihsel ağarma olayları
+(2014, 2015, 2016, 2017, 2020, 2024) her bölgenin kendi sıcak mevsiminde zirve yapar; karşılaştırma modunda iki bölge kendi
+iklimleriyle simüle edilir.
+
+### Bulaşma ve İyileşme Modeli
+- Isı stresi altındaki hücrelerde ağarmış komşular stresi artırır (korunan alanlarda %70 daha az).
+- Isı stresi geçince (DHW < 1) ağarmış koloniler simbiyontlarını geri kazanarak **aylar içinde** toparlanır.
+- Ölü resif yalnızca sağlıklı komşulardan **larva yerleşimi** ile canlanır; bu süreç **10–15 yıl** sürer.
 
 ### IPCC SSP2-4.5 Projeksiyon Modeli
-2024 sonrası sıcaklık artışı, IPCC'nin orta emisyon senaryosu (SSP2-4.5) ankraj noktaları arasında doğrusal interpolasyonla hesaplanır.
+2024 sonrası sıcaklık artışı, SSP2-4.5 senaryosu için tropikal deniz yüzeyi ısınmasını temsil eden ankraj noktaları arasında
+doğrusal interpolasyonla hesaplanır (2013–2023 ortalamasına göre 2050'de +0.8°C, 2100'de +1.75°C).
+- Emisyon politikalarının etkisi iklim gecikmesi nedeniyle **2024–2060 arasında kademeli** olarak devreye girer.
+- 2024 sonrası **rastgele deniz sıcak dalgaları** (El Niño benzeri, yaklaşık 5 yılda bir) eklenir; her çalıştırma farklıdır.
 
 ---
 
@@ -147,9 +171,9 @@ Stres, komşu mercan kolonilerine IDW (Inverse Distance Weighting) tabanlı yay�
 | Kontrol | Açıklama |
 |---------|----------|
 | **Region** | Simüle edilecek Pasifik bölgesini seçer |
-| **Temperature (°C)** | Başlangıç deniz yüzey sıcaklığı (26–34°C) |
+| **Temperature (°C)** | Bölgenin yıllık ortalama SST'si (22–34°C). Bölge seçildiğinde iklimsel ortalamaya ayarlanır; artırmak kalıcı ısınma anomalisi ekler |
 | **Coral Cover (%)** | Başlangıç canlı mercan örtüsü yüzdesi |
-| **Recovery Speed** | Mercanların iyileşme hızı (Slow/Medium/Fast) |
+| **Recovery Speed** | Doğal iyileşme hızı çarpanı (Slow ×0.6 / Medium ×1 / Fast ×1.6) |
 | **Restoration Budget** | Ölü mercanları aktif restorasyon bütçesi ($0M–$100M) |
 
 ### Simülasyon Butonları
@@ -192,9 +216,8 @@ Stres, komşu mercan kolonilerine IDW (Inverse Distance Weighting) tabanlı yay�
 ### Deniz Koruma Alanları (MPA)
 Harita üzerinde **sürükleyerek** koruma alanı çizilebilir. Korunan mercanlar:
 - Stres birikimi **%77 azalır**
-- İyileşme hızı **3.25x** artar
+- İyileşme hızı **1.8x** artar
 - Komşu bulaşma **%70 azalır**
-- Hafif ısınma altında aktif iyileşme sağlar
 - Maksimum koruma: **%40**
 
 ---
@@ -264,15 +287,21 @@ Simülasyon sırasında **⬇ CSV** butonuna tıklayarak tüm simülasyon verile
 ### Simülasyon Döngüsü
 - Her **tick** = ~12 gün (30 tick ≈ 1 yıl)
 - Toplam simülasyon: **2013–2100** (87 yıl, ~2610 tick)
-- Mevsimsel sıcaklık döngüsü sinüsoidal modelle eklenir
-- Kitlesel ağarma olayları (1998, 2010, 2014-17, 2024) tarihsel olarak tetiklenir
+- Mevsimsel sıcaklık döngüsü bölgenin en sıcak ayına göre kosinüs modeliyle eklenir
+- Kitlesel ağarma olayları (2014–2017, 2020, 2024) tarihsel olarak, 2024 sonrası sıcak dalgalar rastgele tetiklenir
 
 ### Stres Hesaplama
 ```
-yeniStres = eskiStres
-  + (sıcaklık - eşik) × 0.0008 × stresÇarpanı    // Sıcaklık stresi
-  + komşuStres × 0.0004 × bulaşmaÇarpanı           // Bulaşma
-  - 0.0008 × iyileşmeÇarpanı                        // Doğal iyileşme
+HotSpot = yerelSST - MMM
+DHW     = Σ (HotSpot ≥ 1 ise HotSpot × 1.74 hafta), son 7 tick (≈12 hafta)
+eşik    = 4 DHW + alkalinite bonusu (0–3 DHW)
+
+DHW > eşik - 1 ise:
+  stres += (DHW - eşik + 1) × 0.0045 × stresÇarpanı      // Termal ağarma
+  stres += ağarmışKomşu × 0.0015 × bulaşmaÇarpanı         // Hastalık yayılımı
+DHW < 1 ise:
+  yaşayan koloni: stres -= 0.008 × iyileşmeÇarpanı         // Simbiyont geri kazanımı (aylar)
+  ölü resif:      stres -= 0.0003 × sağlıklıKomşu × iyileşmeÇarpanı  // Larva yerleşimi (10–15 yıl)
 ```
 
 ### Durum Geçişleri
@@ -296,4 +325,4 @@ Bu proje eğitim amaçlı geliştirilmiştir. Kullanılan veriler NOAA açık ve
 
 ---
 
-*Son güncelleme: Mayıs 2026*
+*Son güncelleme: Ekim 2026*
