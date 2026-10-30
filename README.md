@@ -48,8 +48,14 @@ Bu simülasyon, **NOAA NCRMP** ve **NOAA NCEI** veri setlerinden beslenen gerçe
 - **Bulaşma modeli**: Isı stresi altında ağarmış komşular stresi artırır (hastalık yayılımı)
 - **3 okyanus akıntısı merkezi** sıcaklık dağılımını etkiler
 
-### 🎓 Kapsamlı Onboarding Sistemi
-- **13 Adımlı Tanıtım Turu:** Kullanıcıları tüm paneller, simülasyon mantığı ve metrikler hakkında bilgilendiren detaylı zorunlu rehber (Senaryo butonları turu dahil).
+### 🌐 Türkçe / English Dil Seçeneği
+- Sağ üstteki **TR | EN** düğmesiyle sayfadaki tüm yazılar (butonlar, ipuçları, grafikler, harita yazıları, tur, bilgi paneli, sonuç ekranı) anında değişir; simülasyon kaldığı yerden devam eder.
+- İlk girişte tarayıcı dili kullanılır (Türkçe tarayıcı → TR, diğerleri → EN); seçim tarayıcıda hatırlanır. `?lang=tr` veya `?lang=en` ile bağlantıda da belirtilebilir.
+- Tüm metinler `i18n.js` dosyasında `anahtar: [Türkçe, English]` biçiminde tek yerde durur.
+
+### 🎓 Tanıtım Turu
+- **Karşılama ekranı yalnızca ilk girişte** açılır; **6 kısa adımlık tur** her bölümün ne işe yaradığını anlatır.
+- Sağ alttaki **❓ Tur** turu istenildiği zaman yeniden açar, **?** bilimsel ayrıntıları gösterir.
 - **İnteraktif MPA Çizim Eğitimi:** Harita üzerine ilk gelindiğinde aktifleşen görsel yönlendirme ile deniz koruma alanı oluşturma öğreticisi.
 
 ### 📊 Anlık Analiz Paneli
@@ -249,7 +255,8 @@ Harita üzerinde **sürükleyerek** koruma alanı çizilebilir. Korunan mercanla
 
 ```
 mercanbeyaz/
-├── coral_simulation_final.html  # Ana simülasyon dosyası (monolitik HTML/CSS/JS)
+├── index.html                   # Ana simülasyon dosyası (HTML/CSS/JS)
+├── i18n.js                      # Türkçe/İngilizce metinler ve dil değiştirme
 ├── coral_simulation_dataset.csv # NOAA kaynak veri seti (21 kayıt, 5 bölge)
 ├── pacific_map_bg.png           # Mini harita uydu arka plan görseli
 ├── PROJECT_DOCUMENTATION.md     # Proje dokümantasyonu
@@ -266,7 +273,7 @@ mercanbeyaz/
 
 ### Çalıştırma
 ```
-1. coral_simulation_final.html dosyasını tarayıcıda açın
+1. index.html dosyasını tarayıcıda açın
 2. Simülasyon otomatik olarak başlar (▶ Play)
 3. Sol panelden kontrolleri ayarlayın
 4. Harita üzerinde sürükleyerek koruma alanı çizin

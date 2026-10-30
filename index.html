@@ -10,6 +10,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
     rel="stylesheet">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+  <script src="i18n.js"></script>
   <style>
     * {
       margin: 0;
@@ -756,7 +757,8 @@
     .p-row label {
       font-size: 0.65rem;
       color: #a0c0d8;
-      width: 100px;
+      width: 135px;
+      flex-shrink: 0;
       white-space: nowrap;
       text-overflow: ellipsis;
       overflow: hidden;
@@ -910,6 +912,30 @@
     .mpa-tut-btn{display:block;margin:0 auto;padding:10px 24px;border-radius:8px;border:none;background:linear-gradient(135deg,#00866a,#00d4aa);color:#0a1628;font-family:'Inter',sans-serif;font-size:.78rem;font-weight:700;cursor:pointer;transition:all .25s}
     .mpa-tut-btn:hover{box-shadow:0 0 18px rgba(0,212,170,.45);transform:scale(1.03)}
     .tour-popover.wide{width:440px;max-width:92vw}
+
+    /* ── Language switch ── */
+    .left-panel{position:relative}
+    .lang-switch{position:absolute;top:4px;right:4px;display:flex;border:1px solid #1a3a5c;border-radius:16px;overflow:hidden;background:#0a1a2c;z-index:20}
+    .lang-btn{padding:4px 10px;border:none;background:transparent;color:#4a6fa5;font-family:'Inter',sans-serif;font-size:.68rem;font-weight:700;cursor:pointer;letter-spacing:.5px;transition:all .2s}
+    .lang-btn:hover{color:#00d4ff}
+    .lang-btn.active{background:linear-gradient(135deg,#0077b6,#00b4d8);color:#fff}
+    .welcome-lang{position:static;display:inline-flex;margin:0 auto 10px}
+    .welcome-skip-link{margin-top:10px;font-size:.68rem;color:#4a6fa5;cursor:pointer;text-decoration:underline}
+    .welcome-skip-link:hover{color:#7ab8db}
+
+    /* ── Corner buttons ── */
+    .corner-actions{position:fixed;bottom:16px;right:16px;z-index:9999;display:flex;gap:8px;align-items:center}
+    .help-btn{width:34px;height:34px;border-radius:50%;border:1px solid #1a3a5c;background:linear-gradient(135deg,#0d2137,#132d4a);color:#4a9ab5;font-size:15px;font-weight:700;cursor:pointer;box-shadow:0 0 12px rgba(0,180,216,.2)}
+    .help-btn:hover{color:#00d4ff;border-color:#00b4d8}
+    .tour-btn{background:#00b4d8;color:#fff;border:none;border-radius:24px;padding:8px 18px;font-size:.8rem;cursor:pointer;box-shadow:0 2px 12px rgba(0,180,216,.4)}
+
+    /* ── Info panel content ── */
+    .info-h1{font-family:'Courier New';font-size:1.05rem;font-weight:700;color:#00d4aa;margin-bottom:4px}
+    .info-sub{font-size:.7rem;color:#3a5a7a;margin-bottom:20px;font-style:italic}
+    .info-h2{font-size:.72rem;color:#7ab8db;font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;border-bottom:1px solid #1a3a5c;padding-bottom:4px}
+    .info-text{font-size:.71rem;color:#a0c0d8;line-height:1.7;margin-bottom:16px}
+    .info-text b{color:#00d4aa}
+    .info-src{color:#4fc3f7;font-weight:600}
   </style>
 </head>
 
@@ -917,62 +943,60 @@
   <div class="water-fx"></div>
   <div class="app">
     <div class="left-panel">
-      <h1>🪸 Mercan Resifi Stres & Ağarma Monitörü</h1>
+      <div class="lang-switch" id="lang-switch" data-i18n-title="lang.switch">
+        <button class="lang-btn" data-lang="tr" onclick="I18N.setLang('tr')">TR</button>
+        <button class="lang-btn" data-lang="en" onclick="I18N.setLang('en')">EN</button>
+      </div>
+      <h1 data-i18n="app.title">🪸 Mercan Resifi Stres & Ağarma Monitörü</h1>
       <p class="subtitle" id="region-subtitle">American Samoa</p>
       <div style="display:flex;gap:8px;align-items:flex-start;">
         <div style="flex:1;min-width:0;">
       <div class="badges" id="badges">
-        <div class="badge" title="Simülasyonun bulunduğu yıl. 2024 sonrası projeksiyon verileri kullanılır."><span
-            class="label">Year</span><span class="value" id="b-year">2013</span><span id="proj-label" class="proj-label"
-            style="display:none;">PROJECTED</span></div>
-        <div class="badge"
-          title="Deniz Yüzey Sıcaklığı (Sea Surface Temperature). Mercan ağarması için kritik gösterge."><span
+        <div class="badge" data-i18n-title="badge.year.tip"><span
+            class="label" data-i18n="badge.year">Year</span><span class="value" id="b-year">2013</span><span id="proj-label" class="proj-label"
+            style="display:none;" data-i18n="badge.projected">PROJECTED</span></div>
+        <div class="badge" data-i18n-title="badge.sst.tip"><span
             class="label">SST</span><span class="value" id="b-sst">28.0°C</span></div>
-        <div class="badge" id="badge-dhw"
-          title="Derece Isıtma Haftası (Degree Heating Weeks). 4+ ağarma başlar, 8+ ciddi ölüm riski."><span
+        <div class="badge" id="badge-dhw" data-i18n-title="badge.dhw.tip"><span
             class="label">DHW</span><span class="value" id="b-dhw">0.0</span></div>
-        <div class="badge"
-          title="Ortalama stres seviyesi (0–1). Yüksek değer mercan sağlığının kötüleştiğini gösterir."><span
-            class="label">Stress</span><span class="value" id="b-stress">0.00</span></div>
-        <div class="badge" title="Simülasyon adım sayısı. Her 30 adım yaklaşık 1 yıla karşılık gelir."><span
-            class="label">Tick</span><span class="value" id="b-tick">0</span></div>
-        <div class="badge" id="badge-protected"
-          title="Haritada çizilen Deniz Koruma Alanlarının (MPA) yüzdesi. Maksimum %40.">
-          <span class="label">Protected</span><span class="value" id="b-protected" style="color:#00d4aa">0%</span>
-          <button id="btn-clear-mpa" title="Tüm koruma alanlarını sil"
+        <div class="badge" data-i18n-title="badge.stress.tip"><span
+            class="label" data-i18n="badge.stress">Stress</span><span class="value" id="b-stress">0.00</span></div>
+        <div class="badge" data-i18n-title="badge.tick.tip"><span
+            class="label" data-i18n="badge.tick">Tick</span><span class="value" id="b-tick">0</span></div>
+        <div class="badge" id="badge-protected" data-i18n-title="badge.protected.tip">
+          <span class="label" data-i18n="badge.protected">Protected</span><span class="value" id="b-protected" style="color:#00d4aa">0%</span>
+          <button id="btn-clear-mpa" data-i18n="badge.clearAll" data-i18n-title="badge.clearAll.tip"
             style="display:none;font-size:0.6rem;background:none;border:1px solid #8B0000;color:#ff6b6b;border-radius:4px;padding:1px 6px;cursor:pointer;font-family:'Courier New';">✕
             Clear All</button>
         </div>
       </div>
       <div id="stat-cards" style="display: flex; gap: 6px; flex-wrap: wrap; justify-content: center; margin-top: 4px;">
-        <div class="badge" id="card-dead"
-          title="Tamamen ölen mercan kolonisi sayısı. Restorasyon bütçesiyle kurtarılabilir."
+        <div class="badge" id="card-dead" data-i18n-title="card.dead.tip"
           style="padding: 5px 10px; font-size: 0.68rem; min-width: 100px;">
-          <span class="label">💀 Dead Colonies</span><span class="value" id="val-dead" style="color:#5a8ab5;">0</span>
+          <span class="label" data-i18n="card.dead">💀 Dead Colonies</span><span class="value" id="val-dead" style="color:#5a8ab5;">0</span>
         </div>
-        <div class="badge" id="card-bleached"
-          title="Şu anda ağarma sürecinde olan mercan sayısı. Sıcaklık düşerse iyileşebilir."
+        <div class="badge" id="card-bleached" data-i18n-title="card.bleached.tip"
           style="padding: 5px 10px; font-size: 0.68rem; min-width: 100px;">
-          <span class="label">🌡️ Bleaching</span><span class="value" id="val-bleached" style="color:#5a8ab5;">0</span>
+          <span class="label" data-i18n="card.bleached">🌡️ Bleaching</span><span class="value" id="val-bleached" style="color:#5a8ab5;">0</span>
         </div>
-        <div class="badge" id="card-hotzone" title="En yüksek stresin yoğunlaştığı bölge (NE/NW/SE/SW/CENTER)."
+        <div class="badge" id="card-hotzone" data-i18n-title="card.hotzone.tip"
           style="padding: 5px 10px; font-size: 0.68rem; min-width: 100px;">
-          <span class="label">📍 Hot Zone</span><span class="value" id="val-hotzone" style="color:#fbbf24;">-</span>
+          <span class="label" data-i18n="card.hotzone">📍 Hot Zone</span><span class="value" id="val-hotzone" style="color:#fbbf24;">-</span>
         </div>
-        <div class="badge" id="card-recovering" title="Ölümden geri dönen ve iyileşme sürecinde olan mercan yüzdesi."
+        <div class="badge" id="card-recovering" data-i18n-title="card.recovering.tip"
           style="padding: 5px 10px; font-size: 0.68rem; min-width: 100px;">
-          <span class="label">💚 Recovering</span><span class="value" id="val-recovering"
+          <span class="label" data-i18n="card.recovering">💚 Recovering</span><span class="value" id="val-recovering"
             style="color:#5a8ab5;">0%</span>
         </div>
-        <div class="badge" id="card-proj2100" title="Mevcut politika ayarlarınıza göre 2100 yılındaki tahmini mercan sağlığı. IPCC SSP2-4.5 senaryosu baz alınır."
+        <div class="badge" id="card-proj2100" data-i18n-title="card.proj2100.tip"
           style="padding: 5px 10px; font-size: 0.68rem; min-width: 120px;">
-          <span class="label">🔮 2100 Tahmini</span><span class="value" id="val-proj2100" style="color:#ff8800;">—</span>
+          <span class="label" data-i18n="card.proj2100">🔮 2100 Tahmini</span><span class="value" id="val-proj2100" style="color:#ff8800;">—</span>
         </div>
       </div>
         </div>
         <!-- Mini World Map (right side) -->
         <div id="mini-map-wrap" style="display:flex;flex-direction:column;align-items:center;gap:4px;flex-shrink:0;">
-          <canvas id="mini-map" width="200" height="110" title="Seçilen bölgenin Pasifik Okyanusu üzerindeki gerçek konumu. Koordinatlar NOAA NCRMP verisinden alınmıştır. Noktaya tıklayarak bölge değiştirebilirsiniz."
+          <canvas id="mini-map" width="200" height="110" data-i18n-title="minimap.tip"
             style="border:1px solid #1a3a5c;border-radius:6px;background:#060d18;cursor:pointer;"></canvas>
           <div id="mini-map-info" style="font-family:'Courier New';font-size:0.55rem;color:#4a6fa5;display:flex;gap:8px;">
             <span id="mm-lat" style="color:#7ab8db;">—</span>
@@ -982,65 +1006,59 @@
       </div>
       <div class="controls">
         <div class="control-group">
-          <label>Region</label>
-          <select id="region-sel"
-            title="Simüle edilecek mercan resifi bölgesini seçin. Her bölgenin farklı başlangıç verileri var.">
-            <option value="American Samoa">American Samoa</option>
-            <option value="Main Hawaiian Islands">Main Hawaiian Islands</option>
-            <option value="Mariana Archipelago">Mariana Archipelago</option>
-            <option value="Northwestern Hawaiian Islands">Northwestern Hawaiian Islands</option>
-            <option value="Pacific Remote Island Areas">Pacific Remote Island Areas</option>
+          <label data-i18n="ctl.region">Region</label>
+          <select id="region-sel" data-i18n-title="ctl.region.tip">
+            <option value="American Samoa" data-i18n="region.American Samoa">American Samoa</option>
+            <option value="Main Hawaiian Islands" data-i18n="region.Main Hawaiian Islands">Main Hawaiian Islands</option>
+            <option value="Mariana Archipelago" data-i18n="region.Mariana Archipelago">Mariana Archipelago</option>
+            <option value="Northwestern Hawaiian Islands" data-i18n="region.Northwestern Hawaiian Islands">Northwestern Hawaiian Islands</option>
+            <option value="Pacific Remote Island Areas" data-i18n="region.Pacific Remote Island Areas">Pacific Remote Island Areas</option>
           </select>
         </div>
         <div class="control-group">
-          <label>Temperature (°C) <span class="range-val" id="temp-val">28.6</span></label>
-          <input type="range" id="temp-slider" min="22" max="34" step="0.1" value="28.6"
-            title="Bölgenin yıllık ortalama deniz yüzey sıcaklığı. Bölge seçildiğinde NOAA iklimsel ortalamasına ayarlanır; artırmak kalıcı bir sıcaklık anomalisi ekler.">
+          <label><span data-i18n="ctl.temp">Temperature (°C)</span> <span class="range-val" id="temp-val">28.6</span></label>
+          <input type="range" id="temp-slider" min="22" max="34" step="0.1" value="28.6" data-i18n-title="ctl.temp.tip">
         </div>
         <div class="control-group">
-          <label>Coral Cover (%) <span class="range-val" id="cover-val">80</span></label>
-          <input type="range" id="cover-slider" min="40" max="100" step="1" value="80"
-            title="Başlangıçtaki canlı mercan örtüsü yüzdesi. Düşük değer daha zayıf resif demek.">
+          <label><span data-i18n="ctl.cover">Coral Cover (%)</span> <span class="range-val" id="cover-val">80</span></label>
+          <input type="range" id="cover-slider" min="40" max="100" step="1" value="80" data-i18n-title="ctl.cover.tip">
         </div>
         <div class="control-group">
-          <label>Recovery Speed</label>
-          <select id="recovery-sel" title="Mercanların stresten ne kadar hızlı iyileşeceğini belirler.">
-            <option value="slow">Slow</option>
-            <option value="medium" selected>Medium</option>
-            <option value="fast">Fast</option>
+          <label data-i18n="ctl.recovery">Recovery Speed</label>
+          <select id="recovery-sel" data-i18n-title="ctl.recovery.tip">
+            <option value="slow" data-i18n="ctl.recovery.slow">Slow</option>
+            <option value="medium" selected data-i18n="ctl.recovery.medium">Medium</option>
+            <option value="fast" data-i18n="ctl.recovery.fast">Fast</option>
           </select>
         </div>
         <div class="control-group">
-          <label>RESTORATION BUDGET</label>
+          <label data-i18n="ctl.budget">RESTORATION BUDGET</label>
           <div style="display:flex;align-items:center;gap:8px;">
             <input type="range" id="budget-slider" min="0" max="100" step="10" value="0"
-              style="flex:1;accent-color:#00d4aa;"
-              title="Ölü mercan kolonilerini aktif olarak restore etmek için ayrılan bütçe. Yüksek bütçe = daha fazla iyileşme şansı.">
+              style="flex:1;accent-color:#00d4aa;" data-i18n-title="ctl.budget.tip">
             <span id="budget-val" style="font-family:'Courier New';
           font-size:0.72rem;color:#4fc3f7;min-width:36px;">$0M</span>
           </div>
-          <div style="font-size:0.62rem;color:#3a5a7a;margin-top:2px;">
-            Active restoration of dead coral colonies
-          </div>
+          <div style="font-size:0.62rem;color:#3a5a7a;margin-top:2px;" data-i18n="ctl.budget.note">Active restoration of dead coral colonies</div>
         </div>
 
         <div style="display:flex;gap:6px;margin-bottom:6px;flex-wrap:wrap;">
-          <button class="btn" id="btn-scenario-bau" style="font-size:0.65rem;padding:4px 8px;border-color:#ff6b6b;color:#ff6b6b;" title="Tüm emisyon kaynakları maksimum, hiçbir politika yok">🔥 Business as Usual</button>
-          <button class="btn" id="btn-scenario-optimal" style="font-size:0.65rem;padding:4px 8px;border-color:#00d4aa;color:#00d4aa;" title="Tüm emisyon kaynakları minimum, tüm politikalar aktif">🌿 Optimal Policies</button>
-          <button class="btn" id="btn-scenario-mpa" style="font-size:0.65rem;padding:4px 8px;border-color:#4fc3f7;color:#4fc3f7;" title="Sadece deniz koruma alanları, emisyon politikası yok">🏝 MPA Only</button>
+          <button class="btn" id="btn-scenario-bau" style="font-size:0.65rem;padding:4px 8px;border-color:#ff6b6b;color:#ff6b6b;" data-i18n="scn.bau" data-i18n-title="scn.bau.tip">🔥 Business as Usual</button>
+          <button class="btn" id="btn-scenario-optimal" style="font-size:0.65rem;padding:4px 8px;border-color:#00d4aa;color:#00d4aa;" data-i18n="scn.optimal" data-i18n-title="scn.optimal.tip">🌿 Optimal Policies</button>
+          <button class="btn" id="btn-scenario-mpa" style="font-size:0.65rem;padding:4px 8px;border-color:#4fc3f7;color:#4fc3f7;" data-i18n="scn.mpa" data-i18n-title="scn.mpa.tip">🏝 MPA Only</button>
         </div>
         <div class="btn-group">
-          <button class="btn" id="btn-pause" title="Simülasyonu duraklat. Haritayı incelemek için kullanın.">â¸ Pause</button>
-          <button class="btn active" id="btn-play" title="Simülasyonu normal hızda başlat veya devam ettir.">▶ Play</button>
-          <button class="btn" id="btn-fast" title="Simülasyonu 3 kat hızda çalıştır. Hızlı ileri sarma.">â© Fast</button>
-          <button class="btn" id="btn-reset" title="Simülasyonu sıfırla. Tüm veriler ve grafik başa döner.">↺ Reset</button>
-          <div class="seed-group" title="Tohum (seed): aynı tohum ve aynı ayarlar her seferinde birebir aynı simülasyonu üretir. Politikaları adil karşılaştırmak için tohumu sabit tutun.">
-            <label for="seed-input">Seed</label>
+          <button class="btn" id="btn-pause" data-i18n="btn.pause" data-i18n-title="btn.pause.tip">⏸ Pause</button>
+          <button class="btn active" id="btn-play" data-i18n="btn.play" data-i18n-title="btn.play.tip">▶ Play</button>
+          <button class="btn" id="btn-fast" data-i18n="btn.fast" data-i18n-title="btn.fast.tip">⏩ Fast</button>
+          <button class="btn" id="btn-reset" data-i18n="btn.reset" data-i18n-title="btn.reset.tip">↺ Reset</button>
+          <div class="seed-group" data-i18n-title="seed.tip">
+            <label for="seed-input" data-i18n="seed.label">Seed</label>
             <input type="number" id="seed-input" min="1" max="99999" step="1">
-            <button class="btn" id="btn-new-seed" title="Yeni rastgele tohum seç ve simülasyonu yeniden başlat">🎲</button>
+            <button class="btn" id="btn-new-seed" data-i18n-title="seed.new.tip">🎲</button>
           </div>
-          <button class="btn" id="btn-compare" title="İki bölgeyi yan yana karşılaştır. Aynı koşullarda farklı resiflerin tepkisini görün.">⚖ Compare</button>
-          <button class="btn" id="btn-download-csv" title="Simülasyon verilerini CSV olarak indir"
+          <button class="btn" id="btn-compare" data-i18n="btn.compare" data-i18n-title="btn.compare.tip">⚖ Compare</button>
+          <button class="btn" id="btn-download-csv" data-i18n-title="btn.csv.tip"
             style="background:linear-gradient(135deg,#0a2018,#0d3020);border-color:#00d4aa;color:#00d4aa;position:relative;">⬇
             CSV<span id="log-count"
             style="position:absolute;top:-6px;right:-8px;background:#00d4aa;color:#0a1628;font-size:0.52rem;font-family:'Courier New',monospace;padding:1px 5px;border-radius:8px;font-weight:700;min-width:20px;text-align:center;line-height:1.3;">0</span></button>
@@ -1050,102 +1068,70 @@
       <div class="policy-panel" id="policy-panel">
         <div class="policy-header"
           onclick="document.getElementById('policy-body').classList.toggle('collapsed'); document.getElementById('panel-arrow').textContent = document.getElementById('policy-body').classList.contains('collapsed') ? '▼' : '▲';">
-          <span class="policy-title">🌍 POLICY CONTROLS <span id="panel-arrow"
+          <span class="policy-title"><span data-i18n="pol.title">🌍 POLICY CONTROLS</span> <span id="panel-arrow"
               style="font-size:0.6rem;color:#7ab8db;margin-left:4px;">▲</span></span>
           <div class="policy-summary">
-            <div class="ps-badge" id="ps-temp" title="Emisyon kaynaklarından hesaplanan net ısınma etkisi."><span
-                style="color:#a0c0d8">Net Warming:</span> <span id="ps-temp-val" style="color:#FFB300">+1.2°C</span>
+            <div class="ps-badge" id="ps-temp" data-i18n-title="pol.netWarming.tip"><span
+                style="color:#a0c0d8" data-i18n="pol.netWarming">Net Warming:</span> <span id="ps-temp-val" style="color:#FFB300">+1.2°C</span>
             </div>
-            <div class="ps-badge" id="ps-ph"
-              title="Okyanus asitlenmesi risk seviyesi. Alkali güçlendirme ile düşürülebilir."><span
-                style="color:#a0c0d8">pH Risk:</span> <span id="ps-ph-val" style="color:#FF3300">HIGH</span></div>
-            <div class="ps-badge" id="ps-fish"
-              title="Balık popülasyonunun genel durumu. Balıkçılık kotasından etkilenir."><span
-                style="color:#a0c0d8">Fish:</span> <span id="ps-fish-val" style="color:#00d4aa">STABLE</span></div>
-            <div class="ps-badge" id="ps-pol" title="Aktif iklim anlaşmalarının sayısı (ABD, Çin, AB)."><span
-                style="color:#a0c0d8">Policies:</span> <span id="ps-pol-val" style="color:#00d4aa">3/3 Active</span>
+            <div class="ps-badge" id="ps-ph" data-i18n-title="pol.ph.tip"><span
+                style="color:#a0c0d8" data-i18n="pol.ph">pH Risk:</span> <span id="ps-ph-val" style="color:#FF3300">HIGH</span></div>
+            <div class="ps-badge" id="ps-fish" data-i18n-title="pol.fish.tip"><span
+                style="color:#a0c0d8" data-i18n="pol.fish">Fish:</span> <span id="ps-fish-val" style="color:#00d4aa">STABLE</span></div>
+            <div class="ps-badge" id="ps-pol" data-i18n-title="pol.policies.tip"><span
+                style="color:#a0c0d8" data-i18n="pol.policies">Policies:</span> <span id="ps-pol-val" style="color:#00d4aa">3/3 Active</span>
             </div>
           </div>
         </div>
         <div class="policy-body" id="policy-body">
           <div class="policy-col">
-            <div class="policy-col-title">Emission Sources</div>
-            <div class="p-row"><label
-                title="Kömür ve ağır sanayi kaynaklı CO₂ emisyonları. Küresel ısınmanın en büyük etkeni.">🏭 Coal &
-                Industry</label><input type="range" id="sl-ind" min="0" max="100" value="50"
-                title="Endüstriyel emisyon seviyesi (0=sıfır, 100=maksimum)"><span class="val" id="val-ind">50</span>
-            </div>
-            <div class="p-row"><label
-                title="Havacılık ve deniz taşımacılığı emisyonları. Uluslararası ticaretin karbon ayak izi.">✈️ Aviation
-                & Ship</label><input type="range" id="sl-trans" min="0" max="100" value="50"
-                title="Ulaşım emisyon seviyesi"><span class="val" id="val-trans">50</span></div>
-            <div class="p-row"><label title="Hayvancılık ve çeltik tarımından kaynaklanan metan (CH₄) emisyonları.">🌾
-                Livestock & Rice</label><input type="range" id="sl-agr" min="0" max="100" value="50"
-                title="Tarımsal metan emisyon seviyesi"><span class="val" id="val-agr">50</span></div>
-            <div class="p-row"><label title="Orman tahribatı oranı. Ağaçlar CO₂ emer; kesildiğinde karbon salınır.">🌲
-                Forest Loss</label><input type="range" id="sl-def" min="0" max="100" value="50"
-                title="Ormansızlaşma oranı"><span class="val" id="val-def">50</span></div>
-            <div class="p-row"><label
-                title="Güneş, rüzgâr ve nükleer gibi temiz enerji kaynaklarının payı. Artırınca emisyonlar düşer.">⚡
-                Clean Energy Mix</label><input type="range" id="sl-ren" class="green-thumb" min="0" max="100" value="30"
-                title="Temiz enerji payı — yükseldikçe ısınmayı yavaşlatır"><span class="val" id="val-ren">30</span>
-            </div>
-            <div class="p-row"><label
-                title="Karbon Yakalama ve Depolama teknolojisi. Atmosferdeki CO₂'yi doğrudan azaltır.">🔬 CCS
-                Technology</label><input type="range" id="sl-ccs" class="green-thumb" min="0" max="100" value="0"
-                title="CCS yatırım seviyesi — yükseldikçe emisyonlar düşer"><span class="val" id="val-ccs">0</span>
-            </div>
-            <div class="net-emission-badge" id="net-emission-badge" style="color:#a0c0d8;">NET EMISSION EFFECT: 0.0°C
-            </div>
+            <div class="policy-col-title" data-i18n="pol.emissions">Emission Sources</div>
+            <div class="p-row"><label data-i18n="pol.ind" data-i18n-title="pol.ind.tip"></label><input type="range" id="sl-ind" min="0" max="100" value="50"
+                data-i18n-title="pol.level.tip"><span class="val" id="val-ind">50</span></div>
+            <div class="p-row"><label data-i18n="pol.trans" data-i18n-title="pol.trans.tip"></label><input type="range" id="sl-trans" min="0" max="100" value="50"
+                data-i18n-title="pol.level.tip"><span class="val" id="val-trans">50</span></div>
+            <div class="p-row"><label data-i18n="pol.agr" data-i18n-title="pol.agr.tip"></label><input type="range" id="sl-agr" min="0" max="100" value="50"
+                data-i18n-title="pol.level.tip"><span class="val" id="val-agr">50</span></div>
+            <div class="p-row"><label data-i18n="pol.def" data-i18n-title="pol.def.tip"></label><input type="range" id="sl-def" min="0" max="100" value="50"
+                data-i18n-title="pol.level.tip"><span class="val" id="val-def">50</span></div>
+            <div class="p-row"><label data-i18n="pol.ren" data-i18n-title="pol.ren.tip"></label><input type="range" id="sl-ren" class="green-thumb" min="0" max="100" value="30"
+                data-i18n-title="pol.level.tip"><span class="val" id="val-ren">30</span></div>
+            <div class="p-row"><label data-i18n="pol.ccs" data-i18n-title="pol.ccs.tip"></label><input type="range" id="sl-ccs" class="green-thumb" min="0" max="100" value="0"
+                data-i18n-title="pol.level.tip"><span class="val" id="val-ccs">0</span></div>
+            <div class="net-emission-badge" id="net-emission-badge" style="color:#a0c0d8;"></div>
           </div>
           <div class="policy-col">
-            <div class="policy-col-title">Ocean & Reef Policies</div>
+            <div class="policy-col-title" data-i18n="pol.ocean">Ocean & Reef Policies</div>
             <div style="display:flex;gap:6px;">
-              <button id="btn-us-policy" class="policy-btn active"
-                title="ABD İklim Politikası — Devre dışı bırakılırsa ısınma hızı ×1.4 artar.">🇺🇸 US</button>
-              <button id="btn-cn-policy" class="policy-btn active"
-                title="Çin İklim Politikası — Devre dışı bırakılırsa ısınma hızı ×1.27 artar.">🇨🇳 CN</button>
-              <button id="btn-eu-policy" class="policy-btn active"
-                title="AB İklim Politikası — Devre dışı bırakılırsa ısınma hızı ×1.08 artar.">🇪🇺 EU</button>
+              <button id="btn-us-policy" class="policy-btn active" data-i18n-title="pol.us.tip">🇺🇸 US</button>
+              <button id="btn-cn-policy" class="policy-btn active" data-i18n-title="pol.cn.tip">🇨🇳 CN</button>
+              <button id="btn-eu-policy" class="policy-btn active" data-i18n-title="pol.eu.tip">🇪🇺 EU</button>
             </div>
-            <div class="p-row"><label
-                title="Okyanus alkalinitesini artırarak mercanların ağarma eşiğini yükseltir. Yüksek değer = mercanlar daha yüksek sıcaklığa dayanır.">🌊
-                Alkalinity Enh.</label><input type="range" id="sl-ph" class="green-thumb" min="0" max="100" value="0"
-                title="Alkali güçlendirme seviyesi (0=yok, 100=maksimum koruma)"><span class="val" id="val-ph">0</span>
-            </div>
-            <div class="p-row"><label
-                title="Resif bölgesindeki turizm faaliyetlerinin düzenlenmesi. Kontrolsüz turizm mercanları daha çok strese sokar.">✈️
-                Tourism Reg</label>
-              <select id="sel-tourism" title="Turizm düzenlemesi: Kontrolsüz=stres artar, Sıkı=stres azalır">
-                <option value="0">Unregulated</option>
-                <option value="1">Low</option>
-                <option value="2" selected>Medium</option>
-                <option value="3">Strict</option>
+            <div class="p-row"><label data-i18n="pol.ph.label" data-i18n-title="pol.ph.label.tip"></label><input type="range" id="sl-ph" class="green-thumb" min="0" max="100" value="0"
+                data-i18n-title="pol.level.tip"><span class="val" id="val-ph">0</span></div>
+            <div class="p-row"><label data-i18n="pol.tourism" data-i18n-title="pol.tourism.tip"></label>
+              <select id="sel-tourism" data-i18n-title="pol.tourism.tip">
+                <option value="0" data-i18n="pol.tourism.0">Unregulated</option>
+                <option value="1" data-i18n="pol.tourism.1">Low</option>
+                <option value="2" selected data-i18n="pol.tourism.2">Medium</option>
+                <option value="3" data-i18n="pol.tourism.3">Strict</option>
               </select>
             </div>
-            <div class="p-row"><label
-                title="Balıkçılık kotası. Kota olmadan balık popülasyonu çöker; sıkı kota iyileşmeyi hızlandırır.">🐟
-                Fishing Quota</label>
-              <select id="sel-fishing" title="Balıkçılık kotası: Yok=popülasyon düşer, Sıkı=popülasyon yükselir">
-                <option value="0">None</option>
-                <option value="1" selected>Sustainable</option>
-                <option value="2">Strict</option>
+            <div class="p-row"><label data-i18n="pol.fishing" data-i18n-title="pol.fishing.tip"></label>
+              <select id="sel-fishing" data-i18n-title="pol.fishing.tip">
+                <option value="0" data-i18n="pol.fishing.0">None</option>
+                <option value="1" selected data-i18n="pol.fishing.1">Sustainable</option>
+                <option value="2" data-i18n="pol.fishing.2">Strict</option>
               </select>
             </div>
-            <div class="p-row"><label
-                title="Uluslararası mercan resifi koruma fonu. İyileşme hızını ve restorasyon şansını artırır.">💰 GEF
-                Reef Finance</label><input type="range" id="sl-imf" class="green-thumb" min="0" max="100" value="0"
-                title="Uluslararası fonlama seviyesi — yükseldikçe restorasyon güçlenir"><span class="val"
-                id="val-imf">0</span></div>
+            <div class="p-row"><label data-i18n="pol.imf" data-i18n-title="pol.imf.tip"></label><input type="range" id="sl-imf" class="green-thumb" min="0" max="100" value="0"
+                data-i18n-title="pol.level.tip"><span class="val" id="val-imf">0</span></div>
             <div style="display:flex; justify-content:space-between; align-items:center; margin-top:2px;">
-              <label style="font-size:0.65rem;color:#a0c0d8;display:flex;align-items:center;gap:4px;"
-                title="Aktif olduğunda bölgesel DHW 4'ü (NOAA Uyarı Seviyesi 1) aşarsa en stresli 10 hücreyi otomatik olarak koruma altına alır.">
-                <input type="checkbox" id="cb-ews" style="accent-color:#00d4aa;cursor:pointer;"
-                  title="Erken Uyarı Sistemini aç/kapat"> 🚨 Early Warning System
+              <label style="font-size:0.65rem;color:#a0c0d8;display:flex;align-items:center;gap:4px;" data-i18n-title="pol.ews.tip">
+                <input type="checkbox" id="cb-ews" style="accent-color:#00d4aa;cursor:pointer;"> <span data-i18n="pol.ews">🚨 Early Warning System</span>
               </label>
               <span id="ews-badge"
-                style="font-size:0.6rem;font-family:'Courier New';color:#3a5a7a;display:none;">Auto-protect: 0
-                sites</span>
+                style="font-size:0.6rem;font-family:'Courier New';color:#3a5a7a;display:none;"></span>
             </div>
           </div>
         </div>
@@ -1153,7 +1139,7 @@
 
       <div class="grid-container" id="grid-container">
         <div class="sst-topbar" id="sst-topbar">
-          <span class="sst-title" id="sst-title">Mercan Resifi Stres & Ağarma Monitörü</span>
+          <span class="sst-title" id="sst-title" data-i18n="app.titlePlain">Mercan Resifi Stres & Ağarma Monitörü</span>
           <span class="sst-label">NOAA NCRMP</span>
         </div>
         <div id="canvas-row" style="display: flex; flex: 1; width: 100%; min-height: 0; position: relative;">
@@ -1180,19 +1166,19 @@
         </div>
         <div class="sst-legend-strip">
           <div class="sl-item">
-            <div class="sl-dot" style="background:transparent;border:1px solid #8ab4d0"></div>Healthy (SST color)
+            <div class="sl-dot" style="background:transparent;border:1px solid #8ab4d0"></div><span data-i18n="legend.healthy">Healthy (SST color)</span>
           </div>
           <div class="sl-item">
-            <div class="sl-dot" style="background:rgba(255,255,255,0.6)"></div>Stressed (stipple)
+            <div class="sl-dot" style="background:rgba(255,255,255,0.6)"></div><span data-i18n="legend.stressed">Stressed (stipple)</span>
           </div>
           <div class="sl-item">
-            <div class="sl-dot" style="background:#FFFFAA"></div>Bleached (hotspot)
+            <div class="sl-dot" style="background:#FFFFAA"></div><span data-i18n="legend.bleached">Bleached (hotspot)</span>
           </div>
           <div class="sl-item">
-            <div class="sl-dot" style="background:#3a3a3a"></div>Dead (darkened)
+            <div class="sl-dot" style="background:#3a3a3a"></div><span data-i18n="legend.dead">Dead (darkened)</span>
           </div>
           <div class="sl-item">
-            <div class="sl-dot" style="background:#00FFD0"></div>Recovering (shimmer)
+            <div class="sl-dot" style="background:#00FFD0"></div><span data-i18n="legend.recovering">Recovering (shimmer)</span>
           </div>
         </div>
       </div>
@@ -1200,66 +1186,62 @@
     <div class="right-panel" id="right-panel">
       <!-- MODE 1: Stacked Charts -->
       <div id="analysis-panel" style="background:rgba(0,20,40,0.7);border:1px solid #1a3a5c;border-radius:8px;padding:10px 14px;margin-bottom:8px;font-size:0.72rem;font-family:'Courier New',monospace;">
-        <div style="color:#4fc3f7;font-weight:700;margin-bottom:6px;letter-spacing:0.05em;">📊 SİMÜLASYON ANALİZİ</div>
+        <div style="color:#4fc3f7;font-weight:700;margin-bottom:6px;letter-spacing:0.05em;" data-i18n="ap.title">📊 SİMÜLASYON ANALİZİ</div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px 16px;">
-          <div style="color:#8ab4c8;">En Yüksek Ağarma:</div><div id="ap-peak-bleach" style="color:#ff9800;">—</div>
-          <div style="color:#8ab4c8;">En Kritik Yıl:</div><div id="ap-worst-year" style="color:#ff6b6b;">—</div>
-          <div style="color:#8ab4c8;">Mevcut Mercan Örtüsü:</div><div id="ap-coral-now" style="color:#00d4aa;">—</div>
-          <div style="color:#8ab4c8;">Toplam Ölü Hücre:</div><div id="ap-dead-total" style="color:#ef5350;">—</div>
-          <div style="color:#8ab4c8;">Korunan Alan:</div><div id="ap-protected" style="color:#4fc3f7;">—</div>
-          <div style="color:#8ab4c8;">2100 Tahmini:</div><div id="ap-proj-2100" style="color:#b39ddb;">—</div>
+          <div style="color:#8ab4c8;" data-i18n="ap.peak">En Yüksek Ağarma:</div><div id="ap-peak-bleach" style="color:#ff9800;">—</div>
+          <div style="color:#8ab4c8;" data-i18n="ap.worst">En Kritik Yıl:</div><div id="ap-worst-year" style="color:#ff6b6b;">—</div>
+          <div style="color:#8ab4c8;" data-i18n="ap.coralNow">Mevcut Mercan Örtüsü:</div><div id="ap-coral-now" style="color:#00d4aa;">—</div>
+          <div style="color:#8ab4c8;" data-i18n="ap.dead">Toplam Ölü Hücre:</div><div id="ap-dead-total" style="color:#ef5350;">—</div>
+          <div style="color:#8ab4c8;" data-i18n="ap.protected">Korunan Alan:</div><div id="ap-protected" style="color:#4fc3f7;">—</div>
+          <div style="color:#8ab4c8;" data-i18n="ap.proj">2100 Tahmini:</div><div id="ap-proj-2100" style="color:#b39ddb;">—</div>
         </div>
       </div>
       <div class="charts-stack" id="charts-stack">
-        <div class="chart-card" title="Deniz yüzey sıcaklığı (SST, sol eksen) ve Derece Isıtma Haftası (DHW, sağ eksen). DHW, sıcaklığın bölgenin en sıcak ay ortalamasını (MMM, kesikli turuncu çizgi) en az 1°C aştığı haftaların son 12 haftadaki toplamıdır. Kırmızı şeritler sıcak dalga (ağarma olayı) dönemleridir. Harita moduna geçmek için başlığa tıklayın.">
+        <div class="chart-card" data-i18n-title="chart.temp.tip">
           <div class="chart-header" onclick="openHeatmap('sst')">
-            <span class="chart-header-title">🌡️ Deniz Sıcaklığı & Isı Stresi</span>
+            <span class="chart-header-title" data-i18n="chart.temp.title"></span>
             <span class="chart-header-value" id="hv-temp"></span>
-            <span class="chart-header-icon" title="Haritayı aç">🗺️</span>
+            <span class="chart-header-icon" data-i18n-title="chart.open">🗺️</span>
           </div>
-          <div class="chart-sub">Turuncu: deniz sıcaklığı (kalın çizgi 12 aylık ortalama). Kırmızı alan: biriken ısı stresi (DHW) — 4 üstü ağarma, 8 üstü ölüm riski. Kırmızı şeritler: sıcak dalgalar.</div>
+          <div class="chart-sub" data-i18n="chart.temp.sub"></div>
           <div class="chart-canvas-wrap"><canvas id="chart-temp"></canvas></div>
         </div>
-        <div class="chart-card" title="Sağlıklı koloni yüzdesi: ağarmamış ve ölmemiş mercan kolonilerinin tüm kolonilere oranı (çıplak zemin hariç). NOAA NCRMP ile aynı tanım; ⭐ noktalar bölgenin gerçek NOAA ölçümleridir. Harita moduna geçmek için başlığa tıklayın.">
+        <div class="chart-card" data-i18n-title="chart.coral.tip">
           <div class="chart-header" onclick="openHeatmap('coral')">
-            <span class="chart-header-title">🪸 Sağlıklı Mercan Kolonileri</span>
+            <span class="chart-header-title" data-i18n="chart.coral.title"></span>
             <span class="chart-header-value" id="hv-coral"></span>
-            <span class="chart-header-icon" title="Haritayı aç">🗺️</span>
+            <span class="chart-header-icon" data-i18n-title="chart.open">🗺️</span>
           </div>
-          <div class="chart-sub">Ağarmamış ve ölmemiş kolonilerin oranı (%). ⭐ Aynı bölgede NOAA dalgıçlarının gerçek ölçümü.</div>
+          <div class="chart-sub" data-i18n="chart.coral.sub"></div>
           <div class="chart-canvas-wrap"><canvas id="chart-coral"></canvas></div>
         </div>
-        <div class="chart-card" title="Av balık popülasyonu (Lotka-Volterra modeli, göreli indeks). Taşıma kapasitesi (K) sağlıklı mercan oranına bağlıdır: mercan öldükçe K düşer ve av balıkları azalır. Balıkçılık kotası da etkiler. Harita moduna geçmek için başlığa tıklayın.">
+        <div class="chart-card" data-i18n-title="chart.prey.tip">
           <div class="chart-header" onclick="openHeatmap('prey')">
-            <span class="chart-header-title">🐟 Av Balıkları</span>
+            <span class="chart-header-title" data-i18n="chart.prey.title"></span>
             <span class="chart-header-value" id="hv-prey"></span>
-            <span class="chart-header-icon" title="Haritayı aç">🗺️</span>
+            <span class="chart-header-icon" data-i18n-title="chart.open">🗺️</span>
           </div>
-          <div class="chart-sub">Resifte yaşayan küçük balıklar. Kesikli çizgi: resifin besleyebileceği en fazla balık (taşıma kapasitesi, mercan sağlığına bağlı).</div>
+          <div class="chart-sub" data-i18n="chart.prey.sub"></div>
           <div class="chart-canvas-wrap"><canvas id="chart-prey"></canvas></div>
         </div>
-        <div class="chart-card" title="Avcı balık popülasyonu (Lotka-Volterra modeli, göreli indeks). Av balıklarına bağlıdır; mercan çöküşü av balıklarını, o da gecikmeyle avcıları azaltır. Harita moduna geçmek için başlığa tıklayın.">
+        <div class="chart-card" data-i18n-title="chart.pred.tip">
           <div class="chart-header" onclick="openHeatmap('predator')">
-            <span class="chart-header-title">🦈 Avcı Balıklar</span>
+            <span class="chart-header-title" data-i18n="chart.pred.title"></span>
             <span class="chart-header-value" id="hv-pred"></span>
-            <span class="chart-header-icon" title="Haritayı aç">🗺️</span>
+            <span class="chart-header-icon" data-i18n-title="chart.open">🗺️</span>
           </div>
-          <div class="chart-sub">Av balıklarıyla beslenen büyük balıklar (orfoz, köpekbalığı). Av azaldıkça gecikmeyle düşer.</div>
+          <div class="chart-sub" data-i18n="chart.pred.sub"></div>
           <div class="chart-canvas-wrap"><canvas id="chart-pred"></canvas></div>
         </div>
       </div>
       <!-- MODE 2: Heatmap Overlay -->
       <div class="heatmap-overlay" id="heatmap-overlay">
         <div class="hm-tab-bar">
-          <button class="hm-tab active" data-hm="sst" title="Açık sekmeye tekrar tıklayınca grafiklere dönülür" style="--tab-accent:#FF6B2B" onclick="switchHmTab(this)">🌡️
-            SST</button>
-          <button class="hm-tab" data-hm="coral" title="Açık sekmeye tekrar tıklayınca grafiklere dönülür" style="--tab-accent:#00D4AA" onclick="switchHmTab(this)">🪸
-            Coral</button>
-          <button class="hm-tab" data-hm="prey" title="Açık sekmeye tekrar tıklayınca grafiklere dönülür" style="--tab-accent:#00AAFF" onclick="switchHmTab(this)">🐟
-            Prey</button>
-          <button class="hm-tab" data-hm="predator" title="Açık sekmeye tekrar tıklayınca grafiklere dönülür" style="--tab-accent:#AA44FF" onclick="switchHmTab(this)">🦈
-            Predator</button>
-          <button class="hm-back-btn" onclick="closeHeatmap()">← CHARTS</button>
+          <button class="hm-tab active" data-hm="sst" data-i18n-title="hm.tab.tip" style="--tab-accent:#FF6B2B" onclick="switchHmTab(this)" data-i18n="hm.sst"></button>
+          <button class="hm-tab" data-hm="coral" data-i18n-title="hm.tab.tip" style="--tab-accent:#00D4AA" onclick="switchHmTab(this)" data-i18n="hm.coral"></button>
+          <button class="hm-tab" data-hm="prey" data-i18n-title="hm.tab.tip" style="--tab-accent:#00AAFF" onclick="switchHmTab(this)" data-i18n="hm.prey"></button>
+          <button class="hm-tab" data-hm="predator" data-i18n-title="hm.tab.tip" style="--tab-accent:#AA44FF" onclick="switchHmTab(this)" data-i18n="hm.predator"></button>
+          <button class="hm-back-btn" onclick="closeHeatmap()" data-i18n="hm.back">← CHARTS</button>
         </div>
         <div class="hm-canvas-wrap">
           <canvas id="heatmap-canvas"></canvas>
@@ -1270,7 +1252,7 @@
   </div>
 
   <script>
-    // â”€â”€ Real dataset â”€â”€
+    // ── Real dataset ──
     // Values from coral_simulation_dataset.csv (NOAA NCRMP). PRIA 2016 is left out:
     // its healthy_count exceeds total_colonies (healthy_pct 139%), so the record is invalid.
     const DATA = [
@@ -1295,7 +1277,7 @@
       { year: 2023, region: "Pacific Remote Island Areas", healthy_pct: 96.58, bleached_pct: 0.41, dead_pct: 3.08, coral_health_index: 0.9658, global_bleaching_avg_pct: null }
     ];
 
-    // â”€â”€ Config â”€â”€
+    // ── Config ──
     const COLS = 24, ROWS = 18;
     const STATES = ['HEALTHY', 'STRESSED', 'BLEACHED', 'DEAD', 'RECOVERING'];
     // Multiplier on natural recovery, chosen by the Recovery Speed control
@@ -1378,7 +1360,7 @@
       futureEvents = [];
       for (let y = 2026; y < 2100; y++) {
         if (rand() < 0.2) {
-          futureEvents.push({ year: y, spike: 0.5 + rand() * 0.7, label: `Marine Heatwave ${y}` });
+          futureEvents.push({ year: y, spike: 0.5 + rand() * 0.7 });
           y++; // at most one heatwave every other year
         }
       }
@@ -1423,7 +1405,7 @@
     let monthInYear = 0;
     let seasonalTemp = 28;
     let eventSpike = 0;
-    let activeEventLabel = null;
+    let activeEventYear = null;
     // ── Observed marine heatwaves, per region ──
     // spike = peak SST anomaly (°C) above the seasonal cycle, centred on the region's warm season (±6 months).
     // Which years affected which region follows NOAA Coral Reef Watch alerts and published bleaching surveys;
@@ -1449,9 +1431,9 @@
     };
     // 2014–2017: third global bleaching event; 2023–2025: fourth
     function eventLabel(year) {
-      return (year >= 2014 && year <= 2017) || (year >= 2023 && year <= 2025) ? `Global Bleaching ${year}` : `Marine Heatwave ${year}`;
+      return t((year >= 2014 && year <= 2017) || (year >= 2023 && year <= 2025) ? 'event.global' : 'event.heatwave', { year });
     }
-    let eventSpike2 = 0, activeEventLabel2 = null, temperature2 = 28;
+    let eventSpike2 = 0, activeEventYear2 = null, temperature2 = 28;
     let lastRes1 = null;
     let tick = 0, dhw = 0, simSpeed = 1, running = true;
     let apPeakBleach = 0, apWorstYear = 2013, apWorstBleach = 0;
@@ -1466,7 +1448,7 @@
     let simLog = [];
     const LOG_INTERVAL = 3; // log every 3 ticks (~monthly)
 
-    // â”€â”€ DOM refs â”€â”€
+    // ── DOM refs ──
     const $tempSlider = document.getElementById('temp-slider');
     const $coverSlider = document.getElementById('cover-slider');
     const $tempVal = document.getElementById('temp-val');
@@ -1474,11 +1456,11 @@
     const $regionSel = document.getElementById('region-sel');
     const $recoverySel = document.getElementById('recovery-sel');
 
-    // â”€â”€ Canvas refs â”€â”€
+    // ── Canvas refs ──
     const canvas = document.getElementById('reef-canvas');
     const ctx = canvas.getContext('2d');
 
-    // â”€â”€ Simplex Noise â”€â”€
+    // ── Simplex Noise ──
     function makeSimplexNoise(rand) { const F2 = 0.5 * (Math.sqrt(3) - 1), G2 = (3 - Math.sqrt(3)) / 6; const grad = [[1, 1], [-1, 1], [1, -1], [-1, -1], [1, 0], [-1, 0], [0, 1], [0, -1]]; const perm = new Uint8Array(512); const p = new Uint8Array(256); for (let i = 0; i < 256; i++)p[i] = i; for (let i = 255; i > 0; i--) { const j = Math.floor(rand() * (i + 1));[p[i], p[j]] = [p[j], p[i]]; } for (let i = 0; i < 512; i++)perm[i] = p[i & 255]; return function (x, y) { const s = (x + y) * F2, i = Math.floor(x + s), j = Math.floor(y + s); const t = (i + j) * G2, x0 = x - (i - t), y0 = y - (j - t); const i1 = x0 > y0 ? 1 : 0, j1 = x0 > y0 ? 0 : 1; const x1 = x0 - i1 + G2, y1 = y0 - j1 + G2, x2 = x0 - 1 + 2 * G2, y2 = y0 - 1 + 2 * G2; const ii = i & 255, jj = j & 255; const gi0 = perm[ii + perm[jj]] % 8, gi1 = perm[ii + i1 + perm[jj + j1]] % 8, gi2 = perm[ii + 1 + perm[jj + 1]] % 8; let n0 = 0, n1 = 0, n2 = 0; let t0 = 0.5 - x0 * x0 - y0 * y0; if (t0 > 0) { t0 *= t0; n0 = t0 * t0 * (grad[gi0][0] * x0 + grad[gi0][1] * y0); } let t1 = 0.5 - x1 * x1 - y1 * y1; if (t1 > 0) { t1 *= t1; n1 = t1 * t1 * (grad[gi1][0] * x1 + grad[gi1][1] * y1); } let t2 = 0.5 - x2 * x2 - y2 * y2; if (t2 > 0) { t2 *= t2; n2 = t2 * t2 * (grad[gi2][0] * x2 + grad[gi2][1] * y2); } return 70 * (n0 + n1 + n2); }; }
     let SimplexNoise = makeSimplexNoise(seededStream('noise'));
 
@@ -1514,10 +1496,10 @@
       ctx.textBaseline = 'middle';
 
       const labels = [
-        { pos: 0, text: 'Healthy' },
-        { pos: 0.33, text: 'Stressed' },
-        { pos: 0.66, text: 'Bleached' },
-        { pos: 1, text: 'Dead' }
+        { pos: 0, text: t('state.healthy') },
+        { pos: 0.33, text: t('state.stressed') },
+        { pos: 0.66, text: t('state.bleached') },
+        { pos: 1, text: t('state.dead') }
       ];
 
       for (const lbl of labels) {
@@ -1532,7 +1514,7 @@
       ctx.fillStyle = '#8ab4d0';
       ctx.font = '10px "Courier New", monospace';
       ctx.textAlign = 'center';
-      ctx.fillText('Coral Health', 0, 0);
+      ctx.fillText(t('map.colorbar'), 0, 0);
       ctx.restore();
     }
 
@@ -1595,7 +1577,7 @@
       ctx.fillStyle = '#020810'; ctx.fillRect(0, 0, w, h);
       if (!grid.length) return;
 
-      const legW = 55, mapW = w - legW;
+      const legW = 80, mapW = w - legW;
       const cellW = mapW / COLS, cellH = h / ROWS;
 
       const r1 = renderGridToCtx(grid, ctx, w, h, mapW, offCanvas, offCtx, 0);
@@ -1696,12 +1678,12 @@
 
       // ── Overlay text ──
       const displayYear = Math.min(Math.floor(exactYear), 2100);
-      const mo = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-      const sm = mo[Math.floor(monthInYear) % 12];
+      const sm = I18N.months()[Math.floor(monthInYear) % 12];
       ctx.save(); ctx.font = 'bold 12px "Courier New",monospace';
-      ctx.fillStyle = 'rgba(0,0,0,0.6)'; ctx.fillRect(6, 6, 175, 54);
+      const overlayW = Math.max(175, ctx.measureText(I18N.regionName(region)).width + 14);
+      ctx.fillStyle = 'rgba(0,0,0,0.6)'; ctx.fillRect(6, 6, overlayW, 54);
       ctx.fillStyle = '#fff'; ctx.textBaseline = 'top'; ctx.textAlign = 'left';
-      ctx.fillText(`${sm} ${displayYear}`, 12, 11); ctx.fillText(region, 12, 27);
+      ctx.fillText(`${sm} ${displayYear}`, 12, 11); ctx.fillText(I18N.regionName(region), 12, 27);
       ctx.fillStyle = '#FFD700'; ctx.fillText(`SST: ${temperature.toFixed(1)}°C`, 12, 43);
       ctx.restore();
 
@@ -1715,7 +1697,7 @@
         ctx.font = 'bold 9px "Courier New"';
         ctx.textAlign = 'left';
         ctx.textBaseline = 'top';
-        ctx.fillText('⚠ MAJOR CLIMATE AGREEMENTS COLLAPSED', 8, topBarH + 5);
+        ctx.fillText(t('map.warnAll'), 8, topBarH + 5);
       } else if (!usPolicyActive) {
         const topBarH = 0;
         ctx.fillStyle = `rgba(139,0,0,${0.4 + 0.2 * Math.sin(tick * 0.15)})`;
@@ -1724,7 +1706,7 @@
         ctx.font = 'bold 9px "Courier New"';
         ctx.textAlign = 'left';
         ctx.textBaseline = 'top';
-        ctx.fillText('⚠ US CLIMATE POLICY WITHDRAWN — ACCELERATED WARMING', 8, topBarH + 5);
+        ctx.fillText(t('map.warnUs'), 8, topBarH + 5);
       }
 
 
@@ -1738,16 +1720,16 @@
         ctx.textBaseline = 'middle';
         ctx.shadowColor = '#00d4ff';
         ctx.shadowBlur = 12;
-        ctx.fillText('⏸ PAUSED', mapW / 2, h / 2);
+        ctx.fillText(t('map.paused'), mapW / 2, h / 2);
         ctx.shadowBlur = 0;
         ctx.restore();
       }
 
-      if (eventSpike > 0.1 && activeEventLabel) {
+      if (eventSpike > 0.1 && activeEventYear) {
         ctx.save();
         ctx.globalAlpha = Math.min(1, eventSpike / 0.5); // fade in/out
         ctx.font = '10px "Courier New",monospace';
-        const text = '⚠️ ' + activeEventLabel;
+        const text = '⚠️ ' + eventLabel(activeEventYear);
         const tw = ctx.measureText(text).width;
         ctx.fillStyle = 'rgba(180,0,0,0.7)';
         ctx.beginPath();
@@ -1771,18 +1753,19 @@
         offCanvas2 = r2.offCv; offCtx2 = r2.targetOffCtx;
 
         ctx2.save(); ctx2.font = 'bold 12px "Courier New",monospace';
-        ctx2.fillStyle = 'rgba(0,0,0,0.6)'; ctx2.fillRect(6, 6, 175, 54);
+        const overlayW2 = Math.max(175, ctx2.measureText(I18N.regionName(region2)).width + 14);
+        ctx2.fillStyle = 'rgba(0,0,0,0.6)'; ctx2.fillRect(6, 6, overlayW2, 54);
         ctx2.fillStyle = '#fff'; ctx2.textBaseline = 'top'; ctx2.textAlign = 'left';
         ctx2.fillText(`${sm} ${displayYear}`, 12, 11);
-        ctx2.fillText(region2, 12, 27);
+        ctx2.fillText(I18N.regionName(region2), 12, 27);
         ctx2.fillStyle = '#FFD700'; ctx2.fillText(`SST: ${temperature2.toFixed(1)}°C`, 12, 43);
         ctx2.restore();
 
-        if (eventSpike2 > 0.1 && activeEventLabel2) {
+        if (eventSpike2 > 0.1 && activeEventYear2) {
           ctx2.save();
           ctx2.globalAlpha = Math.min(1, eventSpike2 / 0.5);
           ctx2.font = '10px "Courier New",monospace';
-          const text = '⚠️ ' + activeEventLabel2;
+          const text = '⚠️ ' + eventLabel(activeEventYear2);
           const tw = ctx2.measureText(text).width;
           ctx2.fillStyle = 'rgba(180,0,0,0.7)';
           ctx2.beginPath();
@@ -1841,15 +1824,14 @@
     // ── Time-series charts ──
     // All four charts share one numeric year axis covering the whole run (2013 → current year),
     // with one point per LOG_INTERVAL ticks (~monthly).
-    const MONTHS_TR = ['Oca', 'Şub', 'Mar', 'Nis', 'May', 'Haz', 'Tem', 'Ağu', 'Eyl', 'Eki', 'Kas', 'Ara'];
     const PROJECTION_START = 2024;
     const AXIS_MIN_SPAN_END = 2030;
     function formatYearMonth(x) {
       const y = Math.floor(x);
-      return `${MONTHS_TR[Math.min(11, Math.floor((x - y) * 12))]} ${y}`;
+      return `${I18N.months()[Math.min(11, Math.floor((x - y) * 12))]} ${y}`;
     }
 
-    // Marine heatwave periods seen so far for the main region ({ start, end, label }), shaded on the SST chart
+    // Marine heatwave periods seen so far for the main region ({ start, end, year }), shaded on the SST chart
     let eventBands = [];
 
     // Draws the projection divider, event bands and dashed reference lines (options.plugins.timeDecor)
@@ -1884,7 +1866,7 @@
           c.strokeStyle = 'rgba(255,136,0,0.6)'; c.setLineDash([2, 3]); c.lineWidth = 1;
           c.beginPath(); c.moveTo(px, a.top); c.lineTo(px, a.bottom); c.stroke();
           c.setLineDash([]); c.fillStyle = 'rgba(255,136,0,0.85)'; c.textAlign = 'left'; c.textBaseline = 'top';
-          c.fillText('Projeksiyon →', px + 3, a.top + 2);
+          c.fillText(t('chart.projection'), px + 3, a.top + 2);
         }
         // Event labels (only where the band is wide enough)
         if (opts.events) {
@@ -1911,8 +1893,9 @@
       }
     };
 
-    function axisTitle(text, color = '#5a7fa5') {
-      return { display: true, text, color, font: { size: 9 }, padding: { top: 0, bottom: 2 } };
+    // Axis titles hold an i18n key; relabelCharts() turns it into text
+    function axisTitle(key, color = '#5a7fa5') {
+      return { display: true, text: t(key), i18n: key, color, font: { size: 9 }, padding: { top: 0, bottom: 2 } };
     }
 
     // Options shared by every time chart; `extra` tweaks scales and plugins per chart
@@ -1958,27 +1941,27 @@
       type: 'line',
       data: {
         datasets: [
-          makeDataset('Sıcaklık (aylık)', 'rgba(255,138,61,0.35)', null, { yAxisID: 'y', unit: '°C', borderWidth: 1, order: 1 }),
-          makeDataset('Isı stresi (DHW)', '#FF2D2D', 'rgba(255,45,45,0.22)', { yAxisID: 'y2', unit: ' °C-hafta', fill: 'origin', order: 2 }),
-          makeDataset('Sıcaklık (12 ay ort.)', '#FFB070', null, { yAxisID: 'y', unit: '°C', borderWidth: 2.2, order: 0 })
+          makeDataset('', 'rgba(255,138,61,0.35)', null, { yAxisID: 'y', unit: '°C', borderWidth: 1, order: 1, i18n: 'chart.sstMonthly' }),
+          makeDataset('', '#FF2D2D', 'rgba(255,45,45,0.22)', { yAxisID: 'y2', fill: 'origin', order: 2, i18n: 'chart.dhw', unitKey: 'chart.dhwUnit' }),
+          makeDataset('', '#FFB070', null, { yAxisID: 'y', unit: '°C', borderWidth: 2.2, order: 0, i18n: 'chart.sstAvg' })
         ]
       },
       options: (() => {
         const o = timeChartOpts({
-          yTitle: 'Sıcaklık (°C)', ySuffix: '°', legend: true,
+          yTitle: 'chart.axisTemp', ySuffix: '°', legend: true,
           timeDecor: {
             events: true,
             refLines: [
               { axis: 'y', value: () => mmmOf(region), label: () => `MMM ${mmmOf(region).toFixed(1)}°C`, color: 'rgba(255,170,90,0.75)' },
-              { axis: 'y2', value: 4, label: 'DHW 4 · ağarma', color: 'rgba(255,214,0,0.75)' },
-              { axis: 'y2', value: 8, label: 'DHW 8 · ölüm riski', color: 'rgba(255,70,70,0.85)' }
+              { axis: 'y2', value: 4, label: () => t('chart.refDhw4'), color: 'rgba(255,214,0,0.75)' },
+              { axis: 'y2', value: 8, label: () => t('chart.refDhw8'), color: 'rgba(255,70,70,0.85)' }
             ]
           }
         });
         o.scales.y.grace = '5%';
         o.scales.y2 = {
           position: 'right', min: 0, suggestedMax: 12,
-          title: axisTitle('DHW (°C-hafta)', '#c46a6a'),
+          title: axisTitle('chart.axisDhw', '#c46a6a'),
           ticks: { color: '#c46a6a', font: { size: 9 }, maxTicksLimit: 5, precision: 0 },
           grid: { drawOnChartArea: false }, border: { display: false }
         };
@@ -1992,16 +1975,16 @@
       type: 'line',
       data: {
         datasets: [
-          makeDataset('Model', '#00D4AA', 'rgba(0,212,170,0.15)'),
+          makeDataset('', '#00D4AA', 'rgba(0,212,170,0.15)', { i18n: 'chart.model' }),
           {
-            label: 'NOAA ölçümü', data: [], borderColor: '#FFD700', backgroundColor: '#FFD700',
+            label: '', i18n: 'chart.noaa', data: [], borderColor: '#FFD700', backgroundColor: '#FFD700',
             pointRadius: 6, pointHoverRadius: 8, pointStyle: 'star', showLine: false, fill: false
           }
         ]
       },
       options: timeChartOpts({
-        yTitle: 'Sağlıklı koloni (%)', yMin: 0, yMax: 100, ySuffix: '%', unit: '%', legend: true,
-        timeDecor: { refLines: [{ axis: 'y', value: 50, label: '%50 kritik', color: 'rgba(255,214,0,0.5)' }] }
+        yTitle: 'chart.axisHealthy', yMin: 0, yMax: 100, ySuffix: '%', unit: '%', legend: true,
+        timeDecor: { refLines: [{ axis: 'y', value: 50, label: () => t('chart.ref50'), color: 'rgba(255,214,0,0.5)' }] }
       }),
       plugins: [timeDecorPlugin]
     });
@@ -2010,11 +1993,11 @@
       type: 'line',
       data: {
         datasets: [
-          makeDataset('Av balığı', '#00AAFF', 'rgba(0,170,255,0.15)'),
-          makeDataset('Taşıma kapasitesi', 'rgba(160,200,230,0.6)', null, { borderDash: [4, 3], borderWidth: 1 })
+          makeDataset('', '#00AAFF', 'rgba(0,170,255,0.15)', { i18n: 'chart.prey' }),
+          makeDataset('', 'rgba(160,200,230,0.6)', null, { borderDash: [4, 3], borderWidth: 1, i18n: 'chart.capacity' })
         ]
       },
-      options: timeChartOpts({ yTitle: 'Popülasyon indeksi', yMin: 0, legend: true }),
+      options: timeChartOpts({ yTitle: 'chart.axisPop', yMin: 0, legend: true }),
       plugins: [timeDecorPlugin]
     });
 
@@ -2022,13 +2005,26 @@
       type: 'line',
       data: {
         datasets: [
-          makeDataset('Avcı balık', '#AA44FF', 'rgba(170,68,255,0.15)')
+          makeDataset('', '#AA44FF', 'rgba(170,68,255,0.15)', { i18n: 'chart.predator' })
         ]
       },
-      options: timeChartOpts({ yTitle: 'Popülasyon indeksi', yMin: 0 }),
+      options: timeChartOpts({ yTitle: 'chart.axisPop', yMin: 0 }),
       plugins: [timeDecorPlugin]
     });
     const allCharts = [chartTemp, chartCoral, chartPrey, chartPred];
+
+    // Re-reads every chart label (datasets, axis titles, units) in the current language
+    function relabelCharts() {
+      allCharts.forEach(c => {
+        c.data.datasets.forEach(ds => {
+          if (ds.i18n) ds.label = t(ds.i18n);
+          if (ds.unitKey) ds.unit = t(ds.unitKey);
+        });
+        Object.values(c.options.scales).forEach(sc => { if (sc.title && sc.title.i18n) sc.title.text = t(sc.title.i18n); });
+        c.update('none');
+      });
+    }
+    relabelCharts();
 
     // Starts every chart's time axis at 2013 and widens it as the run goes on
     function setTimeAxisEnd(year) {
@@ -2085,36 +2081,36 @@
     const HM_EXPLAIN_DATA = {
       sst: {
         dots: [
-          { color: '#0000FF', label: 'Cool water' },
-          { color: '#FFEE00', label: 'Warm' },
-          { color: '#FF2200', label: 'Critical heat' }
+          { color: '#0000FF', label: 'hm.sst.cool' },
+          { color: '#FFEE00', label: 'hm.sst.warm' },
+          { color: '#FF2200', label: 'hm.sst.hot' }
         ],
-        text: 'Sea surface temperature per location. Red zones = thermal stress risk for corals.'
+        text: 'hm.sst.text'
       },
       coral: {
         dots: [
-          { color: '#0066FF', label: 'Healthy reef' },
-          { color: '#FFB300', label: 'Stressed' },
-          { color: '#FF3300', label: 'Bleaching' },
-          { color: '#050A1A', label: 'Dead', border: true }
+          { color: '#0066FF', label: 'hm.coral.healthy' },
+          { color: '#FFB300', label: 'hm.coral.stressed' },
+          { color: '#FF3300', label: 'hm.coral.bleaching' },
+          { color: '#050A1A', label: 'hm.coral.dead', border: true }
         ],
-        text: 'Coral colony health index per location. Dark zones = reef loss. Blue = thriving ecosystem.'
+        text: 'hm.coral.text'
       },
       prey: {
         dots: [
-          { color: '#000A14', label: 'No fish', border: true },
-          { color: '#0055AA', label: 'Sparse' },
-          { color: '#AAFFFF', label: 'Dense school' }
+          { color: '#000A14', label: 'hm.prey.none', border: true },
+          { color: '#0055AA', label: 'hm.prey.sparse' },
+          { color: '#AAFFFF', label: 'hm.prey.dense' }
         ],
-        text: 'Estimated prey fish density. Follows coral health \u2014 fish disappear where reef degrades.'
+        text: 'hm.prey.text'
       },
       predator: {
         dots: [
-          { color: '#050008', label: 'Absent', border: true },
-          { color: '#AA00CC', label: 'Present' },
-          { color: '#FFAAFF', label: 'High activity' }
+          { color: '#050008', label: 'hm.pred.absent', border: true },
+          { color: '#AA00CC', label: 'hm.pred.present' },
+          { color: '#FFAAFF', label: 'hm.pred.high' }
         ],
-        text: 'Predator distribution tracks prey availability. Peaks near healthy reef edges, collapses after prey decline.'
+        text: 'hm.pred.text'
       }
     };
 
@@ -2127,9 +2123,9 @@
       info.dots.forEach((d, i) => {
         if (i > 0) leftHtml += '<span class="arrow">→</span>';
         const border = d.border ? 'border:1px solid #3a5a7a;' : '';
-        leftHtml += `<span class="cdot" style="background:${d.color};${border}"></span><span>${d.label}</span>`;
+        leftHtml += `<span class="cdot" style="background:${d.color};${border}"></span><span>${t(d.label)}</span>`;
       });
-      el.innerHTML = `<div class="hm-explain-left">${leftHtml}</div><div class="hm-explain-right">${info.text}</div>`;
+      el.innerHTML = `<div class="hm-explain-left">${leftHtml}</div><div class="hm-explain-right">${t(info.text)}</div>`;
     }
 
     // ── Heatmap rendering system ──
@@ -2191,9 +2187,9 @@
 
     const HEATMAP_CONFIG = {
       sst: { palette: PALETTE_SST, label: '°C', stops: ['26°C', '28°C', '30°C', '32°C'] },
-      coral: { palette: PALETTE_CORAL, label: 'Health', stops: ['Healthy', 'Stressed', 'Bleached', 'Dead'] },
-      prey: { palette: PALETTE_PREY, label: 'Density', stops: ['None', 'Low', 'Med', 'High'] },
-      predator: { palette: PALETTE_PRED, label: 'Density', stops: ['None', 'Low', 'Med', 'High'] }
+      coral: { palette: PALETTE_CORAL, label: 'hm.health', stops: ['state.healthy', 'state.stressed', 'state.bleached', 'state.dead'] },
+      prey: { palette: PALETTE_PREY, label: 'hm.density', stops: ['hm.none', 'hm.low', 'hm.med', 'hm.high'] },
+      predator: { palette: PALETTE_PRED, label: 'hm.density', stops: ['hm.none', 'hm.low', 'hm.med', 'hm.high'] }
     };
 
     function avgNeighborPrey(idx) {
@@ -2271,7 +2267,7 @@
       ctx2d.textAlign = 'left';
       ctx2d.textBaseline = 'middle';
       const lo = sstScaleMin();
-      const stops = activeHeatmapType === 'sst' ? [0, 2, 4, 6].map(d => `${lo + d}°C`) : cfg.stops;
+      const stops = activeHeatmapType === 'sst' ? [0, 2, 4, 6].map(d => `${lo + d}°C`) : cfg.stops.map(k => t(k));
       for (let i = 0; i < stops.length; i++) {
         const pos = i / (stops.length - 1);
         const ty = y + pos * bh;
@@ -2286,7 +2282,7 @@
       ctx2d.fillStyle = '#8ab4d0';
       ctx2d.font = '10px "Courier New", monospace';
       ctx2d.textAlign = 'center';
-      ctx2d.fillText(cfg.label, 0, 0);
+      ctx2d.fillText(cfg.label.startsWith('hm.') ? t(cfg.label) : cfg.label, 0, 0);
       ctx2d.restore();
     }
 
@@ -2308,7 +2304,7 @@
       const cfg = HEATMAP_CONFIG[activeHeatmapType];
       const palette = cfg.palette;
 
-      const legW = 55, mapW = w - legW;
+      const legW = 80, mapW = w - legW;
       const cellW = mapW / COLS, cellH = h / ROWS;
 
       // Half-res IDW rendering
@@ -2476,7 +2472,8 @@
           ctx.stroke();
           // Label with dark background
           ctx.font = 'bold 8px "Courier New"';
-          const shortName = rName.length > 22 ? rName.substring(0,20) + '..' : rName;
+          const dName = I18N.regionName(rName);
+          const shortName = dName.length > 22 ? dName.substring(0,20) + '..' : dName;
           const tw = ctx.measureText(shortName).width;
           // Position label above or below depending on space
           const labelY = y > 30 ? y - 12 : y + 16;
@@ -2511,8 +2508,8 @@
       if (coords) {
         const latEl = document.getElementById('mm-lat');
         const lonEl = document.getElementById('mm-lon');
-        if (latEl) latEl.textContent = `Lat: ${coords.lat.toFixed(2)}\u00b0`;
-        if (lonEl) lonEl.textContent = `Lon: ${coords.lon.toFixed(2)}\u00b0`;
+        if (latEl) latEl.textContent = `${t('minimap.lat')}: ${coords.lat.toFixed(2)}\u00b0`;
+        if (lonEl) lonEl.textContent = `${t('minimap.lon')}: ${coords.lon.toFixed(2)}\u00b0`;
       }
     }
 
@@ -2595,6 +2592,70 @@
     }
 
 
+    // ── End-of-run (2100) result banner ──
+    function showEndBanner() {
+      const existing = document.getElementById('sim-complete-banner');
+      if (existing) existing.remove();
+      const banner = document.createElement('div');
+      banner.id = 'sim-complete-banner';
+      banner.style.cssText = 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:100;background:linear-gradient(135deg,#0a1628,#0d2137);border:1px solid #00d4aa;border-radius:14px;padding:28px 40px;text-align:center;box-shadow:0 0 40px rgba(0,212,170,0.2),0 0 80px rgba(0,212,170,0.08);animation:fadeInUp 0.6s ease;';
+      const finalHealthy = lastRes1 ? (lastRes1.healthyCount / (ROWS * COLS) * 100).toFixed(1) : '?';
+      const finalDead = lastRes1 ? (lastRes1.deadCount / (ROWS * COLS) * 100).toFixed(1) : '?';
+      const activePol = (usPolicyActive ? 1 : 0) + (chinaPolicyActive ? 1 : 0) + (euPolicyActive ? 1 : 0);
+      let scoreEmoji = '💀', scoreKey = 'end.collapse', scoreColor = '#f87171';
+      if (parseFloat(finalHealthy) >= 40) { scoreEmoji = '🏆'; scoreKey = 'end.saved'; scoreColor = '#00d4aa'; }
+      else if (parseFloat(finalHealthy) >= 25) { scoreEmoji = '⚠️'; scoreKey = 'end.hope'; scoreColor = '#FFB300'; }
+      else if (parseFloat(finalHealthy) >= 10) { scoreEmoji = '🔻'; scoreKey = 'end.decline'; scoreColor = '#ff8800'; }
+      const stat = (value, color, key) => `<div style="text-align:center"><div style="font-size:1.3rem;font-weight:700;color:${color};font-family:'Courier New'">${value}</div><div style="font-size:0.6rem;color:#4a6fa5">${t(key)}</div></div>`;
+      banner.innerHTML = `<div style="font-size:2.5rem;margin-bottom:8px">${scoreEmoji}</div>`
+        + `<div style="font-family:'Courier New';font-size:1.1rem;font-weight:700;color:${scoreColor};letter-spacing:1px;margin-bottom:6px">${t(scoreKey)}</div>`
+        + `<div style="font-size:0.75rem;color:#4a6fa5;margin-bottom:12px">${t('end.subtitle', { seed: simSeed })}</div>`
+        + `<div style="display:flex;gap:16px;justify-content:center;margin-bottom:14px">${stat(finalHealthy + '%', '#00d4aa', 'end.healthy')}${stat(finalDead + '%', '#f87171', 'end.dead')}${stat(activePol + '/3', '#7ab8db', 'end.policies')}</div>`
+        + `<div style="font-size:0.65rem;color:#3a5a7a;font-style:italic;margin-bottom:4px">${t('end.scenario')}</div>`
+        + `<button onclick="document.getElementById('sim-complete-banner').remove()" style="margin-top:14px;padding:7px 20px;border-radius:6px;border:1px solid #1a3a5c;background:#0d2137;color:#7ab8db;font-family:'Inter',sans-serif;font-size:0.72rem;font-weight:600;cursor:pointer">${t('end.close')}</button>`;
+      document.body.appendChild(banner);
+    }
+
+    // ── Policy summary bar (Net warming / pH / Fish / Policies) ──
+    function updatePolicySummary() {
+      const effect = (emissionEffect() - 0.75) * 0.5;
+      const pTempBadge = document.getElementById('ps-temp-val');
+      if (effect > 0.1) { pTempBadge.textContent = `+${effect.toFixed(1)}°C`; pTempBadge.style.color = '#f87171'; }
+      else if (effect < -0.1) { pTempBadge.textContent = `${effect.toFixed(1)}°C`; pTempBadge.style.color = '#00d4aa'; }
+      else { pTempBadge.textContent = t('pol.stable'); pTempBadge.style.color = '#a0c0d8'; }
+      const pPhBadge = document.getElementById('ps-ph-val');
+      if (bleachThreshold < 29.5) { pPhBadge.textContent = t('pol.high'); pPhBadge.style.color = '#f87171'; }
+      else if (bleachThreshold < 30.5) { pPhBadge.textContent = t('pol.moderate'); pPhBadge.style.color = '#FFB300'; }
+      else { pPhBadge.textContent = t('pol.buffered'); pPhBadge.style.color = '#00d4aa'; }
+      const pFishBadge = document.getElementById('ps-fish-val');
+      if (fishingQuota === 0) { pFishBadge.textContent = t('pol.depleting'); pFishBadge.style.color = '#f87171'; }
+      else if (fishingQuota === 2) { pFishBadge.textContent = t('pol.recovering'); pFishBadge.style.color = '#00d4aa'; }
+      else { pFishBadge.textContent = t('pol.stable'); pFishBadge.style.color = '#a0c0d8'; }
+      const pPolBadge = document.getElementById('ps-pol-val');
+      const activeCount = (usPolicyActive ? 1 : 0) + (chinaPolicyActive ? 1 : 0) + (euPolicyActive ? 1 : 0);
+      pPolBadge.textContent = t('pol.active', { n: activeCount });
+      pPolBadge.style.color = activeCount === 3 ? '#00d4aa' : activeCount === 2 ? '#FFB300' : '#f87171';
+    }
+
+    // Weighted sum of the emission sliders (0.75 = today's mix)
+    function emissionEffect() {
+      return (industrialCO2 / 100) * 0.8 +
+        (transportEmissions / 100) * 0.4 +
+        (agriculturalCH4 / 100) * 0.3 +
+        (deforestationRate / 100) * 0.3 -
+        (renewableShare / 100) * 0.6 -
+        (carbonCapture / 100) * 0.4;
+    }
+
+    function updateEwsBadge() {
+      const badge = document.getElementById('ews-badge');
+      if (!badge) return;
+      if (!ewsActive) { badge.style.display = 'none'; return; }
+      badge.style.display = 'inline';
+      badge.textContent = t('pol.ews.badge', { n: tempProtected.size });
+      badge.style.color = tempProtected.size > 0 ? '#00d4aa' : '#3a5a7a';
+    }
+
     // ── Simulation step ──
     let simCompleteShown = false;
     function step() {
@@ -2604,20 +2665,7 @@
       if (exactYear >= 2100) {
         if (!window._skipChartUpdate && !simCompleteShown) {
           simCompleteShown = true;
-          const existing = document.getElementById('sim-complete-banner');
-          if (existing) existing.remove();
-          const banner = document.createElement('div');
-          banner.id = 'sim-complete-banner';
-          banner.style.cssText = 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:100;background:linear-gradient(135deg,#0a1628,#0d2137);border:1px solid #00d4aa;border-radius:14px;padding:28px 40px;text-align:center;box-shadow:0 0 40px rgba(0,212,170,0.2),0 0 80px rgba(0,212,170,0.08);animation:fadeInUp 0.6s ease;';
-          const finalHealthy = lastRes1 ? (lastRes1.healthyCount / (ROWS*COLS) * 100).toFixed(1) : '?';
-          const finalDead = lastRes1 ? (lastRes1.deadCount / (ROWS*COLS) * 100).toFixed(1) : '?';
-          const activePol = (usPolicyActive?1:0) + (chinaPolicyActive?1:0) + (euPolicyActive?1:0);
-          let scoreEmoji = '💀', scoreText = 'EKOSİSTEM ÇÖKTÜ', scoreColor = '#f87171';
-          if (parseFloat(finalHealthy) >= 40) { scoreEmoji = '🏆'; scoreText = 'MERCANLARI KURTARDIN!'; scoreColor = '#00d4aa'; }
-          else if (parseFloat(finalHealthy) >= 25) { scoreEmoji = '⚠️'; scoreText = 'KRİTİK AMA UMUT VAR'; scoreColor = '#FFB300'; }
-          else if (parseFloat(finalHealthy) >= 10) { scoreEmoji = '🔻'; scoreText = 'CİDDİ GERİLEME'; scoreColor = '#ff8800'; }
-          banner.innerHTML = `<div style="font-size:2.5rem;margin-bottom:8px">${scoreEmoji}</div><div style="font-family:'Courier New';font-size:1.1rem;font-weight:700;color:${scoreColor};letter-spacing:1px;margin-bottom:6px">${scoreText}</div><div style="font-size:0.75rem;color:#4a6fa5;margin-bottom:12px">2100 — Projeksiyon Dönemi Sonu · Seed #${simSeed}</div><div style="display:flex;gap:16px;justify-content:center;margin-bottom:14px"><div style="text-align:center"><div style="font-size:1.3rem;font-weight:700;color:#00d4aa;font-family:'Courier New'">${finalHealthy}%</div><div style="font-size:0.6rem;color:#4a6fa5">Sağlıklı</div></div><div style="text-align:center"><div style="font-size:1.3rem;font-weight:700;color:#f87171;font-family:'Courier New'">${finalDead}%</div><div style="font-size:0.6rem;color:#4a6fa5">Ölü</div></div><div style="text-align:center"><div style="font-size:1.3rem;font-weight:700;color:#7ab8db;font-family:'Courier New'">${activePol}/3</div><div style="font-size:0.6rem;color:#4a6fa5">Politika</div></div></div><div style="font-size:0.65rem;color:#3a5a7a;font-style:italic;margin-bottom:4px">IPCC SSP2-4.5 orta emisyon senaryosu</div><button onclick="document.getElementById('sim-complete-banner').style.display='none'" style="margin-top:14px;padding:7px 20px;border-radius:6px;border:1px solid #1a3a5c;background:#0d2137;color:#7ab8db;font-family:'Inter',sans-serif;font-size:0.72rem;font-weight:600;cursor:pointer">✕ Kapat</button>`;
-          document.body.appendChild(banner);
+          showEndBanner();
         }
         setSpeed(0);
         return;
@@ -2664,21 +2712,21 @@
       function regionTemp(r) {
         const clim = climateOf(r);
         const seasonalDelta = Math.cos(((monthInYear - clim.peakMonth) / 12) * 2 * Math.PI) * clim.amp;
-        let spike = 0, label = null;
+        let spike = 0, eventYear = null;
         for (const ev of (REGION_EVENTS[r] || []).concat(futureEvents)) {
           const dist = Math.abs(exactYear - (ev.year + clim.peakMonth / 12));
           if (dist < 0.5) {
             spike = ev.spike * (1 - dist / 0.5);
-            label = ev.label || eventLabel(ev.year);
+            eventYear = ev.year;
           }
         }
-        return { temp: clim.mean + userAnomaly + projDelta + seasonalDelta, spike, label };
+        return { temp: clim.mean + userAnomaly + projDelta + seasonalDelta, spike, eventYear };
       }
 
       const rt1 = regionTemp(region);
       seasonalTemp = rt1.temp;
       eventSpike = rt1.spike;
-      activeEventLabel = rt1.label;
+      activeEventYear = rt1.eventYear;
       const finalTemp = seasonalTemp + eventSpike;
       temperature = finalTemp;
 
@@ -2832,7 +2880,7 @@
       if (isCompareMode) {
         const rt2 = regionTemp(region2);
         eventSpike2 = rt2.spike;
-        activeEventLabel2 = rt2.label;
+        activeEventYear2 = rt2.eventYear;
         temperature2 = rt2.temp + rt2.spike;
         res2 = processGrid(grid2, temperature2, mmmOf(region2), 1000);
       }
@@ -2888,17 +2936,10 @@
         } else if (avgDHW < 2) {
           tempProtected.clear();
         }
-        const badge = document.getElementById('ews-badge');
-        if (badge) {
-          badge.style.display = 'inline';
-          badge.textContent = `Auto-protect: ${tempProtected.size} sites`;
-          badge.style.color = tempProtected.size > 0 ? '#00d4aa' : '#3a5a7a';
-        }
       } else {
         tempProtected.clear();
-        const badge = document.getElementById('ews-badge');
-        if (badge) badge.style.display = 'none';
       }
+      updateEwsBadge();
       const coralHealthIndex = res1.healthyCount / totalCells;
 
 
@@ -2965,7 +3006,8 @@
           scBleach.textContent = res1.bleachedCount;
           document.getElementById('card-bleached').querySelector('.value').style.color = bleachedPct > 0.1 ? '#fbbf24' : '#00d4ff';
 
-          document.getElementById('val-hotzone').textContent = res1.hotZone;
+          document.getElementById('val-hotzone').textContent = t('zone.' + res1.hotZone);
+          document.getElementById('val-hotzone').dataset.zone = res1.hotZone;
           document.getElementById('card-hotzone').querySelector('.value').style.color = '#fbbf24';
 
           const recPct = res1.recoveringCount / totalCells;
@@ -2982,37 +3024,8 @@
 
       // Push to charts
 
-      // Update Policy Summary Bar
-      const pTempBadge = document.getElementById('ps-temp-val');
-      if (pTempBadge) {
-        const effect = (emissionDelta - emissionBaseline) * 0.5;
-        if (effect > 0.1) { pTempBadge.textContent = `+${effect.toFixed(1)}°C`; pTempBadge.style.color = '#f87171'; }
-        else if (effect < -0.1) { pTempBadge.textContent = `${effect.toFixed(1)}°C`; pTempBadge.style.color = '#00d4aa'; }
-        else { pTempBadge.textContent = 'STABLE'; pTempBadge.style.color = '#a0c0d8'; }
-      }
-      const pPhBadge = document.getElementById('ps-ph-val');
-      if (pPhBadge) {
-        if (bleachThreshold < 29.5) { pPhBadge.textContent = 'HIGH'; pPhBadge.style.color = '#f87171'; }
-        else if (bleachThreshold < 30.5) { pPhBadge.textContent = 'MODERATE'; pPhBadge.style.color = '#FFB300'; }
-        else { pPhBadge.textContent = 'BUFFERED'; pPhBadge.style.color = '#00d4aa'; }
-      }
-      const pFishBadge = document.getElementById('ps-fish-val');
-      if (pFishBadge) {
-        if (fishingQuota === 0) { pFishBadge.textContent = 'DEPLETING'; pFishBadge.style.color = '#f87171'; }
-        else if (fishingQuota === 2) { pFishBadge.textContent = 'RECOVERING'; pFishBadge.style.color = '#00d4aa'; }
-        else { pFishBadge.textContent = 'STABLE'; pFishBadge.style.color = '#a0c0d8'; }
-      }
-      // Update 2100 projection estimate
+      updatePolicySummary();
       update2100Projection();
-
-      const pPolBadge = document.getElementById('ps-pol-val');
-      if (pPolBadge) {
-        const activeCount = (usPolicyActive ? 1 : 0) + (chinaPolicyActive ? 1 : 0) + (euPolicyActive ? 1 : 0);
-        pPolBadge.textContent = `${activeCount}/3 Active`;
-        if (activeCount === 3) pPolBadge.style.color = '#00d4aa';
-        else if (activeCount === 2) pPolBadge.style.color = '#FFB300';
-        else pPolBadge.style.color = '#f87171';
-      }
 
       // ── CSV Data Logging ──
       if (!window._skipChartUpdate && tick % LOG_INTERVAL === 0) {
@@ -3029,7 +3042,8 @@
           sst: avgTemp.toFixed(2),
           dhw: avgDHW.toFixed(2),
           avg_stress: avgStress.toFixed(3),
-          coral_cover_pct: (((res1.healthyCount + res1.bleachedCount + res1.recoveringCount) / totalCellsLog) * 100).toFixed(1),
+          // Live coral = every cell that is not dead (healthyCount already includes recovering cells)
+          coral_cover_pct: (((totalCellsLog - res1.deadCount) / totalCellsLog) * 100).toFixed(1),
           healthy_pct: ((res1.healthyCount / totalCellsLog) * 100).toFixed(1),
           bleached_pct: ((res1.bleachedCount / totalCellsLog) * 100).toFixed(1),
           dead_pct: ((res1.deadCount / totalCellsLog) * 100).toFixed(1),
@@ -3066,8 +3080,8 @@
       const colonyHealthyPct = res1.colonyCount > 0 ? res1.colonyHealthy / res1.colonyCount * 100 : 0;
       if (eventSpike > 0.2) {
         const last = eventBands[eventBands.length - 1];
-        if (last && last.label === activeEventLabel && exactYear - last.end < 0.1) last.end = exactYear;
-        else eventBands.push({ start: exactYear, end: exactYear, label: activeEventLabel });
+        if (last && last.year === activeEventYear && exactYear - last.end < 0.1) last.end = exactYear;
+        else eventBands.push({ start: exactYear, end: exactYear, year: activeEventYear });
       }
       if (tick % LOG_INTERVAL === 0) {
         const x = exactYear;
@@ -3092,7 +3106,7 @@
 
       // Analysis panel update
       const { healthyCount, bleachedCount, deadCount, recoveringCount } = res1;
-      const coralNowPct = ((healthyCount + bleachedCount + recoveringCount) / (ROWS * COLS) * 100).toFixed(1);
+      const coralNowPct = ((ROWS * COLS - deadCount) / (ROWS * COLS) * 100).toFixed(1);
       const bleachedNowPct = (bleachedCount / (ROWS * COLS) * 100).toFixed(1);
       const deadNowPct = (deadCount / (ROWS * COLS) * 100).toFixed(1);
       const protectedNowPct = ((protectedCells.size / (ROWS * COLS)) * 100).toFixed(1);
@@ -3106,16 +3120,16 @@
       document.getElementById('ap-coral-now').textContent = coralNowPct + '%';
       document.getElementById('ap-dead-total').textContent = deadNowPct + '%';
       document.getElementById('ap-protected').textContent = protectedNowPct + '%';
-      if (apProj) apProj.textContent = '—';
+      if (apProj) apProj.textContent = document.getElementById('val-proj2100').textContent;
     }
 
 
-    // â”€â”€ Controls â”€â”€
+    // ── Controls ──
 
     // ── CSV Export ──
     function downloadCSV() {
       if (simLog.length === 0) {
-        alert('Henüz kayıtlı veri yok. Simülasyonu çalıştırın.');
+        alert(t('csv.empty'));
         return;
       }
       const headers = Object.keys(simLog[0]);
@@ -3141,20 +3155,35 @@
       region = $regionSel.value;
       setTempToClimatology();
       updateCoralRealPoints();
-      const sub = document.getElementById('region-subtitle');
-      if (sub) sub.textContent = region;
       drawMiniMap(region);
       if (isCompareMode) {
-      const allRegions = ['American Samoa','Main Hawaiian Islands','Mariana Archipelago','Northwestern Hawaiian Islands','Pacific Remote Island Areas'];
+        const allRegions = Object.keys(REGION_CLIMATE);
         region2 = allRegions.find(r => r !== region) || allRegions[0];
-        const l1 = document.getElementById('region-label-1');
-        const l2 = document.getElementById('region-label-2');
-        if (l1) l1.textContent = region;
-        if (l2) l2.textContent = region2;
       }
+      updateRegionLabels();
       resetSim();
     });
     document.getElementById('btn-reset').addEventListener('click', resetSim);
+
+    function updateRegionLabels() {
+      document.getElementById('region-subtitle').textContent = I18N.regionName(region);
+      document.getElementById('region-label-1').textContent = I18N.regionName(region);
+      document.getElementById('region-label-2').textContent = I18N.regionName(region2);
+    }
+
+    // ── Language switch: re-render everything that scripts write ──
+    I18N.onLangChange(() => {
+      updateRegionLabels();
+      relabelCharts();
+      updateHmExplain();
+      updateNetEmissionBadge();
+      updatePolicySummary();
+      updateEwsBadge();
+      drawMiniMap(region);
+      const hz = document.getElementById('val-hotzone');
+      if (hz.dataset.zone) hz.textContent = t('zone.' + hz.dataset.zone);
+      if (document.getElementById('sim-complete-banner')) showEndBanner();
+    });
 
     // ── Seed controls ──
     const $seedInput = document.getElementById('seed-input');
@@ -3202,13 +3231,13 @@
       const baseline = 0.75;
       const diff = effect - baseline;
       if (diff > 0.05) {
-        badge.textContent = `NET EMISSION EFFECT: +${diff.toFixed(2)}°C`;
+        badge.textContent = t('pol.netEffect', { v: `+${diff.toFixed(2)}°C` });
         badge.style.color = '#ff6b6b';
       } else if (diff < -0.05) {
-        badge.textContent = `NET EMISSION EFFECT: ${diff.toFixed(2)}°C`;
+        badge.textContent = t('pol.netEffect', { v: `${diff.toFixed(2)}°C` });
         badge.style.color = '#00d4aa';
       } else {
-        badge.textContent = `NET EMISSION EFFECT: STABLE`;
+        badge.textContent = t('pol.netEffect', { v: t('pol.stable') });
         badge.style.color = '#a0c0d8';
       }
     }
@@ -3269,7 +3298,7 @@
       if (e.button !== 0) return;
       isDrawingProtection = true;
       const rect = canvas.getBoundingClientRect();
-      const legW = 55, mapW = canvas.clientWidth - legW;
+      const legW = 80, mapW = canvas.clientWidth - legW;
       const col = Math.floor((e.clientX - rect.left) / (mapW / COLS));
       const row = Math.floor((e.clientY - rect.top) / (canvas.clientHeight / ROWS));
       startCell = { col, row };
@@ -3278,7 +3307,7 @@
 
     canvas.addEventListener('mousemove', (e) => {
       const rect = canvas.getBoundingClientRect();
-      const legW = 55, mapW = canvas.clientWidth - legW;
+      const legW = 80, mapW = canvas.clientWidth - legW;
       const col = Math.floor((e.clientX - rect.left) / (mapW / COLS));
       const row = Math.floor((e.clientY - rect.top) / (canvas.clientHeight / ROWS));
 
@@ -3322,7 +3351,7 @@
         }
 
         if (protectedCells.size + newCells.size > 172) {
-          showToast("⚠ Protected area limit reached (40% max)");
+          showToast(t('toast.mpaLimit'));
         } else if (newCells.size > 0) {
           protectedRects.push({
             cells: newCells,
@@ -3346,7 +3375,7 @@
         updateProtectedBadge();
       }
     });
-    canvas.title = "Drag to draw protected area. Hover & Right-click to delete.";
+    canvas.dataset.i18nTitle = 'map.canvas.tip';
 
     const btnClearMpa = document.getElementById('btn-clear-mpa');
     if (btnClearMpa) {
@@ -3355,7 +3384,7 @@
         rebuildProtectedCells();
         updateProtectedBadge();
         hoveredRectIndex = -1;
-        showToast("Cleared all protected areas", "#00d4aa");
+        showToast(t('toast.mpaCleared'), "#00d4aa");
       });
     }
 
@@ -3480,7 +3509,7 @@
       updateCoralRealPoints();
     }
 
-    // â”€â”€ Main loop â”€â”€
+    // ── Main loop ──
     let lastTime = 0;
     const BASE_INTERVAL = 150;
     function loop(ts) {
@@ -3495,12 +3524,14 @@
       }
     }
 
-    // â”€â”€ Init â”€â”€
+    // ── Init ──
     initGrid();
     requestAnimationFrame(loop);
     drawMiniMap(region);
     update2100Projection();
     setTimeout(updateCoralRealPoints, 200);
+    // Translate once the whole page (info panel, welcome card, footer) has been parsed
+    document.addEventListener('DOMContentLoaded', () => I18N.applyAll());
 
     document.getElementById('timeline-scrubber').addEventListener('input', (e) => {
       const targetTick = parseInt(e.target.value);
@@ -3547,8 +3578,7 @@
         label2.style.display = 'block';
       const allRegions = ['American Samoa','Main Hawaiian Islands','Mariana Archipelago','Northwestern Hawaiian Islands','Pacific Remote Island Areas'];
         region2 = allRegions.find(r => r !== region) || allRegions[0];
-        label1.textContent = region;
-        label2.textContent = region2;
+        updateRegionLabels();
         initGrid2();
       } else {
         wrap2.style.display = 'none';
@@ -3560,9 +3590,11 @@
 
   </script>
 
-  <!-- Info Button -->
-  <button onclick="document.getElementById('info-panel').style.display='flex'"
-    style="position:fixed;bottom:16px;right:16px;z-index:50;width:32px;height:32px;border-radius:50%;border:1px solid #1a3a5c;background:linear-gradient(135deg,#0d2137,#132d4a);color:#4a9ab5;font-size:15px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 0 12px rgba(0,180,216,0.2);">?</button>
+  <!-- Corner buttons -->
+  <div class="corner-actions">
+    <button id="help-btn" class="help-btn" data-i18n-title="help.tip" onclick="document.getElementById('info-panel').style.display='flex'">?</button>
+    <button id="restart-tour-btn" class="tour-btn" data-i18n="tour.restart" data-i18n-title="tour.restart.tip">❓ Tur</button>
+  </div>
 
   <!-- Info Panel (Step 2 of onboarding) -->
   <div id="info-panel"
@@ -3571,189 +3603,91 @@
       style="background:linear-gradient(135deg,#0a1628,#0d2137);border:1px solid #1a3a5c;border-radius:14px;padding:32px;max-width:620px;width:92%;max-height:85vh;overflow-y:auto;position:relative;">
       <button id="info-panel-close-btn"
         style="position:absolute;top:12px;right:16px;background:none;border:none;color:#4a6fa5;font-size:20px;cursor:pointer;">✕</button>
-      <div style="font-family:'Courier New';font-size:1.05rem;font-weight:700;color:#00d4aa;margin-bottom:4px;">🪸 Bu
-        Simülasyon Hakkında</div>
-      <div style="font-size:0.7rem;color:#3a5a7a;margin-bottom:20px;font-style:italic;">Mercan Resifi Stres & Ağarma
-        Monitörü</div>
-
-      <div style="font-size:0.72rem;color:#7ab8db;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px;border-bottom:1px solid #1a3a5c;padding-bottom:4px;">
-        Bilimsel Modeller</div>
-      <div style="font-size:0.71rem;color:#a0c0d8;line-height:1.7;margin-bottom:16px;">
-        <b style="color:#00d4aa;">DHW Eşik Modeli</b> — NOAA Coral Reef Watch metodolojisi. DHW &lt; 4 = ağarma yok,
-        4–8 = ağarma başlar, ≥ 8 = ciddi ağarma ve ölüm riski.<br><br>
-        <b style="color:#00d4aa;">Bölgesel İklim</b> — Her bölgenin kendi ortalama SST'si, mevsimsel genliği ve en sıcak ayı
-        vardır (Samoa ve ekvator resifleri Mart–Nisan, Hawaii ve Marianalar Ağustos–Eylül). DHW, bölgenin MMM değerine göre hesaplanır.<br><br>
-        <b style="color:#00d4aa;">Bulaşma Yayılımı</b> — Isı stresi altındayken ağarmış komşular hastalık yoluyla stresi artırır.
-        Ağarmış koloniler ısı geçince aylar içinde toparlanır; ölü resif ise yalnızca sağlıklı komşulardan larva yerleşimiyle
-        10–15 yılda yeniden canlanır.<br><br>
-        <b style="color:#00d4aa;">Lotka-Volterra Balık Dinamikleri</b> — Av/avcı popülasyonları, mercan sağlık indeksinin taşıma
-        kapasitesi (K) olarak kullanıldığı av-avcı denklemlerini takip eder.<br><br>
-        <b style="color:#00d4aa;">IPCC SSP2-4.5 Projeksiyonu</b> — 2023 sonrası sıcaklıklar orta emisyon senaryosunu takip
-        eder (2013–2023 ortalamasının ~+1.75°C üstü, 2100 itibarıyla). 2024 sonrası rastgele deniz sıcak dalgaları (El Niño benzeri) eklenir; emisyon politikalarının etkisi iklim gecikmesi nedeniyle 2024–2060 arasında kademeli olarak devreye girer.
-      </div>
-
-      <div style="font-size:0.72rem;color:#7ab8db;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px;border-bottom:1px solid #1a3a5c;padding-bottom:4px;">
-        Veri Kaynakları</div>
-      <table class="info-table">
-        <thead><tr><th>Kaynak</th><th>Açıklama</th><th>Kapsam</th></tr></thead>
-        <tbody>
-          <tr><td style="color:#4fc3f7;font-weight:600;">NOAA NCRMP</td><td>Yetişkin mercan koloni gözlemleri — tür, konum, ağarma ve ölüm verileri</td><td>269.356 kayıt, 2013–2023</td></tr>
-          <tr><td style="color:#4fc3f7;font-weight:600;">NOAA NCEI</td><td>Küresel Mercan Ağarma Veritabanı (Erişim No: 0228498)</td><td>35.991 kayıt, 1963–2021</td></tr>
-          <tr><td style="color:#4fc3f7;font-weight:600;">NOAA STR</td><td>Kalıcı resif noktalarında su altı sıcaklık kaydedicileri, 0–30m derinlik</td><td>doi:10.7289/v53x84zk</td></tr>
-          <tr><td style="color:#4fc3f7;font-weight:600;">IPCC SSP2-4.5</td><td>Orta emisyon senaryosu projeksiyon ankraj noktaları</td><td>2024–2100 projeksiyonları</td></tr>
-        </tbody>
-      </table>
-
-      <div style="font-size:0.72rem;color:#7ab8db;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px;border-bottom:1px solid #1a3a5c;padding-bottom:4px;">
-        DHW Eşik Değerleri</div>
-      <table class="info-table">
-        <thead><tr><th>DHW Aralığı</th><th>Durum</th><th>Etki</th></tr></thead>
-        <tbody>
-          <tr><td>0 – 4</td><td style="color:#00d4aa;">Normal</td><td>Ağarma riski yok</td></tr>
-          <tr><td>4 – 8</td><td style="color:#ffd166;">Uyarı</td><td>Ağarma başlar, stres artar</td></tr>
-          <tr><td>≥ 8</td><td style="color:#ff6b6b;">Kritik</td><td>Ciddi ağarma ve ölüm riski</td></tr>
-        </tbody>
-      </table>
-
-      <div style="font-size:0.72rem;color:#7ab8db;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px;border-bottom:1px solid #1a3a5c;padding-bottom:4px;">
-        Stres Hesaplama Formülü</div>
-      <div class="info-code">
-HotSpot = SST − MMM (bölgesel En Yüksek Aylık Ortalama)<br>
-DHW = Σ HotSpot (HotSpot ≥ 1°C) × hafta, son 12 hafta<br>
-<br>
-DHW &gt; eşik − 1 ise:<br>
-&nbsp;&nbsp;stres += (DHW − eşik + 1) × 0.0045 × stresÇarpanı<br>
-DHW &lt; 1 ise (ısı stresi geçti):<br>
-&nbsp;&nbsp;yaşayan koloni: stres −= 0.008 × iyileşmeÇarpanı<br>
-&nbsp;&nbsp;ölü resif: stres −= 0.0003 × sağlıklıKomşu × iyileşmeÇarpanı<br>
-<br>
-eşik = 4 DHW + alkalinite bonusu (en fazla +3)
-      </div>
-
-      <div style="font-size:0.72rem;color:#7ab8db;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px;border-bottom:1px solid #1a3a5c;padding-bottom:4px;">
-        Durum Geçiş Eşikleri</div>
-      <table class="info-table">
-        <thead><tr><th>Mevcut Durum</th><th>Geçiş Koşulu</th><th>Yeni Durum</th></tr></thead>
-        <thead><tr><th>Stres Aralığı</th><th>Durum</th><th>Açıklama</th></tr></thead>
-        <tbody>
-          <tr><td>0.00 – 0.25</td><td style="color:#00d4aa;">Healthy</td><td>Sağlıklı — stres birikimi yok</td></tr>
-          <tr><td>0.25 – 0.55</td><td style="color:#ffd166;">Stressed</td><td>Stres altında — komşulara bulaşma başlar</td></tr>
-          <tr><td>0.55 – 0.82</td><td style="color:#ff6b6b;">Bleached</td><td>Ağarmış — acil soğuma gerekli</td></tr>
-          <tr><td>0.82 – 1.00</td><td style="color:#666;">Dead</td><td>Ölü — yalnızca restorasyon bütçesiyle kurtarılabilir</td></tr>
-          <tr><td>Düşüş &lt; 0.55</td><td style="color:#00ffd0;">Recovering</td><td>İyileşme — stres bleached'dan düşünce tetiklenir</td></tr>
-        </tbody>
-      </table>
-
-      <div style="font-size:0.72rem;color:#7ab8db;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px;border-bottom:1px solid #1a3a5c;padding-bottom:4px;">
-        Gerçek Ağarma Olayları (SST grafiğinde ▲ olarak gösterilir)</div>
-      <div style="font-size:0.71rem;color:#a0c0d8;line-height:1.7;">
-        1998 (+2.1°C) · 2010 (+1.4°C) · 2016 (+2.8°C, kayıtların en kötüsü) · 2017 (+1.2°C) · 2020 (+1.8°C) · 2024 (+2.5°C)
-      </div>
+      <div id="info-content" data-i18n-html="info.html"></div>
     </div>
   </div>
 
   <!-- Data Sources Footer -->
   <footer style="text-align:center;padding:10px 16px;font-size:0.62rem;font-family:'Courier New',monospace;color:#3a5a7a;border-top:1px solid #1a2a3c;margin-top:8px;letter-spacing:0.3px;">
-    Data: <span style="color:#5a8ab5;">NOAA NCRMP</span> · <span style="color:#5a8ab5;">NOAA NCEI</span> · <span style="color:#5a8ab5;">IPCC SSP2-4.5</span>
+    <span data-i18n="footer.data">Data:</span> <span style="color:#5a8ab5;">NOAA NCRMP</span> · <span style="color:#5a8ab5;">NOAA NCEI</span> · <span style="color:#5a8ab5;">IPCC SSP2-4.5</span>
     &nbsp;|&nbsp; GitHub: <a href="https://github.com/tugbatuanakaygisiz-web/coral_simulation" target="_blank" style="color:#00d4aa;text-decoration:none;">tugbatuanakaygisiz-web/coral_simulation</a>
   </footer>
   <!-- Welcome Modal (Step 1 of onboarding) -->
   <div class="welcome-overlay" id="welcome-modal" style="display:none;">
     <div class="welcome-card">
-      <button class="welcome-close" id="welcome-skip-btn">✕</button>
+      <button class="welcome-close" id="welcome-skip-btn" data-i18n-title="welcome.skip">✕</button>
       <img class="hero-img" src="Corauxx.webp" alt="Coral Reef">
       <div class="welcome-body">
-        <h2>🪸 Mercan Resifi Stres & Ağarma Simülasyonu</h2>
-        <p class="wsub">Gerçek NOAA verilerine dayanan bu interaktif simülasyon, iklim değişikliğinin Pasifik mercan resifleri üzerindeki etkisini modeller. Emisyon politikalarını ayarlayarak, deniz koruma alanları çizerek ve 2100 yılına kadar mercan sağlığını tahmin ederek ekolojik geleceği keşfedin.</p>
-        <div class="welcome-arrow"><span>⬇</span></div>
-        <button class="welcome-btn" id="welcome-about-btn">Simülasyon Hakkında Bilgi Al →</button>
+        <div class="lang-switch welcome-lang">
+          <button class="lang-btn" data-lang="tr" onclick="I18N.setLang('tr')">TR</button>
+          <button class="lang-btn" data-lang="en" onclick="I18N.setLang('en')">EN</button>
+        </div>
+        <h2 data-i18n="welcome.title"></h2>
+        <p class="wsub" data-i18n="welcome.text"></p>
+        <button class="welcome-btn" id="welcome-start-btn" data-i18n="welcome.start"></button>
+        <div class="welcome-skip-link" id="welcome-skip-link" data-i18n="welcome.skip"></div>
       </div>
     </div>
   </div>
 
-  <!-- Onboarding Script -->
+  <!-- Onboarding: welcome card (first visit only), short tour, MPA drawing hint -->
   <script>
-  document.addEventListener('DOMContentLoaded', function() {
+  document.addEventListener('DOMContentLoaded', function () {
+    var welcomeEl = document.getElementById('welcome-modal');
+    var infoPanel = document.getElementById('info-panel');
 
-    // Restart Tour Button
-    var restartBtn = document.createElement('button');
-    restartBtn.id = 'restart-tour-btn';
-    restartBtn.innerHTML = '❓ Tur';
-    restartBtn.style.cssText = 'position:fixed;bottom:18px;right:18px;z-index:9999;background:#00b4d8;color:#fff;border:none;border-radius:24px;padding:8px 18px;font-size:0.8rem;cursor:pointer;box-shadow:0 2px 12px rgba(0,180,216,0.4);';
-    document.body.appendChild(restartBtn);
-    restartBtn.addEventListener('click', function() {
-      localStorage.removeItem('tourSeen');
-      localStorage.removeItem('mpaTutorialSeen');
-      location.reload();
-    });
+    function seen(key) { try { return localStorage.getItem(key) === 'true'; } catch (e) { return false; } }
+    function markSeen(key) { try { localStorage.setItem(key, 'true'); } catch (e) { /* ignore */ } }
 
-    // MPA Tutorial
-    var mpaTutShown = false;
+    // ── Corner buttons: ? (scientific details) and ❓ Tour ──
+    document.getElementById('restart-tour-btn').addEventListener('click', function () { startTour(); });
+    document.getElementById('info-panel-close-btn').addEventListener('click', function () { infoPanel.style.display = 'none'; });
+    infoPanel.addEventListener('click', function (e) { if (e.target === infoPanel) infoPanel.style.display = 'none'; });
+
+    // ── Welcome card: first visit only; the ❓ Tour button replays the tour any time ──
+    function closeWelcome() { welcomeEl.style.display = 'none'; }
+    document.getElementById('welcome-start-btn').addEventListener('click', function () { closeWelcome(); startTour(); });
+    function skipWelcome() { closeWelcome(); markSeen('tourSeen'); }
+    document.getElementById('welcome-skip-btn').addEventListener('click', skipWelcome);
+    document.getElementById('welcome-skip-link').addEventListener('click', skipWelcome);
+    if (!seen('tourSeen')) welcomeEl.style.display = 'flex';
+
+    // ── MPA drawing hint: shown the first time the mouse enters the reef map ──
     var gridC = document.getElementById('grid-container');
-    if (gridC && localStorage.getItem('mpaTutorialSeen') !== 'true') {
+    if (gridC && !seen('mpaTutorialSeen')) {
       gridC.addEventListener('mouseenter', function mpaTutHandler() {
-        if (mpaTutShown) return;
-        mpaTutShown = true;
+        if (welcomeEl.style.display === 'flex' || overlayEl) return; // not on top of the welcome card or tour
         gridC.removeEventListener('mouseenter', mpaTutHandler);
         var ov = document.createElement('div');
         ov.className = 'mpa-tutorial-overlay';
-        ov.innerHTML = '<div class="mpa-tutorial-card"><h3>🏝️ Deniz Koruma Alanı Nasıl Çizilir?</h3>'
-          + '<div class="mpa-tut-step"><div class="step-label">Adım 1 — Sürükle</div><div class="mpa-demo-area"><span class="mpa-hand">🖐️</span><div class="mpa-drag-rect"></div></div><p>Canvas üzerinde fareyi basılı tutarak sürükleyin — geometrik koruma alanı oluşur. Stres birikimi %77 azalır, iyileşme hızı 3.25x artar.</p></div>'
-          + '<div class="mpa-tut-step"><div class="step-label">Adım 2 — Koruma</div><p>Korunan hücreler yeşil parlak kenarla işaretlenir. Komşu hücrelere stres bulaşması %70 azalır.</p></div>'
-          + '<div class="mpa-tut-step"><div class="step-label">Adım 3 — Kaldırma</div><p>↺ Reset butonunu kullanın veya Clear All butonuna tıklayın.</p></div>'
-          + '<button class="mpa-tut-btn" id="mpa-tut-close">Anladım, Başlayalım! →</button></div>';
-        gridC.style.position = 'relative';
+        ov.innerHTML = '<div class="mpa-tutorial-card"><h3>' + t('mpa.title') + '</h3>'
+          + '<div class="mpa-tut-step"><div class="step-label">' + t('mpa.step1') + '</div><div class="mpa-demo-area"><span class="mpa-hand">🖐️</span><div class="mpa-drag-rect"></div></div><p>' + t('mpa.step1.text') + '</p></div>'
+          + '<div class="mpa-tut-step"><div class="step-label">' + t('mpa.step2') + '</div><p>' + t('mpa.step2.text') + '</p></div>'
+          + '<div class="mpa-tut-step"><div class="step-label">' + t('mpa.step3') + '</div><p>' + t('mpa.step3.text') + '</p></div>'
+          + '<button class="mpa-tut-btn" id="mpa-tut-close">' + t('mpa.ok') + '</button></div>';
         gridC.appendChild(ov);
-        document.getElementById('mpa-tut-close').addEventListener('click', function() {
+        document.getElementById('mpa-tut-close').addEventListener('click', function () {
           ov.remove();
-          localStorage.setItem('mpaTutorialSeen', 'true');
+          markSeen('mpaTutorialSeen');
         });
       });
     }
 
-    // Tour always starts fresh (returning users can skip via button)
-
-    var welcomeEl = document.getElementById('welcome-modal');
-    var infoPanel = document.getElementById('info-panel');
-    var infoPanelCloseBtn = document.getElementById('info-panel-close-btn');
-    var onboardingActive = true;
-
-    if (welcomeEl) welcomeEl.style.display = 'flex';
-
-    var aboutBtn = document.getElementById('welcome-about-btn');
-    var skipBtn = document.getElementById('welcome-skip-btn');
-    if (aboutBtn) aboutBtn.addEventListener('click', function() {
-      if (welcomeEl) welcomeEl.style.display = 'none';
-      if (infoPanel) infoPanel.style.display = 'flex';
-    });
-    if (skipBtn) skipBtn.addEventListener('click', function() {
-      if (welcomeEl) welcomeEl.style.display = 'none';
-      startTour();
-    });
-    if (infoPanelCloseBtn) infoPanelCloseBtn.addEventListener('click', function() {
-      if (infoPanel) infoPanel.style.display = 'none';
-      if (onboardingActive) startTour();
-    });
-
+    // ── Short tour: what each part of the page is for ──
     var STEPS = [
-      {sel:'#badges,#stat-cards',title:'📊 1/13 — Simülasyon Durumu',desc:'Durum paneli simülasyonun tüm kritik metriklerini gösterir. <b>Year</b>: simülasyon yılı (2013–2100, 2024 sonrası IPCC SSP2-4.5 projeksiyonu). <b>SST</b>: Deniz Yüzey Sıcaklığı (°C). <b>DHW</b>: Derece Isıtma Haftası — ağarma eşiği üzerinde biriken termal stres (NOAA Coral Reef Watch metodolojisi). <b>Stress</b>: ortalama ızgara stresi (0–1). <b>Tick</b>: simülasyon adımı (30 tick ≈ 1 yıl). <b>Protected</b>: MPA kapsamı (%). Kartlar gerçek zamanlı güncellenir.'},
-      {sel:'#mini-map-wrap',title:'🗺️ 2/13 — Pasifik Mini Haritası',desc:'5 NOAA NCRMP izleme bölgesini Pasifik Okyanusu üzerinde gösterir. Her nokta gerçek bir izleme istasyonudur — noktaya tıklayarak bölge değiştirebilirsiniz. Mevcut bölge yeşil ile vurgulanır.'},
-      {sel:'#region-sel',title:'🌏 3/13 — Bölge Seçimi',desc:'5 gerçek NOAA NCRMP izleme bölgesinden birini seçin. Her bölgenin farklı başlangıç SST, mercan örtüsü ve ağarma geçmişi vardır. Bölge değiştirmek simülasyonu o bölgenin gerçek gözlenen başlangıç değerleriyle sıfırlar.'},
-      {sel:'#temp-slider,#cover-slider',title:'🌡️ 4/13 — Başlangıç Koşulları',desc:'Sıcaklık, seçili bölgenin yıllık ortalama SST değeridir ve bölge seçildiğinde NOAA iklimsel ortalamasına ayarlanır (ör. Hawaii ~26°C, Amerikan Samoası ~28.6°C). Artırmak kalıcı bir ısınma anomalisi ekler. Mercan örtüsü 0–100% başlangıçtaki canlı mercan oranıdır. Bunlar başlangıç koşullarıdır — simülasyon fizik modellerine göre evrimleştirir.'},
-      {sel:'#recovery-sel,#budget-slider',title:'🔬 5/13 — İyileşme Parametreleri',desc:'İyileşme Hızı (Yavaş/Orta/Hızlı) doğal mercan iyileşme oranını kontrol eder — gerçek mercan iyileşmesi ağarmadan sonra 10–15 yıl sürer. Restorasyon bütçesi aktif müdahaleyi modeller.'},
-      {sel:'#btn-scenario-bau,#btn-scenario-optimal,#btn-scenario-mpa',title:'🔥 6/13 — Senaryo Butonları',desc:'Hızlıca önceden tanımlanmış senaryoları uygulayabilirsiniz: <b>Business as Usual</b> (tüm emisyonlar maksimum, politikalar kapalı), <b>Optimal Policies</b> (emisyonlar sıfır, tam politika ve koruma) ve <b>MPA Only</b> (emisyonlar standart, koruma bütçesi maksimum).'},
-      {sel:'.btn-group',title:'⏯️ 7/13 — Simülasyon Kontrolleri',desc:'<b>Pause</b>: Duraklatır, haritayı inceleyin. <b>Play</b>: Normal hızda başlatır. <b>Fast</b>: 3x hız. <b>Reset</b>: Her şeyi sıfırlar (aynı tohumla). <b>Seed</b>: Aynı tohum + aynı ayarlar = birebir aynı simülasyon; 🎲 yeni rastgele tohum seçer. <b>Compare</b>: İki bölgeyi yan yana çalıştırır. <b>CSV</b>: Her tick\'i kaydeder — yıl, ay, bölge, SST, DHW, stres, mercan %, sağlıklı/ağarmış/ölü/iyileşen %, balık popülasyonları, koruma % ve tüm politika değerleri.'},
-      {sel:'#policy-body .policy-col:first-child',title:'🏭 8/13 — Emisyon Kaynakları',desc:'Her kaydırıcının bilimsel temeli: <b>Kömür & Sanayi</b> — küresel CO₂\'nin ~%35\'i. <b>Havacılık & Gemi</b> — uluslararası taşımacılık ~%2.5. <b>Hayvancılık & Pirinç</b> — tarımsal CH₄ metan ~%14.5, 20 yılda CO₂\'den 80x güçlü. <b>Orman Kaybı</b> — karbon yutaklarını yok eder. <b>Temiz Enerji</b> — payı arttıkça net emisyonlar düşer. <b>CCS</b> — karbon yakalama ve depolama teknolojisi.'},
-      {sel:'#btn-us-policy,#btn-cn-policy,#btn-eu-policy',title:'🌍 9/13 — İklim Anlaşmaları',desc:'<b>US</b>: Paris Anlaşması/IRA katılımı. <b>CN</b>: Çin\'in 2060 karbon nötrlük taahhüdü. <b>EU</b>: Avrupa Yeşil Mutabakat hedefleri. Kapatıldığında ısınma hızı o bloğun modellenen katkısı kadar artar. Üçü birden kapatılırsa 2100\'e kadar ~+0.8°C ek ısınma oluşur.'},
-      {sel:'#policy-body .policy-col:last-child',title:'🌊 10/13 — Okyanus & Resif Politikaları',desc:'<b>Alkalinite Güçlendirme</b>: Deniz suyuna alkalin mineral ekleyerek pH\'ı yükseltir, ağarma eşiğini ~0.5°C artırabilir. <b>Turizm Düzenleme</b>: Kontrolsüz turizm fiziksel hasar ve kirlilik yaratır. <b>Balıkçılık Kotası</b>: Aşırı avlanma alg büyümesini tetikler, mercanları boğar. <b>GEF Reef Finance</b>: BM mercan koruma fonu. <b>Erken Uyarı</b>: Bölgesel DHW≥4 olunca otomatik MPA genişletme tetikler.'},
-      {sel:'#grid-container',wide:true,title:'🪸 11/13 — Mercan Haritası',desc:'24×18 ızgara = 432 bağımsız mercan koloni hücresi. Her hücrenin kendi stres değeri her tick güncellenir. <b>5 durum</b>: Healthy (stres 0–0.25), Stressed (0.25–0.55), Bleached (0.55–0.82), Dead (0.82–1.00), Recovering. Stres bulaşması: her hücre 8 komşusundan IDW ağırlıklı stres alır. 3 okyanus akıntı merkezi ısı dağılımını etkiler. Korunan hücreler (MPA) stresi %77 daha yavaş biriktirir. <b>Sürükleyerek kendi MPA\'nızı çizin!</b>'},
-      {sel:'#heatmap-overlay,.chart-header',title:'🌡️ 12/13 — Isı Haritası Modu',desc:'Herhangi bir grafik başlığına tıklayarak canvas\'ı ısı haritasına geçirin. SST ısı haritası okyanus akıntılarından etkilenen sıcaklık gradyanını gösterir. Stres ısı haritası termal basıncın en yüksek olduğu yerleri gösterir. Grafiklere dönmek için açık sekmenin başlığına tekrar tıklayın (veya "← CHARTS").'},
-      {sel:'#analysis-panel,#charts-stack',title:'📈 13/13 — Veri Grafikleri & Gerçek NOAA Verileri',desc:'Dört grafik aynı yıl eksenini paylaşır; 2024 sonrası turuncu ayraçla <b>Projeksiyon</b> olarak işaretlenir. <b>Deniz Sıcaklığı & Isı Stresi</b>: kalın çizgi 12 aylık ortalama sıcaklık, kırmızı alan DHW; kesikli çizgiler MMM, DHW 4 (ağarma) ve 8 (ölüm riski), kırmızı şeritler sıcak dalgalar. <b>Sağlıklı Mercan Kolonileri</b>: ağarmamış ve ölmemiş kolonilerin oranı (NOAA ile aynı tanım). Simülasyon çizgisinin üzerindeki <b style="color:#FFD700">⭐ altın yıldız noktalar</b> seçili bölgenin gerçek NOAA ölçümleridir — modelin gerçek veriye ne kadar yakın kaldığını gösterir. <b>Av/Avcı Balıklar</b>: Lotka-Volterra av-avcı dinamiği; kesikli çizgi mercan sağlığına bağlı taşıma kapasitesidir.'}
+      { sel: '#badges', n: 1 },
+      { sel: '.controls', n: 2 },
+      { sel: '#policy-panel', n: 3 },
+      { sel: '#grid-container', n: 4, wide: true },
+      { sel: '#charts-stack', n: 5, wide: true },
+      { sel: '#lang-switch', n: 6 }
     ];
     var tourIdx = 0, spotEl = null, popEl = null, overlayEl = null;
 
     function startTour() {
-      onboardingActive = false; tourIdx = 0;
+      endTour(true);
+      closeWelcome();
+      tourIdx = 0;
       overlayEl = document.createElement('div');
       overlayEl.className = 'tour-overlay';
       document.body.appendChild(overlayEl);
@@ -3763,58 +3697,55 @@ eşik = 4 DHW + alkalinite bonusu (en fazla +3)
       if (spotEl) { spotEl.remove(); spotEl = null; }
       if (popEl) { popEl.remove(); popEl = null; }
     }
-    function endTour() {
+    function endTour(silent) {
       cleanupStep();
       if (overlayEl) { overlayEl.remove(); overlayEl = null; }
-      localStorage.setItem('tourSeen', 'true');
-    }
-    function findTarget(sel) {
-      var parts = sel.split(',');
-      for (var i = 0; i < parts.length; i++) {
-        var el = document.querySelector(parts[i].trim());
-        if (el && el.offsetParent !== null) return el;
-      }
-      return document.querySelector(parts[0].trim());
+      if (!silent) markSeen('tourSeen');
     }
     function showStep() {
       cleanupStep();
       if (tourIdx < 0 || tourIdx >= STEPS.length) { endTour(); return; }
-      var step = STEPS[tourIdx];
-      var target = findTarget(step.sel);
+      var target = document.querySelector(STEPS[tourIdx].sel);
       if (!target) { tourIdx++; showStep(); return; }
       target.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      setTimeout(function() { positionStep(step, target); }, 400);
+      setTimeout(function () { if (overlayEl) positionStep(STEPS[tourIdx], target); }, 400);
     }
     function positionStep(step, target) {
+      cleanupStep();
       var r = target.getBoundingClientRect();
       var pad = 6, vh = window.innerHeight, vw = window.innerWidth;
       spotEl = document.createElement('div');
       spotEl.className = 'tour-spotlight';
-      spotEl.style.cssText = 'position:fixed;top:' + (r.top-pad) + 'px;left:' + (r.left-pad) + 'px;width:' + (r.width+pad*2) + 'px;height:' + (r.height+pad*2) + 'px;';
+      spotEl.style.cssText = 'position:fixed;top:' + (r.top - pad) + 'px;left:' + (r.left - pad) + 'px;width:' + (r.width + pad * 2) + 'px;height:' + (r.height + pad * 2) + 'px;';
       document.body.appendChild(spotEl);
       popEl = document.createElement('div');
       popEl.className = 'tour-popover' + (step.wide ? ' wide' : '');
       var isLast = tourIdx === STEPS.length - 1;
-      var backBtn = tourIdx > 0 ? '<button class="tour-nav-btn" id="tour-back">← Geri</button>' : '<span></span>';
-      var nextBtn = isLast ? '<button class="tour-nav-btn primary" id="tour-next">Simülasyonu Başlat 🪸</button>' : '<button class="tour-nav-btn primary" id="tour-next">İleri →</button>';
-      popEl.innerHTML = '<h3>' + step.title + '</h3><div class="tour-popover-body"><p>' + step.desc + '</p></div><div class="tour-counter">' + (tourIdx+1) + ' / ' + STEPS.length + '</div><div class="tour-nav">' + backBtn + ' <span class="tour-skip" id="tour-skip">Turu Atla</span> ' + nextBtn + '</div>';
-      var popW = step.wide ? 440 : 320;
-      popEl.style.cssText = 'position:fixed;top:-9999px;left:-9999px;width:' + Math.min(popW, vw-20) + 'px;max-width:92vw;max-height:' + Math.round(vh*0.75) + 'px;overflow-y:auto;';
+      var backBtn = tourIdx > 0 ? '<button class="tour-nav-btn" id="tour-back">' + t('tour.back') + '</button>' : '<span></span>';
+      var nextBtn = '<button class="tour-nav-btn primary" id="tour-next">' + t(isLast ? 'tour.finish' : 'tour.next') + '</button>';
+      popEl.innerHTML = '<h3>' + t('tour.' + step.n + '.title') + '</h3><div class="tour-popover-body"><p>' + t('tour.' + step.n + '.desc') + '</p></div>'
+        + '<div class="tour-counter">' + (tourIdx + 1) + ' / ' + STEPS.length + '</div>'
+        + '<div class="tour-nav">' + backBtn + ' <span class="tour-skip" id="tour-skip">' + t('tour.skip') + '</span> ' + nextBtn + '</div>';
+      var popW = Math.min(step.wide ? 440 : 340, vw - 20);
+      popEl.style.cssText = 'position:fixed;top:-9999px;left:-9999px;width:' + popW + 'px;max-width:92vw;';
       document.body.appendChild(popEl);
-      var popH = popEl.offsetHeight;
-      var margin = 12, top, left;
-      if (r.bottom + popH + margin <= vh) { top = r.bottom + margin; }
-      else if (r.top - popH - margin >= 0) { top = r.top - popH - margin; }
-      else { top = Math.max(10, Math.round((vh - popH) / 2)); }
-      left = Math.max(10, Math.min(r.left, vw - Math.min(popW, vw-20) - 10));
+      var popH = popEl.offsetHeight, margin = 12, top;
+      if (r.bottom + popH + margin <= vh) top = r.bottom + margin;
+      else if (r.top - popH - margin >= 0) top = r.top - popH - margin;
+      else top = Math.max(10, Math.round((vh - popH) / 2));
+      var left = Math.max(10, Math.min(r.left, vw - popW - 10));
       top = Math.max(10, Math.min(top, vh - popH - 10));
-      popEl.style.cssText = 'position:fixed;top:' + top + 'px;left:' + left + 'px;width:' + Math.min(popW,vw-20) + 'px;max-width:92vw;max-height:' + Math.round(vh*0.75) + 'px;overflow-y:auto;';
-      document.getElementById('tour-next').addEventListener('click', function() { tourIdx++; showStep(); });
-      var sk = document.getElementById('tour-skip'); if (sk) sk.addEventListener('click', endTour);
-      var bk = document.getElementById('tour-back'); if (bk) bk.addEventListener('click', function() { tourIdx--; showStep(); });
+      popEl.style.cssText = 'position:fixed;top:' + top + 'px;left:' + left + 'px;width:' + popW + 'px;max-width:92vw;';
+      document.getElementById('tour-next').addEventListener('click', function () { tourIdx++; showStep(); });
+      document.getElementById('tour-skip').addEventListener('click', function () { endTour(); });
+      var bk = document.getElementById('tour-back'); if (bk) bk.addEventListener('click', function () { tourIdx--; showStep(); });
     }
 
-  }); // end DOMContentLoaded
+    // Re-render the open tour step in the new language
+    I18N.onLangChange(function () {
+      if (overlayEl && popEl) positionStep(STEPS[tourIdx], document.querySelector(STEPS[tourIdx].sel));
+    });
+  });
   </script>
 
 </body>
