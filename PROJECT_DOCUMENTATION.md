@@ -4,7 +4,7 @@
 > **Teknolojiler:** HTML5, CSS3, JavaScript (vanilla), Chart.js 4.4.1, Google Fonts (IBM Plex Serif / Sans / Mono)  
 > **Toplam Satır:** ~3430  
 > **Tek dosya uygulaması** — harici bağımlılık yok (CDN hariç)  
-> **Ek Dosyalar:** `i18n.js`, `coral_simulation_dataset.csv`, `pacific_map_bg.png`, `Corauxx.webp`, `README.md`
+> **Ek Dosyalar:** `i18n.js`, `coral_simulation_dataset.csv`, `pacific_map_bg.png`, `Corauxx.webp`, `README.md`, `README.tr.md`
 
 ---
 
@@ -44,7 +44,9 @@ mercanbeyaz/
 ├── coral_simulation_dataset.csv # NOAA kaynak veri seti (21 kayıt, 5 bölge)
 ├── pacific_map_bg.png           # Mini harita uydu arka plan görseli
 ├── PROJECT_DOCUMENTATION.md     # Bu dosya
-└── README.md                    # Türkçe kullanıcı kılavuzu
+├── README.md                    # İngilizce README (ana sayfa)
+├── README.tr.md                 # Türkçe kullanıcı kılavuzu
+└── docs/                        # Ekran görüntüleri, sosyal medya önizlemesi
 
 index.html iç yapısı:
 ├── <head>

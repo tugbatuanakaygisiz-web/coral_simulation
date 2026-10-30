@@ -418,7 +418,7 @@
       .badges { grid-template-columns: repeat(2, minmax(0, 1fr)) }
       #stat-cards { grid-template-columns: repeat(2, minmax(0, 1fr)) }
       #stat-cards .badge, #stat-cards .badge:nth-child(n+4) { grid-column: auto }
-      .badges .badge:last-child:nth-child(odd) { grid-column: 1 / -1 }
+      .badges .badge:last-child:nth-child(odd), #stat-cards .badge:last-child:nth-child(odd) { grid-column: 1 / -1 }
       .analysis-grid { grid-template-columns: repeat(2, minmax(0, 1fr)) }
       .badge { padding: 7px 10px 8px }
       .badge .value { font-size: 1rem }
