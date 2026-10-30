@@ -10,6 +10,10 @@
     'app.title': [`Mercan Resifi Stres & Ağarma Monitörü`, `Coral Reef Stress & Bleaching Monitor`],
     'app.titlePlain': [`Mercan Resifi Stres & Ağarma Monitörü`, `Coral Reef Stress & Bleaching Monitor`],
     'lang.switch': [`Dil / Language`, `Language / Dil`],
+    'a11y.minimap': [`Pasifik haritası: beş izleme bölgesi; seçili bölge vurgulu.`, `Pacific map showing the five monitoring regions; the selected one is highlighted.`],
+    'a11y.reef': [`Resif haritası: her hücre bir mercan kolonisi, rengi sağlığını gösterir.`, `Reef map: each cell is a coral colony and its colour shows its health.`],
+    'a11y.reef2': [`Karşılaştırma bölgesinin resif haritası.`, `Reef map of the comparison region.`],
+    'a11y.heatmap': [`Seçili katmanın ısı haritası.`, `Heat map of the selected layer.`],
     'theme.toggle': [`Aydınlık / karanlık mod`, `Light / dark mode`],
     'scn.label': [`Senaryolar`, `Scenarios`],
     'pol.agreements': [`İklim anlaşmaları`, `Climate agreements`],
@@ -448,6 +452,7 @@
     (root || document).querySelectorAll('[data-i18n]').forEach(el => { el.textContent = t(el.dataset.i18n); });
     (root || document).querySelectorAll('[data-i18n-html]').forEach(el => { el.innerHTML = t(el.dataset.i18nHtml); });
     (root || document).querySelectorAll('[data-i18n-title]').forEach(el => { el.title = t(el.dataset.i18nTitle); });
+    (root || document).querySelectorAll('[data-i18n-aria]').forEach(el => { el.setAttribute('aria-label', t(el.dataset.i18nAria)); });
   }
 
   function applyAll() {

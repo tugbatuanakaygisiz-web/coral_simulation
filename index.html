@@ -5,8 +5,18 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Coral Reef Bleaching Simulation</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect width='24' height='24' rx='5' fill='%230b1619'/%3E%3Cpath d='M12 21v-7M12 14c0-3-3-4-3-7M12 14c0-2 3-3 3-6M9 7V4M15 8V5M12 17c-2 0-4-1-5-3M12 17c2 0 4-1 5-3' fill='none' stroke='%23e8806a' stroke-width='1.8' stroke-linecap='round'/%3E%3C/svg%3E">
+  <meta name="theme-color" content="#0b1619">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Coral Reef Bleaching Simulation">
+  <meta property="og:description" content="Interactive model of how climate change bleaches Pacific coral reefs, 2013–2100. Calibrated against NOAA NCRMP surveys; NOAA Coral Reef Watch heat-stress method; IPCC SSP2-4.5 projection.">
+  <meta property="og:url" content="https://tugbatuanakaygisiz-web.github.io/coral_simulation/">
+  <meta property="og:image" content="https://tugbatuanakaygisiz-web.github.io/coral_simulation/docs/social-preview.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
   <meta name="description"
-    content="Interactive coral reef bleaching simulation with real ecological data, fish population dynamics, and DHW-driven state transitions.">
+    content="Interactive model of how climate change bleaches Pacific coral reefs, 2013–2100, calibrated against NOAA NCRMP surveys.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Serif:wght@400;500;600&display=swap" rel="stylesheet">
@@ -35,14 +45,14 @@
       --text: #1c343c;
       --title: #0e242c;
       --muted: #5a6f78;
-      --faint: #8197a0;
+      --faint: #5f737c;
       --sea: #0f5464;
       --sea-hover: #0b4553;
       --on-sea: #ffffff;
       --sea-tint: rgba(15, 84, 100, 0.08);
-      --coral: #c4553c;
-      --good: #2e8c72;
-      --warn: #a86f12;
+      --coral: #b14a33;
+      --good: #23735e;
+      --warn: #8c5c0c;
       --bad: #b5402f;
       --focus: #0f5464;
       --overlay: rgba(14, 36, 44, 0.55);
@@ -76,7 +86,7 @@
       --text: #d9d6cd;
       --title: #ece8de;
       --muted: #8d9d9f;
-      --faint: #677a7d;
+      --faint: #7f9295;
       --sea: #6fb3aa;
       --sea-hover: #84c2b9;
       --on-sea: #08201d;
@@ -140,7 +150,7 @@
     /* ── Read-outs: one instrument strip divided by hairlines instead of separate cards ── */
     .top-row { display: flex; gap: 16px; align-items: stretch }
     .readouts { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 10px }
-    .badges { display: grid; grid-template-columns: repeat(auto-fit, minmax(128px, 1fr)); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden }
+    .badges { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden }
     .badge { background: var(--surface); padding: 9px 14px 10px; display: flex; flex-direction: column; gap: 3px; min-width: 0; position: relative }
     .badge .label { display: flex; align-items: center; gap: 6px; font: 500 0.66rem var(--f-mono); letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis }
     .badge .value { font-family: var(--f-mono); font-size: 1.15rem; color: var(--title); font-variant-numeric: tabular-nums; line-height: 1.25 }
@@ -149,7 +159,7 @@
     .proj-label { position: absolute; top: 9px; right: 10px; font: 500 0.6rem var(--f-mono); letter-spacing: 0.06em; color: var(--warn); border: 1px solid currentColor; border-radius: 3px; padding: 0 4px }
     #btn-clear-mpa { position: absolute; top: 7px; right: 8px; font: 500 0.62rem var(--f-sans); background: none; border: 1px solid var(--line); color: var(--bad); border-radius: 4px; padding: 1px 6px; cursor: pointer }
     #btn-clear-mpa:hover { border-color: var(--bad) }
-    #stat-cards { grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)) }
+    #stat-cards { grid-template-columns: repeat(5, minmax(0, 1fr)) }
 
     #mini-map-wrap { display: flex; flex-direction: column; gap: 6px; flex-shrink: 0; align-items: stretch }
     #mini-map { display: block; border: 1px solid var(--line); border-radius: var(--radius); background: var(--map-bg); cursor: pointer; width: 220px; height: auto }
@@ -250,7 +260,7 @@
     #analysis-panel { padding: 14px 16px }
     .panel-title { font-family: var(--f-serif); font-weight: 500; font-size: 1.08rem; color: var(--title); margin-bottom: 10px; display: flex; align-items: center; gap: 8px }
     .panel-title .ico { color: var(--muted) }
-    .analysis-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 4px; overflow: hidden }
+    .analysis-grid { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 4px; overflow: hidden }
     .analysis-grid > div { background: var(--surface); padding: 8px 12px; display: flex; flex-direction: column; gap: 2px }
     .analysis-grid dt { font: 500 0.64rem var(--f-mono); letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted) }
     .analysis-grid dd { font: 1rem var(--f-mono); color: var(--title); font-variant-numeric: tabular-nums }
@@ -385,9 +395,14 @@
       *, *::before, *::after { animation: none !important; transition: none !important }
     }
 
-    /* ── Medium widths: two charts per row ── */
+    /* ── Medium widths: two charts per row; read-out strips wrap into full rows ── */
     @media (max-width: 1200px) {
       .charts-stack { grid-template-columns: repeat(2, minmax(0, 1fr)) }
+      .badges, .analysis-grid { grid-template-columns: repeat(3, minmax(0, 1fr)) }
+      /* 5 cards on a 6-track grid: three per row, then two wider ones */
+      #stat-cards { grid-template-columns: repeat(6, minmax(0, 1fr)) }
+      #stat-cards .badge { grid-column: span 2 }
+      #stat-cards .badge:nth-child(n+4) { grid-column: span 3 }
     }
 
     /* ── Phones and narrow tablets ── */
@@ -402,6 +417,7 @@
       #mini-map-wrap { align-self: center }
       .badges { grid-template-columns: repeat(2, minmax(0, 1fr)) }
       #stat-cards { grid-template-columns: repeat(2, minmax(0, 1fr)) }
+      #stat-cards .badge, #stat-cards .badge:nth-child(n+4) { grid-column: auto }
       .badges .badge:last-child:nth-child(odd) { grid-column: 1 / -1 }
       .analysis-grid { grid-template-columns: repeat(2, minmax(0, 1fr)) }
       .badge { padding: 7px 10px 8px }
@@ -474,10 +490,10 @@
           <p class="subtitle"><span id="region-subtitle">American Samoa</span></p>
         </div>
         <div class="mast-tools" id="mast-tools">
-          <button class="icon-btn" id="theme-toggle" type="button" data-i18n-title="theme.toggle">
+          <button class="icon-btn" id="theme-toggle" type="button" data-i18n-title="theme.toggle" data-i18n-aria="theme.toggle">
             <svg class="ico i-sun"><use href="#i-sun"/></svg><svg class="ico i-moon"><use href="#i-moon"/></svg>
           </button>
-          <div class="lang-switch" id="lang-switch" data-i18n-title="lang.switch">
+          <div class="lang-switch" id="lang-switch" role="group" data-i18n-title="lang.switch" data-i18n-aria="lang.switch">
             <button class="lang-btn" data-lang="tr" onclick="I18N.setLang('tr')">TR</button>
             <button class="lang-btn" data-lang="en" onclick="I18N.setLang('en')">EN</button>
           </div>
@@ -538,7 +554,7 @@
           </div>
         </div>
         <div id="mini-map-wrap">
-          <canvas id="mini-map" width="200" height="110" data-i18n-title="minimap.tip"></canvas>
+          <canvas id="mini-map" role="img" data-i18n-aria="a11y.minimap" width="200" height="110" data-i18n-title="minimap.tip"></canvas>
           <div id="mini-map-info"><span id="mm-lat">—</span><span id="mm-lon">—</span></div>
         </div>
       </div>
@@ -595,8 +611,8 @@
             <button class="btn" id="btn-reset" data-i18n-title="btn.reset.tip"><svg class="ico"><use href="#i-reset"/></svg><span data-i18n="btn.reset">Reset</span></button>
             <div class="seed-group" data-i18n-title="seed.tip">
               <label for="seed-input" data-i18n="seed.label">Seed</label>
-              <input type="number" id="seed-input" min="1" max="99999" step="1">
-              <button class="btn" id="btn-new-seed" data-i18n-title="seed.new.tip"><svg class="ico"><use href="#i-dice"/></svg></button>
+              <input type="number" id="seed-input" min="1" max="99999" step="1" inputmode="numeric">
+              <button class="btn" id="btn-new-seed" data-i18n-title="seed.new.tip" data-i18n-aria="seed.new.tip"><svg class="ico"><use href="#i-dice"/></svg></button>
             </div>
             <button class="btn" id="btn-compare" data-i18n-title="btn.compare.tip"><svg class="ico"><use href="#i-compare"/></svg><span data-i18n="btn.compare">Compare</span></button>
             <button class="btn btn-csv" id="btn-download-csv" data-i18n-title="btn.csv.tip"><svg class="ico"><use href="#i-download"/></svg><span>CSV</span><span id="log-count">0</span></button>
@@ -605,8 +621,8 @@
       </div>
 
       <div class="policy-panel panel" id="policy-panel">
-        <div class="policy-header"
-          onclick="document.getElementById('policy-panel').classList.toggle('is-collapsed'); document.getElementById('policy-body').classList.toggle('collapsed');">
+        <div class="policy-header" role="button" tabindex="0" aria-expanded="true" aria-controls="policy-body"
+          onclick="this.setAttribute('aria-expanded', this.getAttribute('aria-expanded') === 'true' ? 'false' : 'true'); document.getElementById('policy-panel').classList.toggle('is-collapsed'); document.getElementById('policy-body').classList.toggle('collapsed');">
           <span class="policy-title"><svg class="ico chevron"><use href="#i-chevron"/></svg><span data-i18n="pol.title">Policy Controls</span></span>
           <div class="policy-summary">
             <div class="ps-badge" id="ps-temp" data-i18n-title="pol.netWarming.tip"><span data-i18n="pol.netWarming">Net Warming:</span><span id="ps-temp-val">—</span></div>
@@ -618,12 +634,12 @@
         <div class="policy-body" id="policy-body">
           <div class="policy-col">
             <div class="policy-col-title" data-i18n="pol.emissions">Emission Sources</div>
-            <div class="p-row"><label data-i18n="pol.ind" data-i18n-title="pol.ind.tip"></label><input type="range" id="sl-ind" min="0" max="100" value="50" data-i18n-title="pol.level.tip"><span class="val" id="val-ind">50</span></div>
-            <div class="p-row"><label data-i18n="pol.trans" data-i18n-title="pol.trans.tip"></label><input type="range" id="sl-trans" min="0" max="100" value="50" data-i18n-title="pol.level.tip"><span class="val" id="val-trans">50</span></div>
-            <div class="p-row"><label data-i18n="pol.agr" data-i18n-title="pol.agr.tip"></label><input type="range" id="sl-agr" min="0" max="100" value="50" data-i18n-title="pol.level.tip"><span class="val" id="val-agr">50</span></div>
-            <div class="p-row"><label data-i18n="pol.def" data-i18n-title="pol.def.tip"></label><input type="range" id="sl-def" min="0" max="100" value="50" data-i18n-title="pol.level.tip"><span class="val" id="val-def">50</span></div>
-            <div class="p-row"><label data-i18n="pol.ren" data-i18n-title="pol.ren.tip"></label><input type="range" id="sl-ren" min="0" max="100" value="30" data-i18n-title="pol.level.tip"><span class="val" id="val-ren">30</span></div>
-            <div class="p-row"><label data-i18n="pol.ccs" data-i18n-title="pol.ccs.tip"></label><input type="range" id="sl-ccs" min="0" max="100" value="0" data-i18n-title="pol.level.tip"><span class="val" id="val-ccs">0</span></div>
+            <div class="p-row"><label for="sl-ind" data-i18n="pol.ind" data-i18n-title="pol.ind.tip"></label><input type="range" id="sl-ind" min="0" max="100" value="50" data-i18n-title="pol.level.tip"><span class="val" id="val-ind">50</span></div>
+            <div class="p-row"><label for="sl-trans" data-i18n="pol.trans" data-i18n-title="pol.trans.tip"></label><input type="range" id="sl-trans" min="0" max="100" value="50" data-i18n-title="pol.level.tip"><span class="val" id="val-trans">50</span></div>
+            <div class="p-row"><label for="sl-agr" data-i18n="pol.agr" data-i18n-title="pol.agr.tip"></label><input type="range" id="sl-agr" min="0" max="100" value="50" data-i18n-title="pol.level.tip"><span class="val" id="val-agr">50</span></div>
+            <div class="p-row"><label for="sl-def" data-i18n="pol.def" data-i18n-title="pol.def.tip"></label><input type="range" id="sl-def" min="0" max="100" value="50" data-i18n-title="pol.level.tip"><span class="val" id="val-def">50</span></div>
+            <div class="p-row"><label for="sl-ren" data-i18n="pol.ren" data-i18n-title="pol.ren.tip"></label><input type="range" id="sl-ren" min="0" max="100" value="30" data-i18n-title="pol.level.tip"><span class="val" id="val-ren">30</span></div>
+            <div class="p-row"><label for="sl-ccs" data-i18n="pol.ccs" data-i18n-title="pol.ccs.tip"></label><input type="range" id="sl-ccs" min="0" max="100" value="0" data-i18n-title="pol.level.tip"><span class="val" id="val-ccs">0</span></div>
             <div class="net-emission-badge" id="net-emission-badge"></div>
           </div>
           <div class="policy-col">
@@ -634,8 +650,8 @@
               <button id="btn-cn-policy" class="policy-btn active" data-i18n-title="pol.cn.tip">CN</button>
               <button id="btn-eu-policy" class="policy-btn active" data-i18n-title="pol.eu.tip">EU</button>
             </div>
-            <div class="p-row"><label data-i18n="pol.ph.label" data-i18n-title="pol.ph.label.tip"></label><input type="range" id="sl-ph" min="0" max="100" value="0" data-i18n-title="pol.level.tip"><span class="val" id="val-ph">0</span></div>
-            <div class="p-row"><label data-i18n="pol.tourism" data-i18n-title="pol.tourism.tip"></label>
+            <div class="p-row"><label for="sl-ph" data-i18n="pol.ph.label" data-i18n-title="pol.ph.label.tip"></label><input type="range" id="sl-ph" min="0" max="100" value="0" data-i18n-title="pol.level.tip"><span class="val" id="val-ph">0</span></div>
+            <div class="p-row"><label for="sel-tourism" data-i18n="pol.tourism" data-i18n-title="pol.tourism.tip"></label>
               <select id="sel-tourism" data-i18n-title="pol.tourism.tip">
                 <option value="0" data-i18n="pol.tourism.0">Unregulated</option>
                 <option value="1" data-i18n="pol.tourism.1">Low</option>
@@ -643,14 +659,14 @@
                 <option value="3" data-i18n="pol.tourism.3">Strict</option>
               </select>
             </div>
-            <div class="p-row"><label data-i18n="pol.fishing" data-i18n-title="pol.fishing.tip"></label>
+            <div class="p-row"><label for="sel-fishing" data-i18n="pol.fishing" data-i18n-title="pol.fishing.tip"></label>
               <select id="sel-fishing" data-i18n-title="pol.fishing.tip">
                 <option value="0" data-i18n="pol.fishing.0">None</option>
                 <option value="1" selected data-i18n="pol.fishing.1">Sustainable</option>
                 <option value="2" data-i18n="pol.fishing.2">Strict</option>
               </select>
             </div>
-            <div class="p-row"><label data-i18n="pol.imf" data-i18n-title="pol.imf.tip"></label><input type="range" id="sl-imf" min="0" max="100" value="0" data-i18n-title="pol.level.tip"><span class="val" id="val-imf">0</span></div>
+            <div class="p-row"><label for="sl-imf" data-i18n="pol.imf" data-i18n-title="pol.imf.tip"></label><input type="range" id="sl-imf" min="0" max="100" value="0" data-i18n-title="pol.level.tip"><span class="val" id="val-imf">0</span></div>
             <div class="ews-row">
               <label data-i18n-title="pol.ews.tip"><input type="checkbox" id="cb-ews"><span data-i18n="pol.ews">Early Warning System</span></label>
               <span id="ews-badge" style="display:none;"></span>
@@ -667,11 +683,11 @@
         <div id="canvas-row">
           <div class="canvas-wrap" id="canvas-wrap-1">
             <div class="region-label" id="region-label-1">American Samoa</div>
-            <canvas id="reef-canvas"></canvas>
+            <canvas id="reef-canvas" role="img" data-i18n-aria="a11y.reef"></canvas>
           </div>
           <div class="canvas-wrap" id="canvas-wrap-2">
             <div class="region-label" id="region-label-2">Main Hawaiian Islands</div>
-            <canvas id="reef-canvas-2"></canvas>
+            <canvas id="reef-canvas-2" role="img" data-i18n-aria="a11y.reef2"></canvas>
           </div>
         </div>
         <div id="timeline-wrap">
@@ -704,40 +720,40 @@
       </section>
       <div class="charts-stack" id="charts-stack">
         <div class="chart-card panel" data-i18n-title="chart.temp.tip">
-          <div class="chart-header" onclick="openHeatmap('sst')">
+          <div class="chart-header" role="button" tabindex="0" onclick="openHeatmap('sst')">
             <span class="chart-header-title" data-i18n="chart.temp.title"></span>
             <span class="chart-header-value" id="hv-temp"></span>
             <span class="chart-header-icon" data-i18n-title="chart.open"><svg class="ico"><use href="#i-map"/></svg></span>
           </div>
           <div class="chart-sub" data-i18n="chart.temp.sub"></div>
-          <div class="chart-canvas-wrap"><canvas id="chart-temp"></canvas></div>
+          <div class="chart-canvas-wrap"><canvas id="chart-temp" role="img" data-i18n-aria="chart.temp.tip"></canvas></div>
         </div>
         <div class="chart-card panel" data-i18n-title="chart.coral.tip">
-          <div class="chart-header" onclick="openHeatmap('coral')">
+          <div class="chart-header" role="button" tabindex="0" onclick="openHeatmap('coral')">
             <span class="chart-header-title" data-i18n="chart.coral.title"></span>
             <span class="chart-header-value" id="hv-coral"></span>
             <span class="chart-header-icon" data-i18n-title="chart.open"><svg class="ico"><use href="#i-map"/></svg></span>
           </div>
           <div class="chart-sub" data-i18n="chart.coral.sub"></div>
-          <div class="chart-canvas-wrap"><canvas id="chart-coral"></canvas></div>
+          <div class="chart-canvas-wrap"><canvas id="chart-coral" role="img" data-i18n-aria="chart.coral.tip"></canvas></div>
         </div>
         <div class="chart-card panel" data-i18n-title="chart.prey.tip">
-          <div class="chart-header" onclick="openHeatmap('prey')">
+          <div class="chart-header" role="button" tabindex="0" onclick="openHeatmap('prey')">
             <span class="chart-header-title" data-i18n="chart.prey.title"></span>
             <span class="chart-header-value" id="hv-prey"></span>
             <span class="chart-header-icon" data-i18n-title="chart.open"><svg class="ico"><use href="#i-map"/></svg></span>
           </div>
           <div class="chart-sub" data-i18n="chart.prey.sub"></div>
-          <div class="chart-canvas-wrap"><canvas id="chart-prey"></canvas></div>
+          <div class="chart-canvas-wrap"><canvas id="chart-prey" role="img" data-i18n-aria="chart.prey.tip"></canvas></div>
         </div>
         <div class="chart-card panel" data-i18n-title="chart.pred.tip">
-          <div class="chart-header" onclick="openHeatmap('predator')">
+          <div class="chart-header" role="button" tabindex="0" onclick="openHeatmap('predator')">
             <span class="chart-header-title" data-i18n="chart.pred.title"></span>
             <span class="chart-header-value" id="hv-pred"></span>
             <span class="chart-header-icon" data-i18n-title="chart.open"><svg class="ico"><use href="#i-map"/></svg></span>
           </div>
           <div class="chart-sub" data-i18n="chart.pred.sub"></div>
-          <div class="chart-canvas-wrap"><canvas id="chart-pred"></canvas></div>
+          <div class="chart-canvas-wrap"><canvas id="chart-pred" role="img" data-i18n-aria="chart.pred.tip"></canvas></div>
         </div>
       </div>
       <!-- MODE 2: Heatmap Overlay -->
@@ -751,7 +767,7 @@
           <button class="hm-back-btn" onclick="closeHeatmap()"><svg class="ico"><use href="#i-arrow-left"/></svg><span data-i18n="hm.back">Charts</span></button>
         </div>
         <div class="hm-canvas-wrap">
-          <canvas id="heatmap-canvas"></canvas>
+          <canvas id="heatmap-canvas" role="img" data-i18n-aria="a11y.heatmap"></canvas>
         </div>
         <div class="hm-explain" id="hm-explain"></div>
       </div>
@@ -1046,47 +1062,57 @@
     let renderT = 0;
 
     let offCanvas2 = null, offCtx2 = null;
+    // IDW weight 1 / (d² + 0.1)^0.6 from a lookup table (d² spans 0 … ~13 inside the 5×5 neighbourhood)
+    const IDW_LUT_STEP = 64, IDW_LUT = new Float32Array(16 * IDW_LUT_STEP);
+    for (let i = 0; i < IDW_LUT.length; i++) IDW_LUT[i] = 1 / Math.pow(i / IDW_LUT_STEP + 0.1, 0.6);
+
+    // The organic reef texture is recomputed only when the simulation advances or ~12 times a second for the
+    // water shimmer; frames in between reuse the cached image (full recompute ≈ 10 ms instead of ~60 ms per frame)
+    const MAP_REFRESH_MS = 80;
+    const mapCache = {};
+
     function renderGridToCtx(targetGrid, targetCtx, targetW, targetH, mapW, offCv, targetOffCtx, noiseOff) {
       const cellW = mapW / COLS, cellH = targetH / ROWS;
       const sc = 0.25, hw = (mapW * sc) | 0, hh = (targetH * sc) | 0, invSc = 1 / sc;
       if (hw <= 0 || hh <= 0) return { offCv, targetOffCtx }; // canvas not laid out yet
-      if (!offCv || offCv.width !== hw || offCv.height !== hh) { offCv = document.createElement('canvas'); offCv.width = hw; offCv.height = hh; targetOffCtx = offCv.getContext('2d'); }
-      const img = targetOffCtx.createImageData(hw, hh), d = img.data;
-      const nvTime = noiseTime * 2;
-
-      for (let py = 0; py < hh; py++) {
-        const ry = py * invSc;
-        for (let px = 0; px < hw; px++) {
-          const rx = px * invSc;
-          const turbX = SimplexNoise(rx * 0.03 + noiseOff, ry * 0.03 + nvTime + noiseOff) * 20;
-          const turbY = SimplexNoise(rx * 0.03 + 100 + nvTime + noiseOff, ry * 0.03 + 100 + noiseOff) * 20;
-          const sampleX = rx + turbX;
-          const sampleY = ry + turbY;
-          const gx = sampleX / cellW - 0.5;
-          const gy = sampleY / cellH - 0.5;
-          const gxi = Math.round(gx);
-          const gyi = Math.round(gy);
-          let sumR = 2 * 0.3; let sumG = 13 * 0.3; let sumB = 31 * 0.3; let sumW = 0.3;
-
-          for (let y = gyi - 2; y <= gyi + 2; y++) {
-            for (let x = gxi - 2; x <= gxi + 2; x++) {
-              if (x >= 0 && x < COLS && y >= 0 && y < ROWS) {
-                const cell = targetGrid[y * COLS + x];
-                const color = STATE_COLORS[cell.state];
-                const dx = gx - x; const dy = gy - y;
-                const distSq = dx * dx + dy * dy;
-                const baseW = 1 / Math.pow(distSq + 0.1, 0.6);
-                const colNoise = SimplexNoise(rx * 0.08 + x + noiseOff, ry * 0.08 + y + nvTime * 0.5 + noiseOff);
-                const w = baseW * (1 + colNoise * 0.6);
+      let fresh = false;
+      if (!offCv || offCv.width !== hw || offCv.height !== hh) { offCv = document.createElement('canvas'); offCv.width = hw; offCv.height = hh; targetOffCtx = offCv.getContext('2d'); fresh = true; }
+      const cache = mapCache[noiseOff] || (mapCache[noiseOff] = { tick: -1, at: 0, grid: null });
+      const now = performance.now();
+      if (fresh || cache.tick !== tick || cache.grid !== targetGrid || now - cache.at > MAP_REFRESH_MS) {
+        cache.tick = tick; cache.at = now; cache.grid = targetGrid;
+        const img = targetOffCtx.createImageData(hw, hh), d = img.data;
+        const nvTime = noiseTime * 2;
+        for (let py = 0; py < hh; py++) {
+          const ry = py * invSc;
+          for (let px = 0; px < hw; px++) {
+            const rx = px * invSc;
+            // Two-octave domain warp gives the organic, slowly drifting edges
+            const turbX = SimplexNoise(rx * 0.03 + noiseOff, ry * 0.03 + nvTime + noiseOff) * 20
+              + SimplexNoise(rx * 0.11 + 50 + noiseOff, ry * 0.11 + nvTime * 1.5) * 6;
+            const turbY = SimplexNoise(rx * 0.03 + 100 + nvTime + noiseOff, ry * 0.03 + 100 + noiseOff) * 20
+              + SimplexNoise(rx * 0.11 + 150, ry * 0.11 + 150 + nvTime * 1.5 + noiseOff) * 6;
+            const gx = (rx + turbX) / cellW - 0.5;
+            const gy = (ry + turbY) / cellH - 0.5;
+            const gxi = Math.round(gx);
+            const gyi = Math.round(gy);
+            let sumR = 2 * 0.3, sumG = 13 * 0.3, sumB = 31 * 0.3, sumW = 0.3;
+            for (let y = gyi - 2; y <= gyi + 2; y++) {
+              if (y < 0 || y >= ROWS) continue;
+              for (let x = gxi - 2; x <= gxi + 2; x++) {
+                if (x < 0 || x >= COLS) continue;
+                const color = STATE_COLORS[targetGrid[y * COLS + x].state];
+                const dx = gx - x, dy = gy - y;
+                const w = IDW_LUT[Math.min(IDW_LUT.length - 1, ((dx * dx + dy * dy) * IDW_LUT_STEP) | 0)];
                 sumR += color.r * w; sumG += color.g * w; sumB += color.b * w; sumW += w;
               }
             }
+            const invW = 1 / sumW, off = (py * hw + px) * 4;
+            d[off] = sumR * invW; d[off + 1] = sumG * invW; d[off + 2] = sumB * invW; d[off + 3] = 255;
           }
-          const invW = 1 / sumW; const off = (py * hw + px) * 4;
-          d[off] = sumR * invW; d[off + 1] = sumG * invW; d[off + 2] = sumB * invW; d[off + 3] = 255;
         }
+        targetOffCtx.putImageData(img, 0, 0);
       }
-      targetOffCtx.putImageData(img, 0, 0);
       targetCtx.imageSmoothingEnabled = true; targetCtx.imageSmoothingQuality = 'high';
       targetCtx.drawImage(offCv, 0, 0, hw, hh, 0, 0, mapW, targetH);
       return { offCv, targetOffCtx };
@@ -2910,6 +2936,11 @@
       document.getElementById('region-label-2').textContent = I18N.regionName(region2);
     }
 
+    // Enter / Space activate the clickable headers (chart titles, policy panel) like real buttons
+    document.querySelectorAll('[role="button"][tabindex]').forEach(el => el.addEventListener('keydown', e => {
+      if (e.target === el && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); el.click(); }
+    }));
+
     // ── Light / dark theme ──
     function setTheme(theme) {
       document.documentElement.dataset.theme = theme;
@@ -3383,14 +3414,14 @@
 
   <!-- Corner buttons -->
   <div class="corner-actions">
-    <button id="help-btn" class="help-btn" data-i18n-title="help.tip" onclick="document.getElementById('info-panel').style.display='flex'"><svg class="ico"><use href="#i-help"/></svg></button>
+    <button id="help-btn" class="help-btn" data-i18n-title="help.tip" data-i18n-aria="help.tip" onclick="document.getElementById('info-panel').style.display='flex'"><svg class="ico"><use href="#i-help"/></svg></button>
     <button id="restart-tour-btn" class="tour-btn" data-i18n-title="tour.restart.tip"><svg class="ico"><use href="#i-compass"/></svg><span data-i18n="tour.restart">Tour</span></button>
   </div>
 
   <!-- Scientific details -->
   <div id="info-panel" class="modal-backdrop">
     <div class="modal">
-      <button id="info-panel-close-btn" class="icon-btn modal-close" data-i18n-title="end.close"><svg class="ico"><use href="#i-x"/></svg></button>
+      <button id="info-panel-close-btn" class="icon-btn modal-close" data-i18n-title="end.close" data-i18n-aria="end.close"><svg class="ico"><use href="#i-x"/></svg></button>
       <div id="info-content" data-i18n-html="info.html"></div>
     </div>
   </div>
@@ -3404,7 +3435,7 @@
   <!-- Welcome card (first visit only) -->
   <div class="welcome-overlay" id="welcome-modal" style="display:none;">
     <div class="welcome-card">
-      <button class="welcome-close" id="welcome-skip-btn" data-i18n-title="welcome.skip"><svg class="ico"><use href="#i-x"/></svg></button>
+      <button class="welcome-close" id="welcome-skip-btn" data-i18n-title="welcome.skip" data-i18n-aria="welcome.skip"><svg class="ico"><use href="#i-x"/></svg></button>
       <img class="hero-img" src="Corauxx.webp" alt="">
       <div class="welcome-body">
         <div class="welcome-lang-row">
