@@ -182,7 +182,8 @@ doğrusal interpolasyonla hesaplanır (2013–2023 ortalamasına göre 2050'de +
 | ⏸ Pause | Simülasyonu duraklat |
 | ▶ Play | Normal hızda başlat/devam et |
 | ⏩ Fast | 3x hızda çalıştır |
-| ↺ Reset | Simülasyonu sıfırla |
+| ↺ Reset | Simülasyonu sıfırla (aynı tohumla aynı çalıştırma tekrarlanır) |
+| Seed / 🎲 | Tohum: aynı tohum ve aynı ayarlar birebir aynı simülasyonu üretir; 🎲 yeni rastgele tohum seçer |
 | ⚖ Compare | İki bölgeyi yan yana karşılaştır |
 | ⬇ CSV | Simülasyon verilerini CSV olarak indir |
 
@@ -262,6 +263,7 @@ Simülasyon sırasında **⬇ CSV** butonuna tıklayarak tüm simülasyon verile
 | Sütun | Açıklama |
 |-------|----------|
 | `tick` | Simülasyon adımı |
+| `seed` | Çalıştırmanın tohumu (aynı tohumla yeniden üretilebilir) |
 | `year` | Simülasyon yılı |
 | `month` | Ay |
 | `region` | Seçilen bölge |
@@ -311,6 +313,13 @@ DHW < 1 ise:
 | 0.25 – 0.55 | 🟡 STRESSED (Stresli) |
 | 0.55 – 0.82 | 🟠 BLEACHED (Ağarmış) |
 | 0.82 – 1.00 | 🔴 DEAD (Ölü) |
+
+### Tekrarlanabilirlik (Seed)
+Tüm rastgelelik (başlangıç resifi, okyanus akıntıları, sıcaklık deseni, gelecekteki sıcak dalgalar, restorasyon)
+tohumlanmış bir üreteçten (mulberry32) gelir. Her amaç için ayrı bir akış kullanılır; böylece örneğin karşılaştırma
+modunu çalışma sırasında açmak ana resifin geleceğini değiştirmez.
+- Politikaları adil karşılaştırmak için tohumu sabit tutup yalnızca ayarları değiştirin.
+- Tohum adres çubuğuna yazılır (`?seed=4242`); bağlantıyı paylaşan kişi aynı çalıştırmayı görür.
 
 ### Performans
 - Offscreen canvas ile render optimizasyonu

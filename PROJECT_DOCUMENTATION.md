@@ -355,7 +355,7 @@ Her 3 tick'te bir (aylık) `simLog[]` dizisine kayıt eklenir.
 
 ### 12.2 CSV Sütunları
 ```
-tick, year, month, region, sst, dhw, avg_stress,
+tick, seed, year, month, region, sst, dhw, avg_stress,
 coral_cover_pct, healthy_pct, bleached_pct, dead_pct,
 recovering_pct, prey_population, predator_population,
 protected_pct, budget_million_usd, us_policy, china_policy,
@@ -374,6 +374,14 @@ CSV butonunun sağ üst köşesinde yeşil badge ile toplam kayıt sayısı canl
 "⬇ CSV" butonu `downloadCSV()` fonksiyonunu çağırır, Blob API ile dosya oluşturur.
 
 ---
+
+## 12.5 Tekrarlanabilirlik (Seed)
+
+- `mulberry32` tohumlanmış üreteç; `seededStream(tag)` her amaç için ayrı akış üretir:
+  `grid` (başlangıç resifi + akıntılar), `grid2` (karşılaştırma resifi), `noise` (SimplexNoise permütasyonu),
+  `events` (gelecekteki sıcak dalgalar), `sim` (restorasyon).
+- `initGrid()` tüm akışları tohumdan yeniden kurar; Reset, bölge değişimi ve timeline scrubber aynı geçmişi üretir.
+- Tohum `?seed=` URL parametresiyle okunur/yazılır, CSV'de `seed` sütunu olarak kaydedilir ve 2100 sonuç ekranında gösterilir.
 
 ## 13. Simplex Noise Implementasyonu
 
