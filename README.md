@@ -33,7 +33,8 @@ Bu simülasyon, **NOAA NCRMP** ve **NOAA NCEI** veri setlerinden beslenen gerçe
 - **HTML5 Canvas** — Mercan haritası ve ısı haritası görselleştirmesi
 - **Chart.js** — Zaman serisi grafikleri (SST, Mercan Örtüsü, Balık Popülasyonu)
 - **Vanilla JavaScript** — Simülasyon motoru, veri yönetimi
-- **CSS3** — Responsive arayüz tasarımı
+- **CSS3** — Renk değişkenleriyle (tema token'ları) aydınlık/karanlık tema, responsive düzen
+- **IBM Plex** (Serif, Sans, Mono) — Google Fonts'tan yazı ailesi; ikonlar sayfa içi SVG
 
 ---
 
@@ -47,6 +48,12 @@ Bu simülasyon, **NOAA NCRMP** ve **NOAA NCEI** veri setlerinden beslenen gerçe
 - **Bölgesel iklim**: Her bölgenin kendi ortalama SST'si, mevsimsel genliği ve en sıcak ayı (yarımküreye göre) vardır
 - **Bulaşma modeli**: Isı stresi altında ağarmış komşular stresi artırır (hastalık yayılımı)
 - **3 okyanus akıntısı merkezi** sıcaklık dağılımını etkiler
+
+### Görsel Tasarım ve Tema
+- Sağ üstteki **güneş/ay** düğmesiyle **aydınlık** ("Lagün": kumlu beyaz, derin deniz yeşili) ve **karanlık** ("Derin Okyanus": yeşile çalan derin su, deniz camı) mod arasında geçiş yapılır. İlk açılışta cihazın ayarı kullanılır, seçim tarayıcıda hatırlanır.
+- Mercan rengi yalnızca mercan verisinde kullanılır; düğmeler deniz renginde, değerler ince çizgilerle ayrılmış tek bir gösterge şeridinde durur.
+- Emoji yerine tek renkli çizgi ikonlar kullanılır.
+- Resif haritası ve ısı haritası iki modda da koyu kalır; renkleri bilimsel ölçek olduğu için temadan bağımsızdır.
 
 ### 🌐 Türkçe / English Dil Seçeneği
 - Sağ üstteki **TR | EN** düğmesiyle sayfadaki tüm yazılar (butonlar, ipuçları, grafikler, harita yazıları, tur, bilgi paneli, sonuç ekranı) anında değişir; simülasyon kaldığı yerden devam eder.

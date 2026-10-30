@@ -1,7 +1,7 @@
 # 🪸 Coral Reef Stress & Bleaching Monitor — Proje Dokümantasyonu
 
 > **Dosya:** `index.html` (+ `i18n.js`)  
-> **Teknolojiler:** HTML5, CSS3, JavaScript (vanilla), Chart.js 4.4.1, Google Fonts (Inter)  
+> **Teknolojiler:** HTML5, CSS3, JavaScript (vanilla), Chart.js 4.4.1, Google Fonts (IBM Plex Serif / Sans / Mono)  
 > **Toplam Satır:** ~3430  
 > **Tek dosya uygulaması** — harici bağımlılık yok (CDN hariç)  
 > **Ek Dosyalar:** `i18n.js`, `coral_simulation_dataset.csv`, `pacific_map_bg.png`, `Corauxx.webp`, `README.md`
@@ -49,7 +49,7 @@ mercanbeyaz/
 index.html iç yapısı:
 ├── <head>
 │   ├── Meta bilgileri & SEO
-│   ├── Google Fonts (Inter) import
+│   ├── Google Fonts (IBM Plex) import + ilk boyamadan önce tema seçimi
 │   ├── Chart.js CDN import
 │   └── <style> — Tüm CSS kuralları (~780 satır)
 ├── <body>
@@ -75,17 +75,22 @@ index.html iç yapısı:
 
 ## 3. CSS Tasarım Sistemi
 
-### 3.1 Renk Paleti
-| Kullanım | Renk | Hex |
-|----------|------|-----|
-| Arka plan | Koyu lacivert | `#0a1628` |
-| Panel arka planı | Gradient | `#0d1f33 → #112840` |
-| Kenarlıklar | Koyu mavi | `#1a3a5c` |
-| Birincil vurgu | Cyan | `#00d4ff` |
-| İkincil vurgu | Teal | `#00d4aa` |
-| Uyarı | Sarı | `#fbbf24` |
-| Tehlike | Kırmızı | `#f87171` |
-| Projeksiyon | Turuncu | `#ff8800` |
+### 3.1 Renk Paleti (tema token'ları)
+Tüm arayüz renkleri `:root` üzerindeki CSS değişkenlerinden gelir; `<html data-theme="light|dark">` ile değişir.
+Grafikler `themeColor()` ile aynı değişkenleri okur (`applyChartTheme()`).
+
+| Token | Aydınlık · Lagün | Karanlık · Derin Okyanus | Kullanım |
+|-------|------------------|--------------------------|----------|
+| `--bg` | `#F3F5F4` | `#0B1619` | Sayfa zemini |
+| `--surface` | `#FFFFFF` | `#102024` | Paneller |
+| `--line` | `#D3DCDB` | `#24383E` | İnce çizgiler |
+| `--text` / `--title` | `#1C343C` / `#0E242C` | `#D9D6CD` / `#ECE8DE` | Metin |
+| `--muted` | `#5A6F78` | `#8D9D9F` | İkincil metin, etiketler |
+| `--sea` | `#0F5464` | `#6FB3AA` | Düğmeler, etkin durum |
+| `--coral` | `#C4553C` | `#E8806A` | Yalnızca mercan verisi |
+| `--good` / `--warn` / `--bad` | `#2E8C72` / `#A86F12` / `#B5402F` | `#5DB896` / `#D9A54A` / `#E06A55` | Durum renkleri |
+
+Resif haritası ve ısı haritası `--map-*` değişkenleriyle her iki temada koyu kalır.
 
 ### 3.2 Ana CSS Sınıfları
 - **`.app`** — Dikey flex konteyner, `min-height: 100vh`
