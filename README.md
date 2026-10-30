@@ -148,9 +148,24 @@ Av balık (prey) ve avcı balık (predator) popülasyonları mercan sağlık ind
 | Northwestern Hawaiian Islands | 24.6°C | ±2.5°C | Ağustos | 27.1°C |
 | Pacific Remote Island Areas | 28.3°C | ±0.6°C | Nisan | 28.9°C |
 
-Değerler NOAA Coral Reef Watch 5 km sanal istasyonlarına dayanan yaklaşık iklimsel ortalamalardır. Tarihsel ağarma olayları
-(2014, 2015, 2016, 2017, 2020, 2024) her bölgenin kendi sıcak mevsiminde zirve yapar; karşılaştırma modunda iki bölge kendi
-iklimleriyle simüle edilir.
+Değerler NOAA Coral Reef Watch 5 km sanal istasyonlarına dayanan yaklaşık iklimsel ortalamalardır. Karşılaştırma modunda iki
+bölge kendi iklimleri ve kendi ağarma geçmişleriyle simüle edilir.
+
+### Bölgeye Özel Ağarma Olayları
+Her bölge yalnızca kendisini gerçekten etkileyen sıcak dalgaları yaşar; olay bölgenin sıcak mevsiminde (±6 ay) zirve yapar.
+
+| Bölge | Gözlenen sıcak dalgalar (tepe SST anomalisi) |
+|-------|-----------------------------------------------|
+| American Samoa | 2015 (+0.7°C), 2016 (+1.1°C), 2017 (+0.6°C), 2020 (+0.8°C), 2024 (+1.0°C) |
+| Main Hawaiian Islands | 2014 (+0.9°C), 2015 (+1.6°C, Batı Hawaii'de ağır ölüm), 2019 (+1.0°C) |
+| Mariana Archipelago | 2013 (+0.8°C), 2014 (+1.0°C), 2016 (+0.8°C), 2017 (+1.0°C), 2024 (+1.0°C) |
+| Northwestern Hawaiian Islands | 2014 (+1.4°C, Lisianski/Pearl & Hermes), 2015 (+0.6°C), 2017 (+0.9°C), 2019 (+0.8°C) |
+| Pacific Remote Island Areas | 2015 (+0.8°C), 2016 (+1.0°C, 2015–16 El Niño), 2024 (+1.0°C) |
+
+Hangi yılın hangi bölgeyi etkilediği NOAA Coral Reef Watch uyarılarına ve yayımlanmış ağarma araştırmalarına dayanır; şiddetler
+yaklaşıktır ve simülasyondaki sağlıklı koloni oranının NOAA NCRMP ölçümlerini izlemesi için ayarlanmıştır. 2013–2023 döneminde
+model ile NOAA ölçümleri arasındaki ortalama fark (RMSE, 6 tohum ortalaması) **13.0 → 5.2 puana** indi. Kuzeybatı Hawaii'de
+kalan farkın (≈9 puan) büyük kısmı anket zamanlamasından kaynaklanır: model ölçümleri yıl ortasında varsayar.
 
 ### Bulaşma ve İyileşme Modeli
 - Isı stresi altındaki hücrelerde ağarmış komşular stresi artırır (korunan alanlarda %70 daha az).
@@ -291,7 +306,7 @@ Simülasyon sırasında **⬇ CSV** butonuna tıklayarak tüm simülasyon verile
 - Her **tick** = ~12 gün (30 tick ≈ 1 yıl)
 - Toplam simülasyon: **2013–2100** (87 yıl, ~2610 tick)
 - Mevsimsel sıcaklık döngüsü bölgenin en sıcak ayına göre kosinüs modeliyle eklenir
-- Kitlesel ağarma olayları (2014–2017, 2020, 2024) tarihsel olarak, 2024 sonrası sıcak dalgalar rastgele tetiklenir
+- Ağarma olayları 2013–2024 arasında bölgeye özel gözlemlere göre, 2024 sonrası ise rastgele (tohumlu) sıcak dalgalarla tetiklenir
 
 ### Stres Hesaplama
 ```

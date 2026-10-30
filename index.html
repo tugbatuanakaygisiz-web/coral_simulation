@@ -1282,6 +1282,7 @@
     const HEAT_STRESS_RATE = 0.0045;                             // stress gained per tick per DHW above (DHW_BLEACH - 1)
     const SYMBIONT_RECOVERY = 0.008;                             // stress lost per tick once heat stress is gone (bleached → healthy in ~6–12 months)
     const RECRUIT_RECOVERY = 0.0003;                             // per healthy neighbour per tick for dead cells (regrowth over ~10–15 years)
+    const ESTABLISHED_STRESS = 0.55;                             // regrowing reef counts as live colonies below this stress (~5 years after recruitment starts)
     const SPATIAL_SST_VAR = 0.8;                                 // ± °C of within-reef SST variation
 
     // ── Ocean Currents Simulation Variables ──
@@ -1383,17 +1384,33 @@
     let seasonalTemp = 28;
     let eventSpike = 0;
     let activeEventLabel = null;
-    // spike = peak SST anomaly (°C) above the seasonal cycle, centred on each region's warm season
-    const BLEACHING_EVENTS = [
-      { year: 1998, spike: 2.1, label: 'Mass Bleaching 1998' },
-      { year: 2010, spike: 1.4, label: 'Mass Bleaching 2010' },
-      { year: 2014, spike: 1.0, label: 'Global Bleaching 2014' },
-      { year: 2015, spike: 1.2, label: 'Global Bleaching 2015' },
-      { year: 2016, spike: 1.0, label: 'Global Bleaching 2016' },
-      { year: 2017, spike: 0.7, label: 'Bleaching 2017' },
-      { year: 2020, spike: 0.7, label: 'Mass Bleaching 2020' },
-      { year: 2024, spike: 1.2, label: 'Global Bleaching 2024' }
-    ];
+    // ── Observed marine heatwaves, per region ──
+    // spike = peak SST anomaly (°C) above the seasonal cycle, centred on the region's warm season (±6 months).
+    // Which years affected which region follows NOAA Coral Reef Watch alerts and published bleaching surveys;
+    // the spike sizes are approximate and were tuned so the simulated healthy-colony share tracks the NCRMP surveys in DATA.
+    const REGION_EVENTS = {
+      'American Samoa': [
+        { year: 2015, spike: 0.7 }, { year: 2016, spike: 1.1 }, { year: 2017, spike: 0.6 },
+        { year: 2020, spike: 0.8 }, { year: 2024, spike: 1.0 }
+      ],
+      'Main Hawaiian Islands': [
+        { year: 2014, spike: 0.9 }, { year: 2015, spike: 1.6 }, { year: 2019, spike: 1.0 }
+      ],
+      'Mariana Archipelago': [
+        { year: 2013, spike: 0.8 }, { year: 2014, spike: 1.0 }, { year: 2016, spike: 0.8 },
+        { year: 2017, spike: 1.0 }, { year: 2024, spike: 1.0 }
+      ],
+      'Northwestern Hawaiian Islands': [
+        { year: 2014, spike: 1.4 }, { year: 2015, spike: 0.6 }, { year: 2017, spike: 0.9 }, { year: 2019, spike: 0.8 }
+      ],
+      'Pacific Remote Island Areas': [
+        { year: 2015, spike: 0.8 }, { year: 2016, spike: 1.0 }, { year: 2024, spike: 1.0 }
+      ]
+    };
+    // 2014–2017: third global bleaching event; 2023–2025: fourth
+    function eventLabel(year) {
+      return (year >= 2014 && year <= 2017) || (year >= 2023 && year <= 2025) ? `Global Bleaching ${year}` : `Marine Heatwave ${year}`;
+    }
     let eventSpike2 = 0, activeEventLabel2 = null, temperature2 = 28;
     let lastRes1 = null;
     let tick = 0, dhw = 0, simSpeed = 1, running = true;
@@ -2507,11 +2524,11 @@
         const clim = climateOf(r);
         const seasonalDelta = Math.cos(((monthInYear - clim.peakMonth) / 12) * 2 * Math.PI) * clim.amp;
         let spike = 0, label = null;
-        for (const ev of BLEACHING_EVENTS.concat(futureEvents)) {
+        for (const ev of (REGION_EVENTS[r] || []).concat(futureEvents)) {
           const dist = Math.abs(exactYear - (ev.year + clim.peakMonth / 12));
           if (dist < 0.5) {
             spike = ev.spike * (1 - dist / 0.5);
-            label = ev.label;
+            label = ev.label || eventLabel(ev.year);
           }
         }
         return { temp: clim.mean + userAnomaly + projDelta + seasonalDelta, spike, label };
@@ -2634,10 +2651,12 @@
           if (c.state === 'DEAD') deadCount++;
           if (c.state === 'BLEACHED') bleachedCount++;
           if (c.state === 'RECOVERING') recoveringCount++;
-          if (c.substrate && c.state !== 'DEAD') c.substrate = false;
+          // Bare rock becomes part of the reef once recruits on it are established colonies
+          if (c.substrate && stress <= ESTABLISHED_STRESS) c.substrate = false;
           if (!c.substrate) {
             colonyCount++;
-            if (c.state === 'DEAD') colonyDead++;
+            // Regrowth on dead reef only shows up in surveys once the recruits are established colonies
+            if (c.state === 'DEAD' || (c.regrowing && stress > ESTABLISHED_STRESS)) colonyDead++;
             else if (c.state === 'BLEACHED') colonyBleached++;
             else colonyHealthy++;
           }
@@ -2685,9 +2704,9 @@
             let restorationChance = (budgetValue / 100) * 0.003 * (1 + (imfFund / 100));
             if (protectedCells.has(i)) restorationChance *= 2;
             if (rngSim() < restorationChance) {
-              // Outplanted fragments: alive but still need years of growth (and survive heatwaves) to become healthy
+              // Outplanted nursery colonies: established and alive, but still need years of growth (and to survive heatwaves) to become healthy
               grid[i].state = 'RECOVERING';
-              grid[i].stressLevel = 0.78;
+              grid[i].stressLevel = ESTABLISHED_STRESS;
               grid[i].regrowing = true;
               res1.deadCount--;
               res1.recoveringCount++;

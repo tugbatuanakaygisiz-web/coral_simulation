@@ -144,11 +144,25 @@ Emisyon kaydırıcılarının etkisi `emissionRamp(year)` ile 2024–2060 arası
 Her bölge için yıllık ortalama SST (`mean`), mevsimsel yarı genlik (`amp`) ve en sıcak ay (`peakMonth`).
 MMM = mean + amp. Sıcaklık kaydırıcısı seçili bölgenin yıllık ortalamasını temsil eder ve bölge seçildiğinde bu değere ayarlanır.
 
-### 4.4 Tarihsel Ağartma Olayları (`BLEACHING_EVENTS`)
-Spike değerleri, mevsimsel döngünün üstündeki tepe SST anomalisidir ve her bölgenin sıcak mevsiminde (±6 ay üçgen profil) zirve yapar:
-- 2014 (+1.0°C), 2015 (+1.2°C), 2016 (+1.0°C), 2017 (+0.7°C) — 3. küresel ağarma olayı
-- 2020 (+0.7°C)
-- 2024 (+1.2°C) — 4. küresel ağarma olayı
+### 4.4 Bölgeye Özel Ağartma Olayları (`REGION_EVENTS`)
+Spike değerleri, mevsimsel döngünün üstündeki tepe SST anomalisidir ve her bölgenin sıcak mevsiminde (±6 ay üçgen profil) zirve yapar.
+Etiketler `eventLabel(year)` ile üretilir (2014–2017: 3. küresel olay, 2023–2025: 4. küresel olay, diğerleri "Marine Heatwave").
+
+| Bölge | Gözlenen sıcak dalgalar (tepe SST anomalisi) |
+|-------|-----------------------------------------------|
+| American Samoa | 2015 (+0.7°C), 2016 (+1.1°C), 2017 (+0.6°C), 2020 (+0.8°C), 2024 (+1.0°C) |
+| Main Hawaiian Islands | 2014 (+0.9°C), 2015 (+1.6°C, Batı Hawaii'de ağır ölüm), 2019 (+1.0°C) |
+| Mariana Archipelago | 2013 (+0.8°C), 2014 (+1.0°C), 2016 (+0.8°C), 2017 (+1.0°C), 2024 (+1.0°C) |
+| Northwestern Hawaiian Islands | 2014 (+1.4°C, Lisianski/Pearl & Hermes), 2015 (+0.6°C), 2017 (+0.9°C), 2019 (+0.8°C) |
+| Pacific Remote Island Areas | 2015 (+0.8°C), 2016 (+1.0°C, 2015–16 El Niño), 2024 (+1.0°C) |
+
+Şiddetler, `healthy_pct` NCRMP ölçümlerine karşı kalibre edilmiştir (2013–2023 RMSE 13.0 → 5.2, 6 tohum ortalaması).
+
+### 4.5 Koloni İstatistikleri
+NOAA ile karşılaştırma için koloniler sağlıklı / ağarmış / ölü olarak sayılır (çıplak zemin hariç). Yeniden büyüyen
+(`regrowing`) bir alan, stresi `ESTABLISHED_STRESS` (0.55) altına inene kadar — yani yeni koloniler yerleşene kadar,
+yaklaşık 5 yıl — ölü koloni sayılır; çıplak zemin de ancak bu eşikte koloniye dönüşür. Restorasyonla dikilen koloniler
+doğrudan bu eşikte başlar.
 
 2026–2099 arası için her sıfırlamada rastgele sıcak dalgalar (`futureEvents`, yılda ~%20 olasılık, +0.5–1.2°C) üretilir.
 
