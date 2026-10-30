@@ -24,6 +24,7 @@
 
     // Months
     'months': [`Oca,Şub,Mar,Nis,May,Haz,Tem,Ağu,Eyl,Eki,Kas,Ara`, `Jan,Feb,Mar,Apr,May,Jun,Jul,Aug,Sep,Oct,Nov,Dec`],
+    'monthsLong': [`Ocak,Şubat,Mart,Nisan,Mayıs,Haziran,Temmuz,Ağustos,Eylül,Ekim,Kasım,Aralık`, `January,February,March,April,May,June,July,August,September,October,November,December`],
 
     // Status badges
     'badge.year': [`Yıl`, `Year`],
@@ -175,6 +176,19 @@
     'ap.dead': [`Ölü hücre`, `Dead cells`],
     'ap.protected': [`Korunan alan`, `Protected area`],
     'ap.proj': [`2100 tahmini`, `2100 forecast`],
+
+    // Written run summary (sentences avoid Turkish case endings on numbers and names)
+    'n.status': [`<b>{date}</b> itibarıyla {region} bölgesinde sağlıklı koloni oranı <b>%{pct}</b> (başlangıçta %{start}).`, `As of <b>{date}</b>, <b>{pct}%</b> of colonies in {region} are healthy (started at {start}%).`],
+    'n.projected': [`Bu dönem projeksiyondur.`, `This period is a projection.`],
+    'n.heat.none': [`Şu an ısı stresi yok.`, `There is no heat stress right now.`],
+    'n.heat.low': [`Şu an hafif ısı stresi var (DHW {dhw}).`, `There is mild heat stress right now (DHW {dhw}).`],
+    'n.heat.warn': [`Ağarma uyarısı: biriken ısı stresi DHW {dhw}.`, `Bleaching alert: accumulated heat stress is DHW {dhw}.`],
+    'n.heat.severe': [`Ciddi ısı stresi: DHW {dhw}, mercan ölümü riski yüksek.`, `Severe heat stress: DHW {dhw}, high risk of coral death.`],
+    'n.event': [`Etkin olay: {event}.`, `Active event: {event}.`],
+    'n.worst': [`Şimdiye kadarki en kötü yıl <b>{year}</b>: resifin %{pct} kadarı aynı anda ağarmış durumdaydı.`, `The worst year so far was <b>{year}</b>, when {pct}% of the reef was bleached at once.`],
+    'n.out.good': [`Mevcut ayarlarla 2100 tahmini <b>%{p}</b>: resifin büyük kısmı korunuyor.`, `With the current settings the 2100 forecast is <b>{p}%</b>: most of the reef survives.`],
+    'n.out.mid': [`Mevcut ayarlarla 2100 tahmini <b>%{p}</b>. Bu tahmini en çok emisyonları azaltmak iyileştirir.`, `With the current settings the 2100 forecast is <b>{p}%</b>. Cutting emissions improves it the most.`],
+    'n.out.bad': [`Mevcut ayarlarla 2100 tahmini <b>%{p}</b>: resif büyük ölçüde kayboluyor. Isınma sınırlanmadan yerel önlemler tek başına yetmiyor.`, `With the current settings the 2100 forecast is <b>{p}%</b>: the reef is largely lost. Without limiting warming, local measures are not enough on their own.`],
 
     // Charts
     'chart.open': [`Haritayı aç`, `Open map`],

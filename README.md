@@ -67,6 +67,7 @@ Bu simülasyon, **NOAA NCRMP** ve **NOAA NCEI** veri setlerinden beslenen gerçe
 
 ### 📊 Anlık Analiz Paneli
 - Grafiklerin hemen üstünde yer alan panel, simülasyon boyunca **En Yüksek Ağarma**, **En Kritik Yıl**, **Mevcut Mercan Örtüsü**, **Toplam Ölü Hücre**, **Korunan Alan (%)** ve **2100 Tahmini** metriklerini canlı ve anlık olarak hesaplayıp raporlar.
+- Panelin altında simülasyonla birlikte güncellenen **kısa yazılı özet**: güncel sağlıklı koloni oranı ve başlangıç değeri, şu anki ısı stresi ve etkin sıcak dalga, şimdiye kadarki en kötü yıl ve 2100 tahmini ile onu en çok neyin değiştireceği (iki dilde).
 
 ### 🎛️ Hızlı Senaryo Butonları
 - Kullanıcının tek tıkla önceden tanımlanmış emisyon ve politika senaryolarını simülasyona uygulamasını sağlar:
