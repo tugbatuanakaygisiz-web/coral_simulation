@@ -261,6 +261,38 @@
       box-shadow: 0 0 10px rgba(0, 180, 216, 0.2)
     }
 
+    .seed-group {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      padding: 0 4px 0 8px;
+      border: 1px solid #1a3a5c;
+      border-radius: 6px;
+      background: #0a1a2c;
+    }
+
+    .seed-group label {
+      font-size: 0.62rem;
+      color: #4a6fa5;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .seed-group input {
+      width: 64px;
+      background: transparent;
+      border: none;
+      color: #00d4ff;
+      font-family: 'Courier New', monospace;
+      font-size: 0.75rem;
+      font-weight: 700;
+    }
+
+    .seed-group .btn {
+      padding: 3px 7px;
+    }
+
     .btn.active {
       background: linear-gradient(135deg, #0077b6, #00b4d8);
       color: #fff;
@@ -395,9 +427,9 @@
       flex-direction: row;
       gap: 8px;
       width: 100%;
-      height: 240px;
-      min-height: 240px;
-      max-height: 240px;
+      height: 300px;
+      min-height: 300px;
+      max-height: 300px;
       flex-shrink: 0;
       overflow: hidden;
     }
@@ -409,9 +441,9 @@
     .chart-card {
       flex: 1;
       min-width: 0;
-      height: 240px;
-      min-height: 240px;
-      max-height: 240px;
+      height: 300px;
+      min-height: 300px;
+      max-height: 300px;
       display: flex;
       flex-direction: column;
       background: transparent;
@@ -446,17 +478,42 @@
       transition: opacity 0.4s ease
     }
 
+    .chart-header-value {
+      margin-left: auto;
+      margin-right: 8px;
+      font-family: 'Courier New', monospace;
+      font-size: 11px;
+      font-weight: 700;
+      color: #00d4ff;
+      white-space: nowrap
+    }
+
     .chart-header-icon {
       font-size: 12px;
       color: #4A6FA5;
       pointer-events: none
     }
 
-    .chart-card canvas {
-      width: 100%;
+    .chart-sub {
+      flex-shrink: 0;
+      padding: 4px 10px 2px;
+      font-size: 0.62rem;
+      line-height: 1.35;
+      color: #7a9ab5;
+      min-height: 2.7em
+    }
+
+    .chart-canvas-wrap {
       flex: 1;
       min-height: 0;
-      max-height: 210px;
+      position: relative
+    }
+
+    .chart-canvas-wrap canvas {
+      position: absolute;
+      inset: 0;
+      width: 100% !important;
+      height: 100% !important;
       display: block;
     }
 
@@ -517,6 +574,13 @@
       background: #0F2A45;
       color: #fff;
       border-bottom-color: var(--tab-accent)
+    }
+
+    .hm-tab.active::after {
+      content: '📈';
+      margin-left: 4px;
+      font-size: 10px;
+      opacity: 0.7
     }
 
     .hm-back-btn {
@@ -970,6 +1034,11 @@
           <button class="btn active" id="btn-play" title="Simülasyonu normal hızda başlat veya devam ettir.">▶ Play</button>
           <button class="btn" id="btn-fast" title="Simülasyonu 3 kat hızda çalıştır. Hızlı ileri sarma.">â© Fast</button>
           <button class="btn" id="btn-reset" title="Simülasyonu sıfırla. Tüm veriler ve grafik başa döner.">↺ Reset</button>
+          <div class="seed-group" title="Tohum (seed): aynı tohum ve aynı ayarlar her seferinde birebir aynı simülasyonu üretir. Politikaları adil karşılaştırmak için tohumu sabit tutun.">
+            <label for="seed-input">Seed</label>
+            <input type="number" id="seed-input" min="1" max="99999" step="1">
+            <button class="btn" id="btn-new-seed" title="Yeni rastgele tohum seç ve simülasyonu yeniden başlat">🎲</button>
+          </div>
           <button class="btn" id="btn-compare" title="İki bölgeyi yan yana karşılaştır. Aynı koşullarda farklı resiflerin tepkisini görün.">⚖ Compare</button>
           <button class="btn" id="btn-download-csv" title="Simülasyon verilerini CSV olarak indir"
             style="background:linear-gradient(135deg,#0a2018,#0d3020);border-color:#00d4aa;color:#00d4aa;position:relative;">⬇
@@ -1142,45 +1211,53 @@
         </div>
       </div>
       <div class="charts-stack" id="charts-stack">
-        <div class="chart-card" title="Deniz Yüzey Sıcaklığı (SST) ve Derece Isıtma Haftası (DHW) grafiği. Sıcaklık arttıkça mercanlar strese girer. ▲ işaretleri gerçek ağarma olaylarını gösterir. Harita moduna geçmek için başlığa tıklayın.">
+        <div class="chart-card" title="Deniz yüzey sıcaklığı (SST, sol eksen) ve Derece Isıtma Haftası (DHW, sağ eksen). DHW, sıcaklığın bölgenin en sıcak ay ortalamasını (MMM, kesikli turuncu çizgi) en az 1°C aştığı haftaların son 12 haftadaki toplamıdır. Kırmızı şeritler sıcak dalga (ağarma olayı) dönemleridir. Harita moduna geçmek için başlığa tıklayın.">
           <div class="chart-header" onclick="openHeatmap('sst')">
-            <span class="chart-header-title">🌡️ SST & DHW</span>
-            <span class="chart-header-icon">🗺️</span>
+            <span class="chart-header-title">🌡️ Deniz Sıcaklığı & Isı Stresi</span>
+            <span class="chart-header-value" id="hv-temp"></span>
+            <span class="chart-header-icon" title="Haritayı aç">🗺️</span>
           </div>
-          <canvas id="chart-temp"></canvas>
+          <div class="chart-sub">Turuncu: deniz sıcaklığı (kalın çizgi 12 aylık ortalama). Kırmızı alan: biriken ısı stresi (DHW) — 4 üstü ağarma, 8 üstü ölüm riski. Kırmızı şeritler: sıcak dalgalar.</div>
+          <div class="chart-canvas-wrap"><canvas id="chart-temp"></canvas></div>
         </div>
-        <div class="chart-card" title="Mercan Örtüsü yüzdesi. Sağlıklı mercan oranını gösterir. %50 altı kritik seviye, %20 altı ekosistem çöküşü anlamına gelir. Harita moduna geçmek için başlığa tıklayın.">
+        <div class="chart-card" title="Sağlıklı koloni yüzdesi: ağarmamış ve ölmemiş mercan kolonilerinin tüm kolonilere oranı (çıplak zemin hariç). NOAA NCRMP ile aynı tanım; ⭐ noktalar bölgenin gerçek NOAA ölçümleridir. Harita moduna geçmek için başlığa tıklayın.">
           <div class="chart-header" onclick="openHeatmap('coral')">
-            <span class="chart-header-title">🪸 Coral Cover</span>
-            <span class="chart-header-icon">🗺️</span>
+            <span class="chart-header-title">🪸 Sağlıklı Mercan Kolonileri</span>
+            <span class="chart-header-value" id="hv-coral"></span>
+            <span class="chart-header-icon" title="Haritayı aç">🗺️</span>
           </div>
-          <canvas id="chart-coral"></canvas>
+          <div class="chart-sub">Ağarmamış ve ölmemiş kolonilerin oranı (%). ⭐ Aynı bölgede NOAA dalgıçlarının gerçek ölçümü.</div>
+          <div class="chart-canvas-wrap"><canvas id="chart-coral"></canvas></div>
         </div>
-        <div class="chart-card" title="Av Balık Popülasyonu (Lotka-Volterra modeli). Mercan sağlığı taşıma kapasitesini belirler. Balıkçılık kotası ve resif durumu popülasyonu etkiler. Harita moduna geçmek için başlığa tıklayın.">
+        <div class="chart-card" title="Av balık popülasyonu (Lotka-Volterra modeli, göreli indeks). Taşıma kapasitesi (K) sağlıklı mercan oranına bağlıdır: mercan öldükçe K düşer ve av balıkları azalır. Balıkçılık kotası da etkiler. Harita moduna geçmek için başlığa tıklayın.">
           <div class="chart-header" onclick="openHeatmap('prey')">
-            <span class="chart-header-title">🐟 Prey Fish</span>
-            <span class="chart-header-icon">🗺️</span>
+            <span class="chart-header-title">🐟 Av Balıkları</span>
+            <span class="chart-header-value" id="hv-prey"></span>
+            <span class="chart-header-icon" title="Haritayı aç">🗺️</span>
           </div>
-          <canvas id="chart-prey"></canvas>
+          <div class="chart-sub">Resifte yaşayan küçük balıklar. Kesikli çizgi: resifin besleyebileceği en fazla balık (taşıma kapasitesi, mercan sağlığına bağlı).</div>
+          <div class="chart-canvas-wrap"><canvas id="chart-prey"></canvas></div>
         </div>
-        <div class="chart-card" title="Avcı Balık Popülasyonu (Lotka-Volterra modeli). Av balık sayısına bağlıdır. Mercan çöküşü av balıklarını azaltır, bu da avcıları etkiler. Harita moduna geçmek için başlığa tıklayın.">
+        <div class="chart-card" title="Avcı balık popülasyonu (Lotka-Volterra modeli, göreli indeks). Av balıklarına bağlıdır; mercan çöküşü av balıklarını, o da gecikmeyle avcıları azaltır. Harita moduna geçmek için başlığa tıklayın.">
           <div class="chart-header" onclick="openHeatmap('predator')">
-            <span class="chart-header-title">🦈 Predator Fish</span>
-            <span class="chart-header-icon">🗺️</span>
+            <span class="chart-header-title">🦈 Avcı Balıklar</span>
+            <span class="chart-header-value" id="hv-pred"></span>
+            <span class="chart-header-icon" title="Haritayı aç">🗺️</span>
           </div>
-          <canvas id="chart-pred"></canvas>
+          <div class="chart-sub">Av balıklarıyla beslenen büyük balıklar (orfoz, köpekbalığı). Av azaldıkça gecikmeyle düşer.</div>
+          <div class="chart-canvas-wrap"><canvas id="chart-pred"></canvas></div>
         </div>
       </div>
       <!-- MODE 2: Heatmap Overlay -->
       <div class="heatmap-overlay" id="heatmap-overlay">
         <div class="hm-tab-bar">
-          <button class="hm-tab active" data-hm="sst" style="--tab-accent:#FF6B2B" onclick="switchHmTab(this)">🌡️
+          <button class="hm-tab active" data-hm="sst" title="Açık sekmeye tekrar tıklayınca grafiklere dönülür" style="--tab-accent:#FF6B2B" onclick="switchHmTab(this)">🌡️
             SST</button>
-          <button class="hm-tab" data-hm="coral" style="--tab-accent:#00D4AA" onclick="switchHmTab(this)">🪸
+          <button class="hm-tab" data-hm="coral" title="Açık sekmeye tekrar tıklayınca grafiklere dönülür" style="--tab-accent:#00D4AA" onclick="switchHmTab(this)">🪸
             Coral</button>
-          <button class="hm-tab" data-hm="prey" style="--tab-accent:#00AAFF" onclick="switchHmTab(this)">🐟
+          <button class="hm-tab" data-hm="prey" title="Açık sekmeye tekrar tıklayınca grafiklere dönülür" style="--tab-accent:#00AAFF" onclick="switchHmTab(this)">🐟
             Prey</button>
-          <button class="hm-tab" data-hm="predator" style="--tab-accent:#AA44FF" onclick="switchHmTab(this)">🦈
+          <button class="hm-tab" data-hm="predator" title="Açık sekmeye tekrar tıklayınca grafiklere dönülür" style="--tab-accent:#AA44FF" onclick="switchHmTab(this)">🦈
             Predator</button>
           <button class="hm-back-btn" onclick="closeHeatmap()">← CHARTS</button>
         </div>
@@ -1245,6 +1322,7 @@
     const HEAT_STRESS_RATE = 0.0045;                             // stress gained per tick per DHW above (DHW_BLEACH - 1)
     const SYMBIONT_RECOVERY = 0.008;                             // stress lost per tick once heat stress is gone (bleached → healthy in ~6–12 months)
     const RECRUIT_RECOVERY = 0.0003;                             // per healthy neighbour per tick for dead cells (regrowth over ~10–15 years)
+    const ESTABLISHED_STRESS = 0.55;                             // regrowing reef counts as live colonies below this stress (~5 years after recruitment starts)
     const SPATIAL_SST_VAR = 0.8;                                 // ± °C of within-reef SST variation
 
     // ── Ocean Currents Simulation Variables ──
@@ -1268,14 +1346,39 @@
     // Emission policy changes act on the climate with a lag: their effect phases in over 2024–2060
     function emissionRamp(year) { return Math.max(0, Math.min(1, (year - 2024) / 36)); }
 
+    // ── Seeded randomness: the same seed reproduces the same run ──
+    function mulberry32(a) {
+      return function () {
+        a |= 0; a = a + 0x6D2B79F5 | 0;
+        let t = Math.imul(a ^ a >>> 15, 1 | a);
+        t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
+        return ((t ^ t >>> 14) >>> 0) / 4294967296;
+      };
+    }
+    // One stream per purpose, so e.g. switching on compare mode mid-run does not change the main reef's future
+    function seededStream(tag) {
+      let h = (simSeed ^ 0x9E3779B9) | 0;
+      for (let i = 0; i < tag.length; i++) h = Math.imul(h ^ tag.charCodeAt(i), 0x01000193);
+      return mulberry32(h);
+    }
+    const SEED_MAX = 99999;
+    function randomSeed() { return 1 + Math.floor(Math.random() * SEED_MAX); }
+    function initialSeed() {
+      const q = parseInt(new URLSearchParams(location.search).get('seed'), 10);
+      return q >= 1 && q <= SEED_MAX ? q : randomSeed();
+    }
+    let simSeed = initialSeed();
+    let rngSim = seededStream('sim');
+
     // Future marine heatwaves (El Niño-like years) after the observed record ends.
-    // Regenerated on every reset; both regions in compare mode share the same global events.
+    // Regenerated from the seed on every reset; both regions in compare mode share the same global events.
     let futureEvents = [];
     function generateFutureEvents() {
+      const rand = seededStream('events');
       futureEvents = [];
       for (let y = 2026; y < 2100; y++) {
-        if (Math.random() < 0.2) {
-          futureEvents.push({ year: y, spike: 0.5 + Math.random() * 0.7, label: `Marine Heatwave ${y}` });
+        if (rand() < 0.2) {
+          futureEvents.push({ year: y, spike: 0.5 + rand() * 0.7, label: `Marine Heatwave ${y}` });
           y++; // at most one heatwave every other year
         }
       }
@@ -1321,17 +1424,33 @@
     let seasonalTemp = 28;
     let eventSpike = 0;
     let activeEventLabel = null;
-    // spike = peak SST anomaly (°C) above the seasonal cycle, centred on each region's warm season
-    const BLEACHING_EVENTS = [
-      { year: 1998, spike: 2.1, label: 'Mass Bleaching 1998' },
-      { year: 2010, spike: 1.4, label: 'Mass Bleaching 2010' },
-      { year: 2014, spike: 1.0, label: 'Global Bleaching 2014' },
-      { year: 2015, spike: 1.2, label: 'Global Bleaching 2015' },
-      { year: 2016, spike: 1.0, label: 'Global Bleaching 2016' },
-      { year: 2017, spike: 0.7, label: 'Bleaching 2017' },
-      { year: 2020, spike: 0.7, label: 'Mass Bleaching 2020' },
-      { year: 2024, spike: 1.2, label: 'Global Bleaching 2024' }
-    ];
+    // ── Observed marine heatwaves, per region ──
+    // spike = peak SST anomaly (°C) above the seasonal cycle, centred on the region's warm season (±6 months).
+    // Which years affected which region follows NOAA Coral Reef Watch alerts and published bleaching surveys;
+    // the spike sizes are approximate and were tuned so the simulated healthy-colony share tracks the NCRMP surveys in DATA.
+    const REGION_EVENTS = {
+      'American Samoa': [
+        { year: 2015, spike: 0.7 }, { year: 2016, spike: 1.1 }, { year: 2017, spike: 0.6 },
+        { year: 2020, spike: 0.8 }, { year: 2024, spike: 1.0 }
+      ],
+      'Main Hawaiian Islands': [
+        { year: 2014, spike: 0.9 }, { year: 2015, spike: 1.6 }, { year: 2019, spike: 1.0 }
+      ],
+      'Mariana Archipelago': [
+        { year: 2013, spike: 0.8 }, { year: 2014, spike: 1.0 }, { year: 2016, spike: 0.8 },
+        { year: 2017, spike: 1.0 }, { year: 2024, spike: 1.0 }
+      ],
+      'Northwestern Hawaiian Islands': [
+        { year: 2014, spike: 1.4 }, { year: 2015, spike: 0.6 }, { year: 2017, spike: 0.9 }, { year: 2019, spike: 0.8 }
+      ],
+      'Pacific Remote Island Areas': [
+        { year: 2015, spike: 0.8 }, { year: 2016, spike: 1.0 }, { year: 2024, spike: 1.0 }
+      ]
+    };
+    // 2014–2017: third global bleaching event; 2023–2025: fourth
+    function eventLabel(year) {
+      return (year >= 2014 && year <= 2017) || (year >= 2023 && year <= 2025) ? `Global Bleaching ${year}` : `Marine Heatwave ${year}`;
+    }
     let eventSpike2 = 0, activeEventLabel2 = null, temperature2 = 28;
     let lastRes1 = null;
     let tick = 0, dhw = 0, simSpeed = 1, running = true;
@@ -1342,8 +1461,6 @@
     let prey = 50, predator = 10;
     let region = 'American Samoa';
     let dataIdx = 0;
-    const histLen = 120;
-    let hist = { t: [], sst: [], dhw: [], coral: [], prey: [], pred: [] };
 
     // ── Data logging for CSV export ──
     let simLog = [];
@@ -1362,7 +1479,8 @@
     const ctx = canvas.getContext('2d');
 
     // â”€â”€ Simplex Noise â”€â”€
-    const SimplexNoise = (function () { const F2 = 0.5 * (Math.sqrt(3) - 1), G2 = (3 - Math.sqrt(3)) / 6; const grad = [[1, 1], [-1, 1], [1, -1], [-1, -1], [1, 0], [-1, 0], [0, 1], [0, -1]]; const perm = new Uint8Array(512); const p = new Uint8Array(256); for (let i = 0; i < 256; i++)p[i] = i; for (let i = 255; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1));[p[i], p[j]] = [p[j], p[i]]; } for (let i = 0; i < 512; i++)perm[i] = p[i & 255]; return function (x, y) { const s = (x + y) * F2, i = Math.floor(x + s), j = Math.floor(y + s); const t = (i + j) * G2, x0 = x - (i - t), y0 = y - (j - t); const i1 = x0 > y0 ? 1 : 0, j1 = x0 > y0 ? 0 : 1; const x1 = x0 - i1 + G2, y1 = y0 - j1 + G2, x2 = x0 - 1 + 2 * G2, y2 = y0 - 1 + 2 * G2; const ii = i & 255, jj = j & 255; const gi0 = perm[ii + perm[jj]] % 8, gi1 = perm[ii + i1 + perm[jj + j1]] % 8, gi2 = perm[ii + 1 + perm[jj + 1]] % 8; let n0 = 0, n1 = 0, n2 = 0; let t0 = 0.5 - x0 * x0 - y0 * y0; if (t0 > 0) { t0 *= t0; n0 = t0 * t0 * (grad[gi0][0] * x0 + grad[gi0][1] * y0); } let t1 = 0.5 - x1 * x1 - y1 * y1; if (t1 > 0) { t1 *= t1; n1 = t1 * t1 * (grad[gi1][0] * x1 + grad[gi1][1] * y1); } let t2 = 0.5 - x2 * x2 - y2 * y2; if (t2 > 0) { t2 *= t2; n2 = t2 * t2 * (grad[gi2][0] * x2 + grad[gi2][1] * y2); } return 70 * (n0 + n1 + n2); }; })();
+    function makeSimplexNoise(rand) { const F2 = 0.5 * (Math.sqrt(3) - 1), G2 = (3 - Math.sqrt(3)) / 6; const grad = [[1, 1], [-1, 1], [1, -1], [-1, -1], [1, 0], [-1, 0], [0, 1], [0, -1]]; const perm = new Uint8Array(512); const p = new Uint8Array(256); for (let i = 0; i < 256; i++)p[i] = i; for (let i = 255; i > 0; i--) { const j = Math.floor(rand() * (i + 1));[p[i], p[j]] = [p[j], p[i]]; } for (let i = 0; i < 512; i++)perm[i] = p[i & 255]; return function (x, y) { const s = (x + y) * F2, i = Math.floor(x + s), j = Math.floor(y + s); const t = (i + j) * G2, x0 = x - (i - t), y0 = y - (j - t); const i1 = x0 > y0 ? 1 : 0, j1 = x0 > y0 ? 0 : 1; const x1 = x0 - i1 + G2, y1 = y0 - j1 + G2, x2 = x0 - 1 + 2 * G2, y2 = y0 - 1 + 2 * G2; const ii = i & 255, jj = j & 255; const gi0 = perm[ii + perm[jj]] % 8, gi1 = perm[ii + i1 + perm[jj + j1]] % 8, gi2 = perm[ii + 1 + perm[jj + 1]] % 8; let n0 = 0, n1 = 0, n2 = 0; let t0 = 0.5 - x0 * x0 - y0 * y0; if (t0 > 0) { t0 *= t0; n0 = t0 * t0 * (grad[gi0][0] * x0 + grad[gi0][1] * y0); } let t1 = 0.5 - x1 * x1 - y1 * y1; if (t1 > 0) { t1 *= t1; n1 = t1 * t1 * (grad[gi1][0] * x1 + grad[gi1][1] * y1); } let t2 = 0.5 - x2 * x2 - y2 * y2; if (t2 > 0) { t2 *= t2; n2 = t2 * t2 * (grad[gi2][0] * x2 + grad[gi2][1] * y2); } return 70 * (n0 + n1 + n2); }; }
+    let SimplexNoise = makeSimplexNoise(seededStream('noise'));
 
     // ── Coral State Color Palette ──
     const STATE_COLORS = {
@@ -1684,122 +1802,248 @@
 
     // Initial reef seeded from the region's first NOAA survey. Cells beyond the coral cover
     // are bare substrate (dead) that can be recolonised by recruitment.
-    function buildGrid(regionName) {
+    function buildGrid(regionName, rand) {
       const rd = DATA.filter(d => d.region === regionName);
       const d0 = rd[0] || { healthy_pct: 80, bleached_pct: 5, dead_pct: 5 };
       const hF = d0.healthy_pct / 100, bF = d0.bleached_pct / 100, dF = d0.dead_pct / 100, cF = coralCover / 100;
       const cells = [];
       for (let i = 0; i < ROWS * COLS; i++) {
-        const r = Math.random(); let state, stressLevel;
+        const r = rand(); let state, stressLevel;
         if (r < cF * hF) { state = 'HEALTHY'; stressLevel = 0.1; }
         else if (r < cF * (hF + bF)) { state = 'BLEACHED'; stressLevel = 0.65; }
         else if (r < cF * (hF + bF + dF)) { state = 'DEAD'; stressLevel = 0.9; }
         else if (r < cF) { state = 'STRESSED'; stressLevel = 0.35; }
         else { state = 'DEAD'; stressLevel = 0.9; }
-        cells.push({ state, stressLevel, localTemp: temperature, dhw: 0, hs: new Float32Array(DHW_WINDOW), regrowing: state === 'DEAD' });
+        // substrate: bare rock with no colony yet; it stops being substrate once corals settle on it
+        const substrate = r >= cF;
+        cells.push({ state, stressLevel, localTemp: temperature, dhw: 0, hs: new Float32Array(DHW_WINDOW), regrowing: state === 'DEAD', substrate });
       }
       return cells;
     }
     function initGrid2() {
-      grid2 = buildGrid(region2);
+      grid2 = buildGrid(region2, seededStream('grid2'));
     }
     function initGrid() {
-      grid = buildGrid(region);
+      SimplexNoise = makeSimplexNoise(seededStream('noise'));
+      const rand = seededStream('grid');
+      grid = buildGrid(region, rand);
       generateFutureEvents();
+      rngSim = seededStream('sim');
       lastRes1 = null;
 
       // Randomize initial current centers within grid bounds
       for (let k = 0; k < 3; k++) {
-        currentX[k] = Math.random() * COLS;
-        currentY[k] = Math.random() * ROWS;
+        currentX[k] = rand() * COLS;
+        currentY[k] = rand() * ROWS;
       }
     }
 
-    const chartOpts = (yLabel, color) => ({
-      responsive: true, maintainAspectRatio: false, animation: { duration: 0 },
-      scales: {
-        x: { display: true, ticks: { color: '#3a5a7a', font: { size: 9 }, maxTicksLimit: 6 }, grid: { color: '#0D2137', lineWidth: 0.5 } },
-        y: { display: true, ticks: { color: '#3a5a7a', font: { size: 9 }, maxTicksLimit: 4 }, grid: { color: '#0D2137', lineWidth: 0.5 }, title: { display: false }, border: { display: false } }
-      },
-      plugins: {
-        legend: { display: false },
-        tooltip: {
-          backgroundColor: '#050F1F',
-          titleColor: '#aaa',
-          bodyColor: color,
-          borderColor: '#1A3355',
-          borderWidth: 1,
-          cornerRadius: 8,
-          padding: 10,
-          titleFont: { size: 10 },
-          bodyFont: { size: 12, weight: 'bold' }
-        }
-      },
-      elements: { point: { radius: 0 }, line: { borderWidth: 2 } },
-      layout: { padding: { top: 8, right: 8, bottom: 4, left: 4 } }
-    });
+    // ── Time-series charts ──
+    // All four charts share one numeric year axis covering the whole run (2013 → current year),
+    // with one point per LOG_INTERVAL ticks (~monthly).
+    const MONTHS_TR = ['Oca', 'Şub', 'Mar', 'Nis', 'May', 'Haz', 'Tem', 'Ağu', 'Eyl', 'Eki', 'Kas', 'Ara'];
+    const PROJECTION_START = 2024;
+    const AXIS_MIN_SPAN_END = 2030;
+    function formatYearMonth(x) {
+      const y = Math.floor(x);
+      return `${MONTHS_TR[Math.min(11, Math.floor((x - y) * 12))]} ${y}`;
+    }
 
-    function makeDataset(label, borderColor, fillColor) {
-      return { label, data: [], borderColor, backgroundColor: fillColor, fill: true, tension: 0.3 };
+    // Marine heatwave periods seen so far for the main region ({ start, end, label }), shaded on the SST chart
+    let eventBands = [];
+
+    // Draws the projection divider, event bands and dashed reference lines (options.plugins.timeDecor)
+    const timeDecorPlugin = {
+      id: 'timeDecor',
+      beforeDatasetsDraw(chart, args, opts) {
+        const { ctx: c, chartArea: a, scales: { x } } = chart;
+        c.save();
+        // Projection period: light tint after 2024
+        const px = x.getPixelForValue(PROJECTION_START);
+        if (px < a.right) {
+          c.fillStyle = 'rgba(255,136,0,0.05)';
+          c.fillRect(Math.max(px, a.left), a.top, a.right - Math.max(px, a.left), a.bottom - a.top);
+        }
+        if (opts.events) {
+          for (const b of eventBands) {
+            const x1 = Math.max(a.left, x.getPixelForValue(b.start)), x2 = Math.min(a.right, x.getPixelForValue(b.end));
+            if (x2 <= x1) continue;
+            c.fillStyle = 'rgba(255,60,60,0.16)';
+            c.fillRect(x1, a.top, x2 - x1, a.bottom - a.top);
+          }
+        }
+        c.restore();
+      },
+      afterDatasetsDraw(chart, args, opts) {
+        const { ctx: c, chartArea: a, scales } = chart;
+        c.save();
+        c.font = '9px "Courier New", monospace';
+        // Projection divider
+        const px = scales.x.getPixelForValue(PROJECTION_START);
+        if (px > a.left && px < a.right) {
+          c.strokeStyle = 'rgba(255,136,0,0.6)'; c.setLineDash([2, 3]); c.lineWidth = 1;
+          c.beginPath(); c.moveTo(px, a.top); c.lineTo(px, a.bottom); c.stroke();
+          c.setLineDash([]); c.fillStyle = 'rgba(255,136,0,0.85)'; c.textAlign = 'left'; c.textBaseline = 'top';
+          c.fillText('Projeksiyon →', px + 3, a.top + 2);
+        }
+        // Event labels (only where the band is wide enough)
+        if (opts.events) {
+          c.fillStyle = 'rgba(255,120,120,0.9)'; c.textAlign = 'center'; c.textBaseline = 'bottom';
+          for (const b of eventBands) {
+            const x1 = scales.x.getPixelForValue(b.start), x2 = scales.x.getPixelForValue(b.end);
+            if (x2 - x1 > 16 && x1 >= a.left && x2 <= a.right) c.fillText('▲', (x1 + x2) / 2, a.bottom - 1);
+          }
+        }
+        // Horizontal reference lines
+        for (const ref of opts.refLines || []) {
+          const scale = scales[ref.axis];
+          const v = typeof ref.value === 'function' ? ref.value() : ref.value;
+          if (!scale || v == null || v < scale.min || v > scale.max) continue;
+          const py = scale.getPixelForValue(v);
+          c.strokeStyle = ref.color; c.setLineDash([4, 3]); c.lineWidth = 1;
+          c.beginPath(); c.moveTo(a.left, py); c.lineTo(a.right, py); c.stroke();
+          c.setLineDash([]); c.fillStyle = ref.color; c.textBaseline = 'bottom';
+          c.textAlign = ref.axis === 'y2' ? 'right' : 'left';
+          const label = typeof ref.label === 'function' ? ref.label() : ref.label;
+          c.fillText(label, ref.axis === 'y2' ? a.right - 3 : a.left + 3, py - 1);
+        }
+        c.restore();
+      }
+    };
+
+    function axisTitle(text, color = '#5a7fa5') {
+      return { display: true, text, color, font: { size: 9 }, padding: { top: 0, bottom: 2 } };
+    }
+
+    // Options shared by every time chart; `extra` tweaks scales and plugins per chart
+    function timeChartOpts({ yTitle, yMin, yMax, ySuffix = '', unit = '', legend = false, timeDecor = {} }) {
+      return {
+        responsive: true, maintainAspectRatio: false, animation: { duration: 0 }, parsing: false, normalized: true,
+        interaction: { mode: 'nearest', axis: 'x', intersect: false },
+        scales: {
+          x: {
+            type: 'linear', min: 2013, max: AXIS_MIN_SPAN_END,
+            ticks: { color: '#5a7fa5', font: { size: 9 }, maxTicksLimit: 7, callback: v => Math.round(v), precision: 0 },
+            grid: { color: '#0D2137', lineWidth: 0.5 }
+          },
+          y: {
+            min: yMin, max: yMax,
+            title: axisTitle(yTitle),
+            ticks: { color: '#5a7fa5', font: { size: 9 }, maxTicksLimit: 5, callback: v => `${+v.toFixed(1)}${ySuffix}` },
+            grid: { color: '#0D2137', lineWidth: 0.5 }, border: { display: false }
+          }
+        },
+        plugins: {
+          legend: legend ? { display: true, position: 'top', align: 'end', labels: { color: '#8ab4d0', font: { size: 9 }, boxWidth: 10, boxHeight: 6, padding: 6 } } : { display: false },
+          tooltip: {
+            backgroundColor: '#050F1F', titleColor: '#aaa', borderColor: '#1A3355', borderWidth: 1,
+            cornerRadius: 8, padding: 8, titleFont: { size: 10 }, bodyFont: { size: 11, weight: 'bold' },
+            callbacks: {
+              title: items => items.length ? formatYearMonth(items[0].parsed.x) : '',
+              label: c => `${c.dataset.label}: ${c.parsed.y.toFixed(1)}${c.dataset.unit ?? unit}`
+            }
+          },
+          timeDecor
+        },
+        elements: { point: { radius: 0, hoverRadius: 3 }, line: { borderWidth: 1.6, tension: 0 } },
+        layout: { padding: { top: 4, right: 6, bottom: 2, left: 2 } }
+      };
+    }
+
+    function makeDataset(label, borderColor, fillColor, extra = {}) {
+      return Object.assign({ label, data: [], borderColor, backgroundColor: fillColor, fill: !!fillColor }, extra);
     }
 
     const chartTemp = new Chart(document.getElementById('chart-temp'), {
       type: 'line',
       data: {
-        labels: [], datasets: [
-          makeDataset('SST', '#FF6B2B', 'rgba(255,107,43,0.15)'),
-          makeDataset('DHW', '#FF2200', 'rgba(255,34,0,0.10)'),
-          { label: '⚠ Event', data: [], borderColor: 'rgba(255,50,50,0.9)', backgroundColor: 'rgba(255,50,50,0.9)', pointRadius: 6, pointHoverRadius: 8, pointStyle: 'triangle', showLine: false, fill: false, tension: 0 }
+        datasets: [
+          makeDataset('Sıcaklık (aylık)', 'rgba(255,138,61,0.35)', null, { yAxisID: 'y', unit: '°C', borderWidth: 1, order: 1 }),
+          makeDataset('Isı stresi (DHW)', '#FF2D2D', 'rgba(255,45,45,0.22)', { yAxisID: 'y2', unit: ' °C-hafta', fill: 'origin', order: 2 }),
+          makeDataset('Sıcaklık (12 ay ort.)', '#FFB070', null, { yAxisID: 'y', unit: '°C', borderWidth: 2.2, order: 0 })
         ]
       },
       options: (() => {
-        const o = chartOpts('°C / DHW', '#FF6B2B');
-        o.plugins.legend = { display: true, labels: { color: '#7a9ab5', font: { size: 10 }, boxWidth: 12 } };
-        o.plugins.tooltip.bodyColor = '#FF6B2B';
+        const o = timeChartOpts({
+          yTitle: 'Sıcaklık (°C)', ySuffix: '°', legend: true,
+          timeDecor: {
+            events: true,
+            refLines: [
+              { axis: 'y', value: () => mmmOf(region), label: () => `MMM ${mmmOf(region).toFixed(1)}°C`, color: 'rgba(255,170,90,0.75)' },
+              { axis: 'y2', value: 4, label: 'DHW 4 · ağarma', color: 'rgba(255,214,0,0.75)' },
+              { axis: 'y2', value: 8, label: 'DHW 8 · ölüm riski', color: 'rgba(255,70,70,0.85)' }
+            ]
+          }
+        });
+        o.scales.y.grace = '5%';
+        o.scales.y2 = {
+          position: 'right', min: 0, suggestedMax: 12,
+          title: axisTitle('DHW (°C-hafta)', '#c46a6a'),
+          ticks: { color: '#c46a6a', font: { size: 9 }, maxTicksLimit: 5, precision: 0 },
+          grid: { drawOnChartArea: false }, border: { display: false }
+        };
         return o;
-      })()
+      })(),
+      plugins: [timeDecorPlugin]
     });
+
+    // Healthy share of coral colonies, on the same definition as the NOAA survey stars
     const chartCoral = new Chart(document.getElementById('chart-coral'), {
       type: 'line',
       data: {
-        labels: [],
         datasets: [
-          makeDataset('Coral Cover', '#00D4AA', 'rgba(0,212,170,0.15)'),
+          makeDataset('Model', '#00D4AA', 'rgba(0,212,170,0.15)'),
           {
-            label: 'NOAA Observed',
-            data: [],
-            borderColor: '#FFD700',
-            backgroundColor: '#FFD700',
-            pointRadius: 6,
-            pointHoverRadius: 8,
-            pointStyle: 'star',
-            showLine: false,
-            fill: false
+            label: 'NOAA ölçümü', data: [], borderColor: '#FFD700', backgroundColor: '#FFD700',
+            pointRadius: 6, pointHoverRadius: 8, pointStyle: 'star', showLine: false, fill: false
           }
         ]
       },
-      options: (() => {
-        const o = chartOpts('Cover %', '#00D4AA');
-        o.plugins.tooltip.callbacks = {
-          label: (ctx) => {
-            if (ctx.datasetIndex === 1) return `NOAA Observed ${ctx.parsed.x}: ${ctx.parsed.y}%`;
-            return `${ctx.dataset.label}: ${ctx.parsed.y?.toFixed(1) ?? ''}%`;
-          }
-        };
-        return o;
-      })()
+      options: timeChartOpts({
+        yTitle: 'Sağlıklı koloni (%)', yMin: 0, yMax: 100, ySuffix: '%', unit: '%', legend: true,
+        timeDecor: { refLines: [{ axis: 'y', value: 50, label: '%50 kritik', color: 'rgba(255,214,0,0.5)' }] }
+      }),
+      plugins: [timeDecorPlugin]
     });
+
     const chartPrey = new Chart(document.getElementById('chart-prey'), {
       type: 'line',
-      data: { labels: [], datasets: [makeDataset('Prey', '#00AAFF', 'rgba(0,170,255,0.15)')] },
-      options: chartOpts('Population', '#00AAFF')
+      data: {
+        datasets: [
+          makeDataset('Av balığı', '#00AAFF', 'rgba(0,170,255,0.15)'),
+          makeDataset('Taşıma kapasitesi', 'rgba(160,200,230,0.6)', null, { borderDash: [4, 3], borderWidth: 1 })
+        ]
+      },
+      options: timeChartOpts({ yTitle: 'Popülasyon indeksi', yMin: 0, legend: true }),
+      plugins: [timeDecorPlugin]
     });
+
     const chartPred = new Chart(document.getElementById('chart-pred'), {
       type: 'line',
-      data: { labels: [], datasets: [makeDataset('Predator', '#AA44FF', 'rgba(170,68,255,0.15)')] },
-      options: chartOpts('Population', '#AA44FF')
+      data: {
+        datasets: [
+          makeDataset('Avcı balık', '#AA44FF', 'rgba(170,68,255,0.15)')
+        ]
+      },
+      options: timeChartOpts({ yTitle: 'Popülasyon indeksi', yMin: 0 }),
+      plugins: [timeDecorPlugin]
     });
     const allCharts = [chartTemp, chartCoral, chartPrey, chartPred];
+
+    // Starts every chart's time axis at 2013 and widens it as the run goes on
+    function setTimeAxisEnd(year) {
+      const end = Math.max(AXIS_MIN_SPAN_END, Math.ceil(year));
+      allCharts.forEach(c => { c.options.scales.x.max = end; });
+    }
+    // Last 12 months of monthly SST samples, for the smoothed trend line
+    const SAMPLES_PER_YEAR = Math.round(30 / LOG_INTERVAL);
+    let sstWindow = [];
+    function clearTimeCharts() {
+      allCharts.forEach(c => { c.data.datasets.forEach(ds => { ds.data = []; }); });
+      sstWindow = [];
+      eventBands = [];
+      setTimeAxisEnd(2013);
+    }
 
     // ── Panel mode switching ──
     let panelMode = 'charts'; // 'charts' or 'heatmap'
@@ -1823,11 +2067,13 @@
       panelMode = 'charts';
       document.getElementById('heatmap-overlay').classList.remove('visible');
       document.getElementById('charts-stack').classList.remove('hidden');
-      // Resize all charts since they were hidden
-      allCharts.forEach(c => c.resize());
+      // Resize and redraw all charts: they were hidden and not updated meanwhile
+      allCharts.forEach(c => { c.resize(); c.update('none'); });
     }
 
     function switchHmTab(btn) {
+      // Clicking the tab that is already open returns to the charts (mirrors clicking a chart title to open the map)
+      if (btn.classList.contains('active')) { closeHeatmap(); return; }
       activeHeatmapType = btn.dataset.hm;
       document.querySelectorAll('.hm-tab').forEach(t => t.classList.remove('active'));
       btn.classList.add('active');
@@ -2149,19 +2395,6 @@
       drawHeatmapColorBar(hmCtx, cfg, mapW + 14, 30, 14, h - 60);
     }
 
-    function pushChart(chart, label, ...vals) {
-      if (window._skipChartUpdate) return;
-      chart.data.labels.push(label);
-      vals.forEach((v, i) => { if (chart.data.datasets[i]) chart.data.datasets[i].data.push(v); });
-      if (chart.data.labels.length > histLen) {
-        chart.data.labels.shift();
-        chart.data.datasets.forEach(ds => ds.data.shift());
-      }
-      chart.update('none');
-    }
-
-
-
     // ── FEATURE: Region Coordinates (from NOAA NCRMP CSV) ──
     const REGION_COORDS = {
       'American Samoa': { lat: -14.03, lon: -170.19 },
@@ -2383,7 +2616,7 @@
           if (parseFloat(finalHealthy) >= 40) { scoreEmoji = '🏆'; scoreText = 'MERCANLARI KURTARDIN!'; scoreColor = '#00d4aa'; }
           else if (parseFloat(finalHealthy) >= 25) { scoreEmoji = '⚠️'; scoreText = 'KRİTİK AMA UMUT VAR'; scoreColor = '#FFB300'; }
           else if (parseFloat(finalHealthy) >= 10) { scoreEmoji = '🔻'; scoreText = 'CİDDİ GERİLEME'; scoreColor = '#ff8800'; }
-          banner.innerHTML = `<div style="font-size:2.5rem;margin-bottom:8px">${scoreEmoji}</div><div style="font-family:'Courier New';font-size:1.1rem;font-weight:700;color:${scoreColor};letter-spacing:1px;margin-bottom:6px">${scoreText}</div><div style="font-size:0.75rem;color:#4a6fa5;margin-bottom:12px">2100 — Projeksiyon Dönemi Sonu</div><div style="display:flex;gap:16px;justify-content:center;margin-bottom:14px"><div style="text-align:center"><div style="font-size:1.3rem;font-weight:700;color:#00d4aa;font-family:'Courier New'">${finalHealthy}%</div><div style="font-size:0.6rem;color:#4a6fa5">Sağlıklı</div></div><div style="text-align:center"><div style="font-size:1.3rem;font-weight:700;color:#f87171;font-family:'Courier New'">${finalDead}%</div><div style="font-size:0.6rem;color:#4a6fa5">Ölü</div></div><div style="text-align:center"><div style="font-size:1.3rem;font-weight:700;color:#7ab8db;font-family:'Courier New'">${activePol}/3</div><div style="font-size:0.6rem;color:#4a6fa5">Politika</div></div></div><div style="font-size:0.65rem;color:#3a5a7a;font-style:italic;margin-bottom:4px">IPCC SSP2-4.5 orta emisyon senaryosu</div><button onclick="document.getElementById('sim-complete-banner').style.display='none'" style="margin-top:14px;padding:7px 20px;border-radius:6px;border:1px solid #1a3a5c;background:#0d2137;color:#7ab8db;font-family:'Inter',sans-serif;font-size:0.72rem;font-weight:600;cursor:pointer">✕ Kapat</button>`;
+          banner.innerHTML = `<div style="font-size:2.5rem;margin-bottom:8px">${scoreEmoji}</div><div style="font-family:'Courier New';font-size:1.1rem;font-weight:700;color:${scoreColor};letter-spacing:1px;margin-bottom:6px">${scoreText}</div><div style="font-size:0.75rem;color:#4a6fa5;margin-bottom:12px">2100 — Projeksiyon Dönemi Sonu · Seed #${simSeed}</div><div style="display:flex;gap:16px;justify-content:center;margin-bottom:14px"><div style="text-align:center"><div style="font-size:1.3rem;font-weight:700;color:#00d4aa;font-family:'Courier New'">${finalHealthy}%</div><div style="font-size:0.6rem;color:#4a6fa5">Sağlıklı</div></div><div style="text-align:center"><div style="font-size:1.3rem;font-weight:700;color:#f87171;font-family:'Courier New'">${finalDead}%</div><div style="font-size:0.6rem;color:#4a6fa5">Ölü</div></div><div style="text-align:center"><div style="font-size:1.3rem;font-weight:700;color:#7ab8db;font-family:'Courier New'">${activePol}/3</div><div style="font-size:0.6rem;color:#4a6fa5">Politika</div></div></div><div style="font-size:0.65rem;color:#3a5a7a;font-style:italic;margin-bottom:4px">IPCC SSP2-4.5 orta emisyon senaryosu</div><button onclick="document.getElementById('sim-complete-banner').style.display='none'" style="margin-top:14px;padding:7px 20px;border-radius:6px;border:1px solid #1a3a5c;background:#0d2137;color:#7ab8db;font-family:'Inter',sans-serif;font-size:0.72rem;font-weight:600;cursor:pointer">✕ Kapat</button>`;
           document.body.appendChild(banner);
         }
         setSpeed(0);
@@ -2432,11 +2665,11 @@
         const clim = climateOf(r);
         const seasonalDelta = Math.cos(((monthInYear - clim.peakMonth) / 12) * 2 * Math.PI) * clim.amp;
         let spike = 0, label = null;
-        for (const ev of BLEACHING_EVENTS.concat(futureEvents)) {
+        for (const ev of (REGION_EVENTS[r] || []).concat(futureEvents)) {
           const dist = Math.abs(exactYear - (ev.year + clim.peakMonth / 12));
           if (dist < 0.5) {
             spike = ev.spike * (1 - dist / 0.5);
-            label = ev.label;
+            label = ev.label || eventLabel(ev.year);
           }
         }
         return { temp: clim.mean + userAnomaly + projDelta + seasonalDelta, spike, label };
@@ -2467,6 +2700,8 @@
         const nextStress = new Float32Array(ROWS * COLS);
         let totalTemp = 0, totalStress = 0, healthyCount = 0, totalAlive = 0, totalDHW = 0;
         let deadCount = 0, bleachedCount = 0, recoveringCount = 0;
+        // Colony condition as NOAA NCRMP reports it: healthy / bleached / dead share of coral colonies (bare substrate excluded)
+        let colonyCount = 0, colonyHealthy = 0, colonyBleached = 0, colonyDead = 0;
         // Slowly drifting within-reef temperature pattern
         const drift = tick * 0.004;
 
@@ -2557,6 +2792,15 @@
           if (c.state === 'DEAD') deadCount++;
           if (c.state === 'BLEACHED') bleachedCount++;
           if (c.state === 'RECOVERING') recoveringCount++;
+          // Bare rock becomes part of the reef once recruits on it are established colonies
+          if (c.substrate && stress <= ESTABLISHED_STRESS) c.substrate = false;
+          if (!c.substrate) {
+            colonyCount++;
+            // Regrowth on dead reef only shows up in surveys once the recruits are established colonies
+            if (c.state === 'DEAD' || (c.regrowing && stress > ESTABLISHED_STRESS)) colonyDead++;
+            else if (c.state === 'BLEACHED') colonyBleached++;
+            else colonyHealthy++;
+          }
         }
 
         const zones = { 'NE': [0, 0], 'NW': [0, 0], 'SE': [0, 0], 'SW': [0, 0], 'CENTER': [0, 0] };
@@ -2580,7 +2824,7 @@
           }
         }
 
-        return { totalTemp, totalStress, totalDHW, healthyCount, deadCount, bleachedCount, recoveringCount, hotZone };
+        return { totalTemp, totalStress, totalDHW, healthyCount, deadCount, bleachedCount, recoveringCount, hotZone, colonyCount, colonyHealthy, colonyBleached, colonyDead };
       }
 
       const res1 = processGrid(grid, finalTemp, mmmOf(region), 0);
@@ -2600,13 +2844,22 @@
           if (grid[i].state === 'DEAD') {
             let restorationChance = (budgetValue / 100) * 0.003 * (1 + (imfFund / 100));
             if (protectedCells.has(i)) restorationChance *= 2;
-            if (Math.random() < restorationChance) {
-              // Outplanted fragments: alive but still need years of growth (and survive heatwaves) to become healthy
+            if (rngSim() < restorationChance) {
+              // Outplanted nursery colonies: established and alive, but still need years of growth (and to survive heatwaves) to become healthy
               grid[i].state = 'RECOVERING';
-              grid[i].stressLevel = 0.78;
+              grid[i].stressLevel = ESTABLISHED_STRESS;
               grid[i].regrowing = true;
               res1.deadCount--;
               res1.recoveringCount++;
+              if (grid[i].substrate) {
+                // Outplanting onto bare rock creates a new colony
+                grid[i].substrate = false;
+                res1.colonyCount++;
+                res1.colonyHealthy++;
+              } else {
+                res1.colonyDead--;
+                res1.colonyHealthy++;
+              }
             }
           }
         }
@@ -2728,8 +2981,6 @@
       }
 
       // Push to charts
-      const lbl = Math.floor(exactYear).toString();
-      const eventPoint = eventSpike > 0.1 ? avgTemp : null;
 
       // Update Policy Summary Bar
       const pTempBadge = document.getElementById('ps-temp-val');
@@ -2771,6 +3022,7 @@
         const totalCellsLog = ROWS * COLS;
         simLog.push({
           tick,
+          seed: simSeed,
           year: Math.min(Math.floor(exactYear), 2100),
           month: monthStr,
           region,
@@ -2782,6 +3034,9 @@
           bleached_pct: ((res1.bleachedCount / totalCellsLog) * 100).toFixed(1),
           dead_pct: ((res1.deadCount / totalCellsLog) * 100).toFixed(1),
           recovering_pct: ((res1.recoveringCount / totalCellsLog) * 100).toFixed(1),
+          colony_healthy_pct: res1.colonyCount ? (res1.colonyHealthy / res1.colonyCount * 100).toFixed(1) : '0.0',
+          colony_bleached_pct: res1.colonyCount ? (res1.colonyBleached / res1.colonyCount * 100).toFixed(1) : '0.0',
+          colony_dead_pct: res1.colonyCount ? (res1.colonyDead / res1.colonyCount * 100).toFixed(1) : '0.0',
           prey_population: prey.toFixed(1),
           predator_population: predator.toFixed(1),
           protected_pct: ((protectedCells.size / totalCellsLog) * 100).toFixed(1),
@@ -2807,10 +3062,33 @@
         if (badge) badge.textContent = simLog.length;
       }
 
-      pushChart(chartTemp, lbl, avgTemp, avgDHW, eventPoint);
-      pushChart(chartCoral, lbl, (1 - avgStress) * 100);
-      pushChart(chartPrey, lbl, prey);
-      pushChart(chartPred, lbl, predator);
+      // ── Time charts: recorded every LOG_INTERVAL ticks (also while fast-forwarding), redrawn only when visible ──
+      const colonyHealthyPct = res1.colonyCount > 0 ? res1.colonyHealthy / res1.colonyCount * 100 : 0;
+      if (eventSpike > 0.2) {
+        const last = eventBands[eventBands.length - 1];
+        if (last && last.label === activeEventLabel && exactYear - last.end < 0.1) last.end = exactYear;
+        else eventBands.push({ start: exactYear, end: exactYear, label: activeEventLabel });
+      }
+      if (tick % LOG_INTERVAL === 0) {
+        const x = exactYear;
+        chartTemp.data.datasets[0].data.push({ x, y: avgTemp });
+        chartTemp.data.datasets[1].data.push({ x, y: avgDHW });
+        sstWindow.push(avgTemp);
+        if (sstWindow.length > SAMPLES_PER_YEAR) sstWindow.shift();
+        chartTemp.data.datasets[2].data.push({ x, y: sstWindow.reduce((a, v) => a + v, 0) / sstWindow.length });
+        chartCoral.data.datasets[0].data.push({ x, y: colonyHealthyPct });
+        chartPrey.data.datasets[0].data.push({ x, y: prey });
+        chartPrey.data.datasets[1].data.push({ x, y: K });
+        chartPred.data.datasets[0].data.push({ x, y: predator });
+        setTimeAxisEnd(x);
+        if (!window._skipChartUpdate) {
+          if (panelMode === 'charts') allCharts.forEach(c => c.update('none'));
+          document.getElementById('hv-temp').textContent = `${avgTemp.toFixed(1)}°C · DHW ${avgDHW.toFixed(1)}`;
+          document.getElementById('hv-coral').textContent = `${colonyHealthyPct.toFixed(0)}%`;
+          document.getElementById('hv-prey').textContent = `${prey.toFixed(0)} / K ${K.toFixed(0)}`;
+          document.getElementById('hv-pred').textContent = predator.toFixed(1);
+        }
+      }
 
       // Analysis panel update
       const { healthyCount, bleachedCount, deadCount, recoveringCount } = res1;
@@ -2877,6 +3155,30 @@
       resetSim();
     });
     document.getElementById('btn-reset').addEventListener('click', resetSim);
+
+    // ── Seed controls ──
+    const $seedInput = document.getElementById('seed-input');
+    function setSeed(seed) {
+      simSeed = seed;
+      $seedInput.value = seed;
+      // Keep the seed in the address bar so a run can be shared as a link
+      try {
+        const url = new URL(location.href);
+        url.searchParams.set('seed', seed);
+        history.replaceState(null, '', url);
+      } catch (e) { /* e.g. sandboxed frames */ }
+    }
+    $seedInput.value = simSeed;
+    $seedInput.addEventListener('change', () => {
+      const v = parseInt($seedInput.value, 10);
+      if (!(v >= 1 && v <= SEED_MAX)) { $seedInput.value = simSeed; return; }
+      setSeed(v);
+      resetSim();
+    });
+    document.getElementById('btn-new-seed').addEventListener('click', () => {
+      setSeed(randomSeed());
+      resetSim();
+    });
 
     const $budgetSlider = document.getElementById('budget-slider');
     const $budgetVal = document.getElementById('budget-val');
@@ -3143,8 +3445,9 @@
     }
 
     function updateCoralRealPoints() {
+      // NOAA surveys are plotted mid-year
       const realPoints = DATA.filter(d => d.region === region).map(d => ({
-        x: String(d.year),
+        x: d.year + 0.5,
         y: d.healthy_pct
       }));
       if (chartCoral.data.datasets[1]) {
@@ -3167,7 +3470,9 @@
       const b = document.getElementById('sim-complete-banner');
       if (b) b.remove();
       coralCover = parseInt($coverSlider.value);
-      allCharts.forEach(c => { c.data.labels = []; c.data.datasets.forEach(ds => ds.data = []); c.update('none'); });
+      clearTimeCharts();
+      allCharts.forEach(c => c.update('none'));
+      ['hv-temp', 'hv-coral', 'hv-prey', 'hv-pred'].forEach(id => { document.getElementById(id).textContent = ''; });
       apPeakBleach = 0; apWorstYear = 2013; apWorstBleach = 0;
       ['ap-peak-bleach','ap-worst-year','ap-coral-now','ap-dead-total','ap-protected','ap-proj-2100'].forEach(id => { const el = document.getElementById(id); if(el) el.textContent = '—'; });
       initGrid();
@@ -3203,10 +3508,7 @@
 
       // Disable chart updates during fast-forward for performance
       window._skipChartUpdate = true;
-      allCharts.forEach(c => {
-        c.data.labels = [];
-        c.data.datasets.forEach(ds => ds.data = []);
-      });
+      clearTimeCharts();
 
       // Full reset
       tick = 0; dhw = 0; prey = 50; predator = 10; exactYear = 2013;
@@ -3228,7 +3530,8 @@
         step();
       }
 
-      // Force chart redraw
+      // Force chart redraw (the NOAA stars were cleared with the other datasets)
+      updateCoralRealPoints();
       allCharts.forEach(c => c.update('none'));
     });
 
@@ -3439,13 +3742,13 @@ eşik = 4 DHW + alkalinite bonusu (en fazla +3)
       {sel:'#temp-slider,#cover-slider',title:'🌡️ 4/13 — Başlangıç Koşulları',desc:'Sıcaklık, seçili bölgenin yıllık ortalama SST değeridir ve bölge seçildiğinde NOAA iklimsel ortalamasına ayarlanır (ör. Hawaii ~26°C, Amerikan Samoası ~28.6°C). Artırmak kalıcı bir ısınma anomalisi ekler. Mercan örtüsü 0–100% başlangıçtaki canlı mercan oranıdır. Bunlar başlangıç koşullarıdır — simülasyon fizik modellerine göre evrimleştirir.'},
       {sel:'#recovery-sel,#budget-slider',title:'🔬 5/13 — İyileşme Parametreleri',desc:'İyileşme Hızı (Yavaş/Orta/Hızlı) doğal mercan iyileşme oranını kontrol eder — gerçek mercan iyileşmesi ağarmadan sonra 10–15 yıl sürer. Restorasyon bütçesi aktif müdahaleyi modeller.'},
       {sel:'#btn-scenario-bau,#btn-scenario-optimal,#btn-scenario-mpa',title:'🔥 6/13 — Senaryo Butonları',desc:'Hızlıca önceden tanımlanmış senaryoları uygulayabilirsiniz: <b>Business as Usual</b> (tüm emisyonlar maksimum, politikalar kapalı), <b>Optimal Policies</b> (emisyonlar sıfır, tam politika ve koruma) ve <b>MPA Only</b> (emisyonlar standart, koruma bütçesi maksimum).'},
-      {sel:'.btn-group',title:'⏯️ 7/13 — Simülasyon Kontrolleri',desc:'<b>Pause</b>: Duraklatır, haritayı inceleyin. <b>Play</b>: Normal hızda başlatır. <b>Fast</b>: 3x hız. <b>Reset</b>: Her şeyi sıfırlar. <b>Compare</b>: İki bölgeyi yan yana çalıştırır. <b>CSV</b>: Her tick\'i kaydeder — yıl, ay, bölge, SST, DHW, stres, mercan %, sağlıklı/ağarmış/ölü/iyileşen %, balık popülasyonları, koruma % ve tüm politika değerleri.'},
+      {sel:'.btn-group',title:'⏯️ 7/13 — Simülasyon Kontrolleri',desc:'<b>Pause</b>: Duraklatır, haritayı inceleyin. <b>Play</b>: Normal hızda başlatır. <b>Fast</b>: 3x hız. <b>Reset</b>: Her şeyi sıfırlar (aynı tohumla). <b>Seed</b>: Aynı tohum + aynı ayarlar = birebir aynı simülasyon; 🎲 yeni rastgele tohum seçer. <b>Compare</b>: İki bölgeyi yan yana çalıştırır. <b>CSV</b>: Her tick\'i kaydeder — yıl, ay, bölge, SST, DHW, stres, mercan %, sağlıklı/ağarmış/ölü/iyileşen %, balık popülasyonları, koruma % ve tüm politika değerleri.'},
       {sel:'#policy-body .policy-col:first-child',title:'🏭 8/13 — Emisyon Kaynakları',desc:'Her kaydırıcının bilimsel temeli: <b>Kömür & Sanayi</b> — küresel CO₂\'nin ~%35\'i. <b>Havacılık & Gemi</b> — uluslararası taşımacılık ~%2.5. <b>Hayvancılık & Pirinç</b> — tarımsal CH₄ metan ~%14.5, 20 yılda CO₂\'den 80x güçlü. <b>Orman Kaybı</b> — karbon yutaklarını yok eder. <b>Temiz Enerji</b> — payı arttıkça net emisyonlar düşer. <b>CCS</b> — karbon yakalama ve depolama teknolojisi.'},
       {sel:'#btn-us-policy,#btn-cn-policy,#btn-eu-policy',title:'🌍 9/13 — İklim Anlaşmaları',desc:'<b>US</b>: Paris Anlaşması/IRA katılımı. <b>CN</b>: Çin\'in 2060 karbon nötrlük taahhüdü. <b>EU</b>: Avrupa Yeşil Mutabakat hedefleri. Kapatıldığında ısınma hızı o bloğun modellenen katkısı kadar artar. Üçü birden kapatılırsa 2100\'e kadar ~+0.8°C ek ısınma oluşur.'},
       {sel:'#policy-body .policy-col:last-child',title:'🌊 10/13 — Okyanus & Resif Politikaları',desc:'<b>Alkalinite Güçlendirme</b>: Deniz suyuna alkalin mineral ekleyerek pH\'ı yükseltir, ağarma eşiğini ~0.5°C artırabilir. <b>Turizm Düzenleme</b>: Kontrolsüz turizm fiziksel hasar ve kirlilik yaratır. <b>Balıkçılık Kotası</b>: Aşırı avlanma alg büyümesini tetikler, mercanları boğar. <b>GEF Reef Finance</b>: BM mercan koruma fonu. <b>Erken Uyarı</b>: Bölgesel DHW≥4 olunca otomatik MPA genişletme tetikler.'},
       {sel:'#grid-container',wide:true,title:'🪸 11/13 — Mercan Haritası',desc:'24×18 ızgara = 432 bağımsız mercan koloni hücresi. Her hücrenin kendi stres değeri her tick güncellenir. <b>5 durum</b>: Healthy (stres 0–0.25), Stressed (0.25–0.55), Bleached (0.55–0.82), Dead (0.82–1.00), Recovering. Stres bulaşması: her hücre 8 komşusundan IDW ağırlıklı stres alır. 3 okyanus akıntı merkezi ısı dağılımını etkiler. Korunan hücreler (MPA) stresi %77 daha yavaş biriktirir. <b>Sürükleyerek kendi MPA\'nızı çizin!</b>'},
-      {sel:'#heatmap-overlay,.chart-header',title:'🌡️ 12/13 — Isı Haritası Modu',desc:'Herhangi bir grafik başlığına tıklayarak canvas\'ı ısı haritasına geçirin. SST ısı haritası okyanus akıntılarından etkilenen sıcaklık gradyanını gösterir. Stres ısı haritası termal basıncın en yüksek olduğu yerleri gösterir. Geri dönmek için "← CHARTS" butonuna tıklayın.'},
-      {sel:'#analysis-panel,#charts-stack',title:'📈 13/13 — Veri Grafikleri & Gerçek NOAA Verileri',desc:'<b>SST/DHW</b>: 2013–2023 NOAA NCRMP gözlem bazçizgisi, 2024 sonrası IPCC SSP2-4.5 projeksiyonu. <b>Coral Cover</b>: Simülasyon çizgisinin üzerindeki <b style="color:#FFD700">⭐ altın yıldız noktalar</b> seçili bölgenin gerçek NOAA ölçümleridir — modelin gerçek veriye ne kadar yakın kaldığını gösterir. <b>Prey/Predator Fish</b>: Lotka-Volterra av-avcı dinamiği, taşıma kapasitesi mercan örtüsüne bağlı.'}
+      {sel:'#heatmap-overlay,.chart-header',title:'🌡️ 12/13 — Isı Haritası Modu',desc:'Herhangi bir grafik başlığına tıklayarak canvas\'ı ısı haritasına geçirin. SST ısı haritası okyanus akıntılarından etkilenen sıcaklık gradyanını gösterir. Stres ısı haritası termal basıncın en yüksek olduğu yerleri gösterir. Grafiklere dönmek için açık sekmenin başlığına tekrar tıklayın (veya "← CHARTS").'},
+      {sel:'#analysis-panel,#charts-stack',title:'📈 13/13 — Veri Grafikleri & Gerçek NOAA Verileri',desc:'Dört grafik aynı yıl eksenini paylaşır; 2024 sonrası turuncu ayraçla <b>Projeksiyon</b> olarak işaretlenir. <b>Deniz Sıcaklığı & Isı Stresi</b>: kalın çizgi 12 aylık ortalama sıcaklık, kırmızı alan DHW; kesikli çizgiler MMM, DHW 4 (ağarma) ve 8 (ölüm riski), kırmızı şeritler sıcak dalgalar. <b>Sağlıklı Mercan Kolonileri</b>: ağarmamış ve ölmemiş kolonilerin oranı (NOAA ile aynı tanım). Simülasyon çizgisinin üzerindeki <b style="color:#FFD700">⭐ altın yıldız noktalar</b> seçili bölgenin gerçek NOAA ölçümleridir — modelin gerçek veriye ne kadar yakın kaldığını gösterir. <b>Av/Avcı Balıklar</b>: Lotka-Volterra av-avcı dinamiği; kesikli çizgi mercan sağlığına bağlı taşıma kapasitesidir.'}
     ];
     var tourIdx = 0, spotEl = null, popEl = null, overlayEl = null;
 

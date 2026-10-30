@@ -29,7 +29,7 @@ Bu uygulama, mercan resiflerinin iklim değişikliği altındaki davranışını
 - **Simülasyon Sonu Değerlendirmesi** — Türkçe puan ve sonuç ekranı
 - **Anlık Analiz Paneli** — En yüksek ağarma yüzdesi, kritik yıl ve korunan alan oranını canlı izleyen panel
 - **Senaryo Seçim Butonları** — Hızlı başlangıç için 3 hazır politika senaryosu (BAU, Optimal, MPA Only)
-- **Gerçek NOAA Veri Entegrasyonu** — Coral Cover grafiği üzerinde altın yıldız şeklinde gösterilen gözlemlenmiş NOAA verileri
+- **Gerçek NOAA Veri Entegrasyonu** — Healthy Colonies grafiği üzerinde altın yıldız şeklinde gösterilen gözlemlenmiş NOAA verileri
 - **Veri Kaynağı Footer** — NOAA NCRMP · NOAA NCEI · IPCC SSP2-4.5
 
 ---
@@ -144,11 +144,25 @@ Emisyon kaydırıcılarının etkisi `emissionRamp(year)` ile 2024–2060 arası
 Her bölge için yıllık ortalama SST (`mean`), mevsimsel yarı genlik (`amp`) ve en sıcak ay (`peakMonth`).
 MMM = mean + amp. Sıcaklık kaydırıcısı seçili bölgenin yıllık ortalamasını temsil eder ve bölge seçildiğinde bu değere ayarlanır.
 
-### 4.4 Tarihsel Ağartma Olayları (`BLEACHING_EVENTS`)
-Spike değerleri, mevsimsel döngünün üstündeki tepe SST anomalisidir ve her bölgenin sıcak mevsiminde (±6 ay üçgen profil) zirve yapar:
-- 2014 (+1.0°C), 2015 (+1.2°C), 2016 (+1.0°C), 2017 (+0.7°C) — 3. küresel ağarma olayı
-- 2020 (+0.7°C)
-- 2024 (+1.2°C) — 4. küresel ağarma olayı
+### 4.4 Bölgeye Özel Ağartma Olayları (`REGION_EVENTS`)
+Spike değerleri, mevsimsel döngünün üstündeki tepe SST anomalisidir ve her bölgenin sıcak mevsiminde (±6 ay üçgen profil) zirve yapar.
+Etiketler `eventLabel(year)` ile üretilir (2014–2017: 3. küresel olay, 2023–2025: 4. küresel olay, diğerleri "Marine Heatwave").
+
+| Bölge | Gözlenen sıcak dalgalar (tepe SST anomalisi) |
+|-------|-----------------------------------------------|
+| American Samoa | 2015 (+0.7°C), 2016 (+1.1°C), 2017 (+0.6°C), 2020 (+0.8°C), 2024 (+1.0°C) |
+| Main Hawaiian Islands | 2014 (+0.9°C), 2015 (+1.6°C, Batı Hawaii'de ağır ölüm), 2019 (+1.0°C) |
+| Mariana Archipelago | 2013 (+0.8°C), 2014 (+1.0°C), 2016 (+0.8°C), 2017 (+1.0°C), 2024 (+1.0°C) |
+| Northwestern Hawaiian Islands | 2014 (+1.4°C, Lisianski/Pearl & Hermes), 2015 (+0.6°C), 2017 (+0.9°C), 2019 (+0.8°C) |
+| Pacific Remote Island Areas | 2015 (+0.8°C), 2016 (+1.0°C, 2015–16 El Niño), 2024 (+1.0°C) |
+
+Şiddetler, `healthy_pct` NCRMP ölçümlerine karşı kalibre edilmiştir (2013–2023 RMSE 13.0 → 5.2, 6 tohum ortalaması).
+
+### 4.5 Koloni İstatistikleri
+NOAA ile karşılaştırma için koloniler sağlıklı / ağarmış / ölü olarak sayılır (çıplak zemin hariç). Yeniden büyüyen
+(`regrowing`) bir alan, stresi `ESTABLISHED_STRESS` (0.55) altına inene kadar — yani yeni koloniler yerleşene kadar,
+yaklaşık 5 yıl — ölü koloni sayılır; çıplak zemin de ancak bu eşikte koloniye dönüşür. Restorasyonla dikilen koloniler
+doğrudan bu eşikte başlar.
 
 2026–2099 arası için her sıfırlamada rastgele sıcak dalgalar (`futureEvents`, yılda ~%20 olasılık, +0.5–1.2°C) üretilir.
 
@@ -161,6 +175,7 @@ Spike değerleri, mevsimsel döngünün üstündeki tepe SST anomalisidir ve her
 - **Her hücre:** `{ state, stressLevel, localTemp, dhw, hs, regrowing }`
   - `hs`: son 7 tick'in HotSpot katkıları (12 haftalık DHW halka tamponu)
   - `regrowing`: ölmüş ve larva yerleşimiyle yeniden büyüyen hücre
+  - `substrate`: henüz koloni olmayan çıplak zemin; üzerine mercan yerleşince (veya restorasyonla) koloniye dönüşür. Koloni istatistiklerine dahil edilmez.
 - **Durumlar:** HEALTHY → STRESSED → BLEACHED → DEAD → RECOVERING
 
 ### 5.2 Durum Geçiş Eşikleri
@@ -244,11 +259,15 @@ restorationChance = (budget/100) × 0.003 × (1 + gefFund/100)
 Balık haritalarında min-max normalizasyon + gamma düzeltme uygulanır.
 
 ### 6.4 Grafikler (Chart.js)
-4 zaman serisi grafiği, her biri 120 veri noktası geçmişi tutar:
-- **SST & DHW** — Çift dataset + olay üçgenleri
-- **Coral Cover** — Yüzde bazlı
-- **Prey Fish** — Popülasyon
-- **Predator Fish** — Popülasyon
+4 zaman serisi grafiği ortak sayısal yıl eksenini (`setTimeAxisEnd`) paylaşır ve 2013'ten itibaren tüm geçmişi tutar
+(her `LOG_INTERVAL` = 3 tick'te bir nokta; ileri sarma sırasında da kaydedilir, yalnızca görünürken yeniden çizilir).
+`timeDecorPlugin` 2024 projeksiyon ayracını, sıcak dalga şeritlerini (`eventBands`) ve kesikli referans çizgilerini çizer.
+- **Deniz Sıcaklığı & Isı Stresi** — aylık SST + 12 aylık ortalama (sol eksen), DHW (sağ eksen `y2`); referanslar MMM, DHW 4, DHW 8
+- **Sağlıklı Mercan Kolonileri** — Sağlıklı koloni oranı (NOAA tanımı); NOAA ölçümleri yıl ortasına (`year + 0.5`) yerleştirilir; %50 referansı
+- **Av Balıkları** — Popülasyon + taşıma kapasitesi K (kesikli)
+- **Avcı Balıklar** — Popülasyon
+
+Kart başlıklarında anlık değer (`hv-*`) gösterilir. Isı haritası modunda açık sekmeye tekrar tıklamak grafiklere döner.
 
 ---
 
@@ -355,9 +374,10 @@ Her 3 tick'te bir (aylık) `simLog[]` dizisine kayıt eklenir.
 
 ### 12.2 CSV Sütunları
 ```
-tick, year, month, region, sst, dhw, avg_stress,
+tick, seed, year, month, region, sst, dhw, avg_stress,
 coral_cover_pct, healthy_pct, bleached_pct, dead_pct,
-recovering_pct, prey_population, predator_population,
+recovering_pct, colony_healthy_pct, colony_bleached_pct,
+colony_dead_pct, prey_population, predator_population,
 protected_pct, budget_million_usd, us_policy, china_policy,
 eu_policy, active_policies, industrial_co2, transport_emissions,
 agricultural_ch4, deforestation_rate, renewable_share,
@@ -374,6 +394,14 @@ CSV butonunun sağ üst köşesinde yeşil badge ile toplam kayıt sayısı canl
 "⬇ CSV" butonu `downloadCSV()` fonksiyonunu çağırır, Blob API ile dosya oluşturur.
 
 ---
+
+## 12.5 Tekrarlanabilirlik (Seed)
+
+- `mulberry32` tohumlanmış üreteç; `seededStream(tag)` her amaç için ayrı akış üretir:
+  `grid` (başlangıç resifi + akıntılar), `grid2` (karşılaştırma resifi), `noise` (SimplexNoise permütasyonu),
+  `events` (gelecekteki sıcak dalgalar), `sim` (restorasyon).
+- `initGrid()` tüm akışları tohumdan yeniden kurar; Reset, bölge değişimi ve timeline scrubber aynı geçmişi üretir.
+- Tohum `?seed=` URL parametresiyle okunur/yazılır, CSV'de `seed` sütunu olarak kaydedilir ve 2100 sonuç ekranında gösterilir.
 
 ## 13. Simplex Noise Implementasyonu
 

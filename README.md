@@ -62,13 +62,20 @@ Bu simülasyon, **NOAA NCRMP** ve **NOAA NCEI** veri setlerinden beslenen gerçe
   - 🏝️ **MPA Only**: Standart emisyon, maksimum yerel koruma, fon ve bütçe.
 
 ### 📊 Gerçek Zamanlı Grafikler
-- **SST & DHW**: Deniz yüzey sıcaklığı ve Derece Isıtma Haftası
-- **Coral Cover**: Mercan örtüsü yüzdesi (Seçilen bölgenin gerçek NOAA NCRMP gözlem verileri altın yıldız noktaları [⭐] şeklinde grafik üzerinde gösterilir)
-- **Prey Fish**: Av balık popülasyonu (Lotka-Volterra modeli)
-- **Predator Fish**: Avcı balık popülasyonu
+Dört grafik de aynı sayısal yıl eksenini paylaşır ve 2013'ten itibaren tüm çalıştırmayı gösterir; 2024 sonrası
+"Projeksiyon" olarak işaretlenir. Her kartta Türkçe başlık, tek cümlelik açıklama, eksen başlıkları/birimleri ve sağ üstte
+anlık değer bulunur.
+
+- **🌡️ Deniz Sıcaklığı & Isı Stresi**: Aylık SST (soluk) ve 12 aylık ortalama (kalın, ısınma eğilimi) sol eksende;
+  DHW (°C-hafta) sağ eksende. Kesikli çizgiler: bölgenin MMM değeri, DHW 4 (ağarma) ve DHW 8 (ölüm riski).
+  Kırmızı şeritler sıcak dalga (ağarma olayı) dönemleridir.
+- **🪸 Sağlıklı Mercan Kolonileri**: Sağlıklı koloni yüzdesi — ağarmamış ve ölmemiş kolonilerin tüm mercan kolonilerine oranı (çıplak zemin hariç). NOAA NCRMP'nin `healthy_pct` değeriyle aynı tanımdır; seçilen bölgenin gerçek gözlemleri altın yıldız [⭐] olarak aynı grafikte gösterilir. Grafik 2013'ten itibaren tüm çalıştırmayı gösterir.
+- **🐟 Av Balıkları**: Av balık popülasyonu (Lotka-Volterra, göreli indeks) ve kesikli çizgiyle mercan sağlığına bağlı taşıma kapasitesi (K)
+- **🦈 Avcı Balıklar**: Avcı balık popülasyonu (göreli indeks)
 
 ### 🗺️ Isı Haritası Modu
-Her grafik başlığına tıklandığında grid üzerinde ilgili metriğin ısı haritasını görselleştirir.
+Her grafik başlığına tıklandığında grid üzerinde ilgili metriğin ısı haritasını görselleştirir. Grafiklere dönmek için
+açık sekmenin başlığına tekrar tıklamak (📈) veya "← CHARTS" düğmesi yeterlidir.
 
 ### 🌍 Bölge Desteği (5 Bölge)
 | Bölge | Koordinat | Veri Yılları |
@@ -148,9 +155,24 @@ Av balık (prey) ve avcı balık (predator) popülasyonları mercan sağlık ind
 | Northwestern Hawaiian Islands | 24.6°C | ±2.5°C | Ağustos | 27.1°C |
 | Pacific Remote Island Areas | 28.3°C | ±0.6°C | Nisan | 28.9°C |
 
-Değerler NOAA Coral Reef Watch 5 km sanal istasyonlarına dayanan yaklaşık iklimsel ortalamalardır. Tarihsel ağarma olayları
-(2014, 2015, 2016, 2017, 2020, 2024) her bölgenin kendi sıcak mevsiminde zirve yapar; karşılaştırma modunda iki bölge kendi
-iklimleriyle simüle edilir.
+Değerler NOAA Coral Reef Watch 5 km sanal istasyonlarına dayanan yaklaşık iklimsel ortalamalardır. Karşılaştırma modunda iki
+bölge kendi iklimleri ve kendi ağarma geçmişleriyle simüle edilir.
+
+### Bölgeye Özel Ağarma Olayları
+Her bölge yalnızca kendisini gerçekten etkileyen sıcak dalgaları yaşar; olay bölgenin sıcak mevsiminde (±6 ay) zirve yapar.
+
+| Bölge | Gözlenen sıcak dalgalar (tepe SST anomalisi) |
+|-------|-----------------------------------------------|
+| American Samoa | 2015 (+0.7°C), 2016 (+1.1°C), 2017 (+0.6°C), 2020 (+0.8°C), 2024 (+1.0°C) |
+| Main Hawaiian Islands | 2014 (+0.9°C), 2015 (+1.6°C, Batı Hawaii'de ağır ölüm), 2019 (+1.0°C) |
+| Mariana Archipelago | 2013 (+0.8°C), 2014 (+1.0°C), 2016 (+0.8°C), 2017 (+1.0°C), 2024 (+1.0°C) |
+| Northwestern Hawaiian Islands | 2014 (+1.4°C, Lisianski/Pearl & Hermes), 2015 (+0.6°C), 2017 (+0.9°C), 2019 (+0.8°C) |
+| Pacific Remote Island Areas | 2015 (+0.8°C), 2016 (+1.0°C, 2015–16 El Niño), 2024 (+1.0°C) |
+
+Hangi yılın hangi bölgeyi etkilediği NOAA Coral Reef Watch uyarılarına ve yayımlanmış ağarma araştırmalarına dayanır; şiddetler
+yaklaşıktır ve simülasyondaki sağlıklı koloni oranının NOAA NCRMP ölçümlerini izlemesi için ayarlanmıştır. 2013–2023 döneminde
+model ile NOAA ölçümleri arasındaki ortalama fark (RMSE, 6 tohum ortalaması) **13.0 → 5.2 puana** indi. Kuzeybatı Hawaii'de
+kalan farkın (≈9 puan) büyük kısmı anket zamanlamasından kaynaklanır: model ölçümleri yıl ortasında varsayar.
 
 ### Bulaşma ve İyileşme Modeli
 - Isı stresi altındaki hücrelerde ağarmış komşular stresi artırır (korunan alanlarda %70 daha az).
@@ -182,7 +204,8 @@ doğrusal interpolasyonla hesaplanır (2013–2023 ortalamasına göre 2050'de +
 | ⏸ Pause | Simülasyonu duraklat |
 | ▶ Play | Normal hızda başlat/devam et |
 | ⏩ Fast | 3x hızda çalıştır |
-| ↺ Reset | Simülasyonu sıfırla |
+| ↺ Reset | Simülasyonu sıfırla (aynı tohumla aynı çalıştırma tekrarlanır) |
+| Seed / 🎲 | Tohum: aynı tohum ve aynı ayarlar birebir aynı simülasyonu üretir; 🎲 yeni rastgele tohum seçer |
 | ⚖ Compare | İki bölgeyi yan yana karşılaştır |
 | ⬇ CSV | Simülasyon verilerini CSV olarak indir |
 
@@ -262,6 +285,7 @@ Simülasyon sırasında **⬇ CSV** butonuna tıklayarak tüm simülasyon verile
 | Sütun | Açıklama |
 |-------|----------|
 | `tick` | Simülasyon adımı |
+| `seed` | Çalıştırmanın tohumu (aynı tohumla yeniden üretilebilir) |
 | `year` | Simülasyon yılı |
 | `month` | Ay |
 | `region` | Seçilen bölge |
@@ -273,6 +297,7 @@ Simülasyon sırasında **⬇ CSV** butonuna tıklayarak tüm simülasyon verile
 | `dead_pct` | Ölü hücre yüzdesi |
 | `bleached_pct` | Ağarmış hücre yüzdesi |
 | `recovering_pct` | İyileşen hücre yüzdesi |
+| `colony_healthy_pct` / `colony_bleached_pct` / `colony_dead_pct` | Kolonilerin sağlıklı/ağarmış/ölü oranı (NOAA `healthy_pct`/`bleached_pct`/`dead_pct` ile doğrudan karşılaştırılabilir) |
 | `prey_population` | Av balık popülasyonu |
 | `predator_population` | Avcı balık popülasyonu |
 | `protected_pct` | Korunan alan yüzdesi |
@@ -288,7 +313,7 @@ Simülasyon sırasında **⬇ CSV** butonuna tıklayarak tüm simülasyon verile
 - Her **tick** = ~12 gün (30 tick ≈ 1 yıl)
 - Toplam simülasyon: **2013–2100** (87 yıl, ~2610 tick)
 - Mevsimsel sıcaklık döngüsü bölgenin en sıcak ayına göre kosinüs modeliyle eklenir
-- Kitlesel ağarma olayları (2014–2017, 2020, 2024) tarihsel olarak, 2024 sonrası sıcak dalgalar rastgele tetiklenir
+- Ağarma olayları 2013–2024 arasında bölgeye özel gözlemlere göre, 2024 sonrası ise rastgele (tohumlu) sıcak dalgalarla tetiklenir
 
 ### Stres Hesaplama
 ```
@@ -311,6 +336,13 @@ DHW < 1 ise:
 | 0.25 – 0.55 | 🟡 STRESSED (Stresli) |
 | 0.55 – 0.82 | 🟠 BLEACHED (Ağarmış) |
 | 0.82 – 1.00 | 🔴 DEAD (Ölü) |
+
+### Tekrarlanabilirlik (Seed)
+Tüm rastgelelik (başlangıç resifi, okyanus akıntıları, sıcaklık deseni, gelecekteki sıcak dalgalar, restorasyon)
+tohumlanmış bir üreteçten (mulberry32) gelir. Her amaç için ayrı bir akış kullanılır; böylece örneğin karşılaştırma
+modunu çalışma sırasında açmak ana resifin geleceğini değiştirmez.
+- Politikaları adil karşılaştırmak için tohumu sabit tutup yalnızca ayarları değiştirin.
+- Tohum adres çubuğuna yazılır (`?seed=4242`); bağlantıyı paylaşan kişi aynı çalıştırmayı görür.
 
 ### Performans
 - Offscreen canvas ile render optimizasyonu
