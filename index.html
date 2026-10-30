@@ -652,6 +652,14 @@
       flex-shrink: 0
     }
 
+    .hm-explain-left .mpa-key {
+      display: inline-block;
+      width: 12px;
+      height: 8px;
+      border: 1.5px dashed #fff;
+      flex-shrink: 0
+    }
+
     .hm-explain-left .arrow {
       color: #2a4a6a;
       margin: 0 1px
@@ -1238,6 +1246,7 @@
       <div class="heatmap-overlay" id="heatmap-overlay">
         <div class="hm-tab-bar">
           <button class="hm-tab active" data-hm="sst" data-i18n-title="hm.tab.tip" style="--tab-accent:#FF6B2B" onclick="switchHmTab(this)" data-i18n="hm.sst"></button>
+          <button class="hm-tab" data-hm="dhw" data-i18n-title="hm.tab.tip" style="--tab-accent:#FF3B3B" onclick="switchHmTab(this)" data-i18n="hm.dhw"></button>
           <button class="hm-tab" data-hm="coral" data-i18n-title="hm.tab.tip" style="--tab-accent:#00D4AA" onclick="switchHmTab(this)" data-i18n="hm.coral"></button>
           <button class="hm-tab" data-hm="prey" data-i18n-title="hm.tab.tip" style="--tab-accent:#00AAFF" onclick="switchHmTab(this)" data-i18n="hm.prey"></button>
           <button class="hm-tab" data-hm="predator" data-i18n-title="hm.tab.tip" style="--tab-accent:#AA44FF" onclick="switchHmTab(this)" data-i18n="hm.predator"></button>
@@ -2087,6 +2096,14 @@
         ],
         text: 'hm.sst.text'
       },
+      dhw: {
+        dots: [
+          { color: '#008C78', label: 'hm.dhw.low' },
+          { color: '#FFDC00', label: 'hm.dhw.bleach' },
+          { color: '#DC1414', label: 'hm.dhw.death' }
+        ],
+        text: 'hm.dhw.text'
+      },
       coral: {
         dots: [
           { color: '#0066FF', label: 'hm.coral.healthy' },
@@ -2125,7 +2142,8 @@
         const border = d.border ? 'border:1px solid #3a5a7a;' : '';
         leftHtml += `<span class="cdot" style="background:${d.color};${border}"></span><span>${t(d.label)}</span>`;
       });
-      el.innerHTML = `<div class="hm-explain-left">${leftHtml}</div><div class="hm-explain-right">${t(info.text)}</div>`;
+      leftHtml += '<span class="arrow">·</span><span class="mpa-key"></span><span>' + t('hm.mpa') + '</span>';
+      el.innerHTML = `<div class="hm-explain-left">${leftHtml}</div><div class="hm-explain-right">${t(info.text)} ${t('hm.hint')}</div>`;
     }
 
     // ── Heatmap rendering system ──
@@ -2140,6 +2158,12 @@
 
     function samplePalette(palette, t) {
       t = Math.max(0, Math.min(1, t));
+      if (palette[0].at !== undefined) {
+        let i = 1;
+        while (i < palette.length - 1 && t > palette[i].at) i++;
+        const a = palette[i - 1], b = palette[i];
+        return lerpColor(a, b, (t - a.at) / ((b.at - a.at) || 1));
+      }
       const n = palette.length - 1;
       const idx = t * n;
       const lo = Math.floor(idx);
@@ -2159,12 +2183,24 @@
       { r: 255, g: 255, b: 255 } // 32°C  #FFFFFF
     ];
 
+    // Stops sit on the state thresholds (healthy ≤ 0.25 < stressed ≤ 0.55 < bleached ≤ 0.82 < dead)
     const PALETTE_CORAL = [
-      { r: 0, g: 102, b: 255 },  // 0.0 healthy  #0066FF
-      { r: 0, g: 204, b: 170 },  // 0.25         #00CCAA
-      { r: 255, g: 179, b: 0 },  // 0.5          #FFB300
-      { r: 255, g: 51, b: 0 },   // 0.75         #FF3300
-      { r: 5, g: 10, b: 26 }     // 1.0 dead     #050A1A
+      { at: 0, r: 0, g: 102, b: 255 },
+      { at: 0.25, r: 0, g: 204, b: 170 },
+      { at: 0.55, r: 255, g: 179, b: 0 },
+      { at: 0.82, r: 255, g: 51, b: 0 },
+      { at: 1, r: 5, g: 10, b: 26 }
+    ];
+
+    // Degree Heating Weeks, 0–16 °C-weeks
+    const DHW_SCALE_MAX = 16;
+    const PALETTE_DHW = [
+      { at: 0, r: 4, g: 20, b: 40 },
+      { at: 2 / 16, r: 0, g: 140, b: 120 },
+      { at: 4 / 16, r: 255, g: 220, b: 0 },
+      { at: 8 / 16, r: 255, g: 110, b: 0 },
+      { at: 12 / 16, r: 220, g: 20, b: 20 },
+      { at: 1, r: 90, g: 0, b: 30 }
     ];
 
     const PALETTE_PREY = [
@@ -2185,11 +2221,38 @@
       { r: 255, g: 170, b: 255 }  // 1.0  #FFAAFF
     ];
 
+    // Each layer: palette, colour-bar ticks ({ at, text }) and an axis label; values are on fixed scales
     const HEATMAP_CONFIG = {
-      sst: { palette: PALETTE_SST, label: '°C', stops: ['26°C', '28°C', '30°C', '32°C'] },
-      coral: { palette: PALETTE_CORAL, label: 'hm.health', stops: ['state.healthy', 'state.stressed', 'state.bleached', 'state.dead'] },
-      prey: { palette: PALETTE_PREY, label: 'hm.density', stops: ['hm.none', 'hm.low', 'hm.med', 'hm.high'] },
-      predator: { palette: PALETTE_PRED, label: 'hm.density', stops: ['hm.none', 'hm.low', 'hm.med', 'hm.high'] }
+      sst: {
+        palette: PALETTE_SST, label: () => '°C',
+        ticks: () => {
+          const lo = sstScaleMin(), mmm = mmmOf(region);
+          return [0, 2, 4, 6].map(d => ({ at: d / 6, text: `${lo + d}°C` }))
+            .concat([{ at: (mmm - lo) / 6, text: 'MMM', marker: true }]);
+        }
+      },
+      dhw: {
+        palette: PALETTE_DHW, label: () => t('chart.axisDhw'),
+        ticks: () => [
+          { at: 0, text: '0' }, { at: 4 / 16, text: '4 · ' + t('hm.dhw.bleachShort'), marker: true },
+          { at: 8 / 16, text: '8 · ' + t('hm.dhw.deathShort'), marker: true }, { at: 12 / 16, text: '12' }, { at: 1, text: '16+' }
+        ]
+      },
+      coral: {
+        palette: PALETTE_CORAL, label: () => t('hm.health'),
+        ticks: () => [
+          { at: 0, text: t('state.healthy') }, { at: 0.25, text: t('state.stressed'), marker: true },
+          { at: 0.55, text: t('state.bleached'), marker: true }, { at: 0.82, text: t('state.dead'), marker: true }
+        ]
+      },
+      prey: {
+        palette: PALETTE_PREY, label: () => t('hm.density'),
+        ticks: () => ['hm.none', 'hm.low', 'hm.med', 'hm.high'].map((k, i) => ({ at: i / 3, text: t(k) }))
+      },
+      predator: {
+        palette: PALETTE_PRED, label: () => t('hm.density'),
+        ticks: () => ['hm.none', 'hm.low', 'hm.med', 'hm.high'].map((k, i) => ({ at: i / 3, text: t(k) }))
+      }
     };
 
     function avgNeighborPrey(idx) {
@@ -2214,6 +2277,9 @@
         case 'sst': {
           // Normalize localTemp to a 6°C window centred on the region's MMM
           return Math.max(0, Math.min(1, (cell.localTemp - sstScaleMin()) / 6));
+        }
+        case 'dhw': {
+          return Math.min(1, cell.dhw / DHW_SCALE_MAX);
         }
         case 'coral': {
           return cell.stressLevel; // already 0-1
@@ -2240,12 +2306,12 @@
       const pal = cfg.palette;
       for (let i = 0; i < pal.length; i++) {
         const c = pal[i];
-        grad.addColorStop(i / (pal.length - 1), `rgb(${c.r},${c.g},${c.b})`);
+        grad.addColorStop(c.at !== undefined ? c.at : i / (pal.length - 1), `rgb(${c.r},${c.g},${c.b})`);
       }
       ctx2d.fillStyle = grad;
       ctx2d.fillRect(x, y, bw, bh);
       const accentColors = {
-        sst: '#FF6B2B', coral: '#00D4AA',
+        sst: '#FF6B2B', dhw: '#FF3B3B', coral: '#00D4AA',
         prey: '#00AAFF', predator: '#AA44FF'
       };
       const accent = accentColors[activeHeatmapType] || '#ffffff';
@@ -2266,13 +2332,13 @@
       ctx2d.font = '9px "Courier New", monospace';
       ctx2d.textAlign = 'left';
       ctx2d.textBaseline = 'middle';
-      const lo = sstScaleMin();
-      const stops = activeHeatmapType === 'sst' ? [0, 2, 4, 6].map(d => `${lo + d}°C`) : cfg.stops.map(k => t(k));
-      for (let i = 0; i < stops.length; i++) {
-        const pos = i / (stops.length - 1);
-        const ty = y + pos * bh;
+      for (const tick of cfg.ticks()) {
+        if (tick.at < 0 || tick.at > 1) continue;
+        const ty = y + tick.at * bh;
+        ctx2d.fillStyle = '#c0d8e8';
         ctx2d.fillRect(x - 3, ty, 3, 1);
-        ctx2d.fillText(stops[i], x + bw + 3, ty);
+        if (tick.marker) { ctx2d.fillStyle = 'rgba(255,255,255,0.85)'; ctx2d.fillRect(x, ty, bw, 1.5); ctx2d.fillStyle = '#ffffff'; }
+        ctx2d.fillText(tick.text, x + bw + 3, ty);
       }
 
       // Vertical label
@@ -2282,8 +2348,34 @@
       ctx2d.fillStyle = '#8ab4d0';
       ctx2d.font = '10px "Courier New", monospace';
       ctx2d.textAlign = 'center';
-      ctx2d.fillText(cfg.label.startsWith('hm.') ? t(cfg.label) : cfg.label, 0, 0);
+      ctx2d.fillText(cfg.label(), 0, 0);
       ctx2d.restore();
+    }
+
+    // The heat map pixels are recomputed only when the simulation advances, the layer or size changes or the
+    // language changes; the hover read-out and overlays are redrawn every frame on top of the cached image.
+    let hmCacheKey = '', hmHover = null, hmStats = null;
+
+    function summariseLayer(type) {
+      const n = ROWS * COLS;
+      if (type === 'sst' || type === 'dhw') {
+        let sum = 0, min = Infinity, max = -Infinity, hot = 0;
+        for (const c of grid) {
+          const v = type === 'sst' ? c.localTemp : c.dhw;
+          sum += v; if (v < min) min = v; if (v > max) max = v; if (c.dhw >= 4) hot++;
+        }
+        return type === 'sst'
+          ? t('hm.sum.sst', { avg: (sum / n).toFixed(1), min: min.toFixed(1), max: max.toFixed(1) })
+          : t('hm.sum.dhw', { avg: (sum / n).toFixed(1), max: max.toFixed(1), pct: Math.round(hot / n * 100) });
+      }
+      if (type === 'coral') {
+        let hl = 0, bl = 0, dd = 0;
+        for (const c of grid) { if (c.state === 'DEAD') dd++; else if (c.state === 'BLEACHED') bl++; else hl++; }
+        return t('hm.sum.coral', { h: Math.round(hl / n * 100), b: Math.round(bl / n * 100), d: Math.round(dd / n * 100) });
+      }
+      let sum = 0;
+      for (let i = 0; i < n; i++) sum += Math.pow(getCellValue(grid[i], i, type), 0.5);
+      return t('hm.sum.fish', { avg: Math.round(sum / n * 100) });
     }
 
     function renderHeatmap() {
@@ -2297,14 +2389,11 @@
         cEl.width = w * dpr; cEl.height = h * dpr;
         cEl.style.width = w + 'px'; cEl.style.height = h + 'px';
         hmCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        hmCacheKey = '';
       }
-      hmCtx.fillStyle = '#020810';
-      hmCtx.fillRect(0, 0, w, h);
 
       const cfg = HEATMAP_CONFIG[activeHeatmapType];
-      const palette = cfg.palette;
-
-      const legW = 80, mapW = w - legW;
+      const legW = w < 500 ? 70 : 90, mapW = w - legW;
       const cellW = mapW / COLS, cellH = h / ROWS;
 
       // Half-res IDW rendering
@@ -2314,82 +2403,125 @@
         hmOffCanvas = document.createElement('canvas');
         hmOffCanvas.width = hw; hmOffCanvas.height = hh;
         hmOffCtx = hmOffCanvas.getContext('2d');
-      }
-      const img = hmOffCtx.createImageData(hw, hh), d = img.data;
-      const nvTime = noiseTime * 2;
-
-      // Pre-compute per-cell values
-      const cellValues = new Float32Array(ROWS * COLS);
-      for (let i = 0; i < ROWS * COLS; i++) {
-        cellValues[i] = getCellValue(grid[i], i, activeHeatmapType);
+        hmCacheKey = '';
       }
 
-      // Min-max normalization + gamma for fish maps
-      if (activeHeatmapType === 'prey' || activeHeatmapType === 'predator') {
-        let minV = Infinity, maxV = -Infinity;
-        for (let i = 0; i < cellValues.length; i++) {
-          if (cellValues[i] < minV) minV = cellValues[i];
-          if (cellValues[i] > maxV) maxV = cellValues[i];
+      const key = `${tick}|${activeHeatmapType}|${hw}x${hh}|${I18N.lang}|${region}`;
+      if (key !== hmCacheKey) {
+        hmCacheKey = key;
+        const img = hmOffCtx.createImageData(hw, hh), d = img.data;
+        const palette = cfg.palette;
+        const cellValues = new Float32Array(ROWS * COLS);
+        for (let i = 0; i < ROWS * COLS; i++) {
+          cellValues[i] = getCellValue(grid[i], i, activeHeatmapType);
+          // Fish layers: square root keeps small populations visible; the scale itself stays absolute
+          if (activeHeatmapType === 'prey' || activeHeatmapType === 'predator') cellValues[i] = Math.pow(cellValues[i], 0.5);
         }
-        const range = maxV - minV + 0.001;
-        for (let i = 0; i < cellValues.length; i++) {
-          cellValues[i] = Math.pow((cellValues[i] - minV) / range, 0.5);
-        }
-      }
-
-      for (let py = 0; py < hh; py++) {
-        const ry = py * invSc;
-        for (let px = 0; px < hw; px++) {
-          const rx = px * invSc;
-
-          // Turbulence
-          const turbX = SimplexNoise(rx * 0.03, ry * 0.03 + nvTime) * 15;
-          const turbY = SimplexNoise(rx * 0.03 + 100 + nvTime, ry * 0.03 + 100) * 15;
-          const sampleX = rx + turbX;
-          const sampleY = ry + turbY;
-
-          const gx = sampleX / cellW - 0.5;
-          const gy = sampleY / cellH - 0.5;
-          const gxi = Math.round(gx);
-          const gyi = Math.round(gy);
-
-          // IDW interpolation of cell values
-          let sumVal = 0, sumW = 0.001;
-
-          for (let cy = gyi - 2; cy <= gyi + 2; cy++) {
-            for (let cx = gxi - 2; cx <= gxi + 2; cx++) {
-              if (cx >= 0 && cx < COLS && cy >= 0 && cy < ROWS) {
-                const dx = gx - cx;
-                const dy = gy - cy;
-                const distSq = dx * dx + dy * dy;
-                const baseW = 1 / Math.pow(distSq + 0.1, 0.6);
-                const colNoise = SimplexNoise(rx * 0.08 + cx, ry * 0.08 + cy + nvTime * 0.5);
-                const wt = baseW * (1 + colNoise * 0.5);
-                sumVal += cellValues[cy * COLS + cx] * wt;
-                sumW += wt;
+        for (let py = 0; py < hh; py++) {
+          const ry = py * invSc;
+          for (let px = 0; px < hw; px++) {
+            const rx = px * invSc;
+            // Light turbulence for organic edges; small enough that blobs stay on their cells
+            const sampleX = rx + SimplexNoise(rx * 0.03, ry * 0.03) * 6;
+            const sampleY = ry + SimplexNoise(rx * 0.03 + 100, ry * 0.03 + 100) * 4;
+            const gx = sampleX / cellW - 0.5, gy = sampleY / cellH - 0.5;
+            const gxi = Math.round(gx), gyi = Math.round(gy);
+            // IDW interpolation of cell values
+            let sumVal = 0, sumW = 0.001;
+            for (let cy = gyi - 2; cy <= gyi + 2; cy++) {
+              for (let cx = gxi - 2; cx <= gxi + 2; cx++) {
+                if (cx >= 0 && cx < COLS && cy >= 0 && cy < ROWS) {
+                  const dx = gx - cx, dy = gy - cy;
+                  const wt = 1 / Math.pow(dx * dx + dy * dy + 0.3, 1.5);
+                  sumVal += cellValues[cy * COLS + cx] * wt;
+                  sumW += wt;
+                }
               }
             }
+            const color = samplePalette(palette, sumVal / sumW);
+            const off = (py * hw + px) * 4;
+            d[off] = color.r; d[off + 1] = color.g; d[off + 2] = color.b; d[off + 3] = 255;
           }
-
-          const val = sumVal / sumW;
-          const color = samplePalette(palette, val);
-
-          const off = (py * hw + px) * 4;
-          d[off] = color.r;
-          d[off + 1] = color.g;
-          d[off + 2] = color.b;
-          d[off + 3] = 255;
         }
+        hmOffCtx.putImageData(img, 0, 0);
+        hmStats = summariseLayer(activeHeatmapType);
       }
 
-      hmOffCtx.putImageData(img, 0, 0);
+      hmCtx.fillStyle = '#020810';
+      hmCtx.fillRect(0, 0, w, h);
       hmCtx.imageSmoothingEnabled = true;
       hmCtx.imageSmoothingQuality = 'high';
       hmCtx.drawImage(hmOffCanvas, 0, 0, hw, hh, 0, 0, mapW, h);
 
+      // Protected areas (MPA) as dashed outlines, so their effect can be compared
+      hmCtx.save();
+      hmCtx.setLineDash([5, 3]); hmCtx.lineWidth = 1.5; hmCtx.strokeStyle = 'rgba(255,255,255,0.9)';
+      for (const r of protectedRects) {
+        hmCtx.strokeRect(r.minCol * cellW + 0.5, r.minRow * cellH + 0.5, (r.maxCol - r.minCol + 1) * cellW - 1, (r.maxRow - r.minRow + 1) * cellH - 1);
+      }
+      hmCtx.restore();
+
+      // Header: layer, date, region and a one-line summary
+      const months = I18N.months();
+      const head = `${t('hm.layer.' + activeHeatmapType)} · ${months[Math.floor(monthInYear) % 12]} ${Math.min(Math.floor(exactYear), 2100)} · ${I18N.regionName(region)}`;
+      hmCtx.save();
+      hmCtx.font = 'bold 11px "Courier New", monospace';
+      const headTextW = hmCtx.measureText(head).width;
+      hmCtx.font = '10px "Courier New", monospace';
+      const headW = Math.max(headTextW, hmCtx.measureText(hmStats || '').width);
+      hmCtx.fillStyle = 'rgba(0,0,0,0.65)';
+      hmCtx.fillRect(6, 6, Math.min(headW + 14, mapW - 12), 36);
+      hmCtx.textBaseline = 'top'; hmCtx.textAlign = 'left';
+      hmCtx.font = 'bold 11px "Courier New", monospace'; hmCtx.fillStyle = '#ffffff';
+      hmCtx.fillText(head, 13, 11);
+      hmCtx.font = '10px "Courier New", monospace'; hmCtx.fillStyle = '#9fd0ee';
+      hmCtx.fillText(hmStats || '', 13, 26);
+      hmCtx.restore();
+
+      // Hover read-out for the cell under the mouse
+      if (hmHover && hmHover.cx >= 0 && hmHover.cx < COLS && hmHover.cy >= 0 && hmHover.cy < ROWS) {
+        const idx = hmHover.cy * COLS + hmHover.cx, c = grid[idx];
+        const bx = hmHover.cx * cellW, by = hmHover.cy * cellH;
+        hmCtx.save();
+        hmCtx.strokeStyle = '#ffffff'; hmCtx.lineWidth = 1.5;
+        hmCtx.strokeRect(bx + 0.5, by + 0.5, cellW - 1, cellH - 1);
+        const stateKey = { HEALTHY: 'state.healthy', STRESSED: 'state.stressed', BLEACHED: 'state.bleached', DEAD: 'state.dead', RECOVERING: 'state.recovering' }[c.state];
+        const lines = [
+          `${t('hm.tt.sst')}: ${c.localTemp.toFixed(1)}°C`,
+          `${t('hm.tt.dhw')}: ${c.dhw.toFixed(1)}`,
+          `${t('hm.tt.state')}: ${t(stateKey)} (${c.stressLevel.toFixed(2)})`,
+          `${t('hm.tt.prey')}: ${Math.round(Math.pow(getCellValue(c, idx, 'prey'), 0.5) * 100)}%`,
+          `${t('hm.tt.pred')}: ${Math.round(Math.pow(getCellValue(c, idx, 'predator'), 0.5) * 100)}%`
+        ];
+        if (protectedCells.has(idx)) lines.push('🛡️ ' + t('hm.tt.protected'));
+        hmCtx.font = '10px "Courier New", monospace';
+        const tw = Math.max(...lines.map(l => hmCtx.measureText(l).width)) + 16, th = lines.length * 14 + 10;
+        let tx = bx + cellW + 8, ty = by;
+        if (tx + tw > mapW) tx = bx - tw - 8;
+        if (ty + th > h) ty = h - th - 4;
+        hmCtx.fillStyle = 'rgba(5,15,31,0.92)'; hmCtx.strokeStyle = '#1A3355'; hmCtx.lineWidth = 1;
+        hmCtx.beginPath(); hmCtx.roundRect(tx, ty, tw, th, 6); hmCtx.fill(); hmCtx.stroke();
+        hmCtx.fillStyle = '#e0f0ff'; hmCtx.textBaseline = 'top'; hmCtx.textAlign = 'left';
+        lines.forEach((l, i) => hmCtx.fillText(l, tx + 8, ty + 6 + i * 14));
+        hmCtx.restore();
+      }
+
       // Color bar legend
-      drawHeatmapColorBar(hmCtx, cfg, mapW + 14, 30, 14, h - 60);
+      drawHeatmapColorBar(hmCtx, cfg, mapW + 14, 50, 14, h - 80);
     }
+
+    // Hover / touch read-out on the heat map
+    function hmPointer(e) {
+      const rect = hmCanvasEl.getBoundingClientRect();
+      const p = e.touches ? e.touches[0] : e;
+      const w = hmCanvasEl.clientWidth, mapW = w - (w < 500 ? 70 : 90);
+      const x = p.clientX - rect.left, y = p.clientY - rect.top;
+      hmHover = x < mapW ? { cx: Math.floor(x / (mapW / COLS)), cy: Math.floor(y / (hmCanvasEl.clientHeight / ROWS)) } : null;
+    }
+    hmCanvasEl.addEventListener('mousemove', hmPointer);
+    hmCanvasEl.addEventListener('touchstart', hmPointer, { passive: true });
+    hmCanvasEl.addEventListener('touchmove', hmPointer, { passive: true });
+    hmCanvasEl.addEventListener('mouseleave', () => { hmHover = null; });
 
     // ── FEATURE: Region Coordinates (from NOAA NCRMP CSV) ──
     const REGION_COORDS = {
