@@ -296,6 +296,7 @@
 
     // Footer / help
     'footer.data': [`Veri:`, `Data:`],
+    'footer.by': [`Geliştiren:`, `Developed by`],
     'help.tip': [`Bilimsel ayrıntılar`, `Scientific details`],
     'tour.restart': [`Tur`, `Tour`],
     'tour.restart.tip': [`Tanıtım turunu yeniden başlat`, `Restart the introduction tour`],

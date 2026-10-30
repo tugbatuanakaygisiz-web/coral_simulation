@@ -1,4 +1,4 @@
-# 🪸 Coral Reef Stress & Bleaching Monitor — Proje Dokümantasyonu
+# Coral Reef Stress & Bleaching Monitor — Proje Dokümantasyonu
 
 > **Dosya:** `index.html` (+ `i18n.js`)  
 > **Teknolojiler:** HTML5, CSS3, JavaScript (vanilla), Chart.js 4.4.1, Google Fonts (IBM Plex Serif / Sans / Mono)  
@@ -152,6 +152,16 @@ Emisyon kaydırıcılarının etkisi `emissionRamp(year)` ile 2024–2060 arası
 ### 4.3.1 Bölgesel İklim (`REGION_CLIMATE`)
 Her bölge için yıllık ortalama SST (`mean`), mevsimsel yarı genlik (`amp`) ve en sıcak ay (`peakMonth`).
 MMM = mean + amp. Sıcaklık kaydırıcısı seçili bölgenin yıllık ortalamasını temsil eder ve bölge seçildiğinde bu değere ayarlanır.
+
+| Bölge | Yıllık Ort. SST | Mevsimsel Genlik | En Sıcak Ay | MMM |
+|-------|----------------|------------------|-------------|-----|
+| American Samoa | 28.6°C | ±0.9°C | Mart | 29.5°C |
+| Main Hawaiian Islands | 25.9°C | ±1.4°C | Eylül | 27.3°C |
+| Mariana Archipelago | 28.5°C | ±0.9°C | Eylül | 29.4°C |
+| Northwestern Hawaiian Islands | 24.6°C | ±2.5°C | Ağustos | 27.1°C |
+| Pacific Remote Island Areas | 28.3°C | ±0.6°C | Nisan | 28.9°C |
+
+Değerler NOAA Coral Reef Watch 5 km sanal istasyonlarına dayanan yaklaşık iklimsel ortalamalardır.
 
 ### 4.4 Bölgeye Özel Ağartma Olayları (`REGION_EVENTS`)
 Spike değerleri, mevsimsel döngünün üstündeki tepe SST anomalisidir ve her bölgenin sıcak mevsiminde (±6 ay üçgen profil) zirve yapar.

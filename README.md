@@ -6,6 +6,8 @@ An interactive, browser-based simulation of how Pacific coral reefs respond to m
 local protection. It starts from NOAA reef survey data (2013–2023) and projects each reef to 2100 under the IPCC
 SSP2-4.5 scenario.
 
+Developed by **Tuğba Tuana Kaygısız**.
+
 **Live demo:** https://tugbatuanakaygisiz-web.github.io/coral_simulation/
 
 ![Simulation in dark mode](docs/screenshot-dark.jpg)
