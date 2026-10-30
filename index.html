@@ -257,6 +257,8 @@
 
     .narrative { margin-top: 12px; font-size: 0.92rem; line-height: 1.65; color: var(--text); max-width: 95ch }
     .narrative:empty { display: none }
+    .narrative { transition: opacity .18s ease }
+    .narrative.is-updating { opacity: 0 }
     .narrative b { color: var(--title); font-weight: 600 }
 
     /* ── Charts ── */
@@ -943,7 +945,10 @@
     let tick = 0, dhw = 0, simSpeed = 1, running = true;
     let apPeakBleach = 0, apWorstYear = 2013, apWorstBleach = 0;
     // Inputs for the written run summary
-    let proj2100Estimate = null, lastAvgDHW = 0, startHealthyPct = null;
+    let proj2100Estimate = null, startHealthyPct = null;
+    // The summary describes the last completed year: its peak heat stress and any heatwave in it
+    const TICKS_PER_YEAR = 30;
+    let yearMaxDHW = 0, yearEventYear = null, lastYear = null;
     let exactYear = 2013;
     let temperature = 28, coralCover = 80, recoverySpeed = 'medium';
     let dhwSlot = 0;
@@ -1332,6 +1337,7 @@
       rngSim = seededStream('sim');
       lastRes1 = null;
       startHealthyPct = null;
+      yearMaxDHW = 0; yearEventYear = null; lastYear = null;
 
       // Randomize initial current centers within grid bounds
       for (let k = 0; k < 3; k++) {
@@ -2600,7 +2606,13 @@
       const avgTemp = res1.totalTemp / totalCells;
       const avgStress = res1.totalStress / totalCells;
       const avgDHW = res1.totalDHW / totalCells;
-      lastAvgDHW = avgDHW;
+      // Collect this year's peak heat stress; close the year every 30 ticks (also while fast-forwarding)
+      yearMaxDHW = Math.max(yearMaxDHW, avgDHW);
+      if (activeEventYear && eventSpike > 0.2) yearEventYear = activeEventYear;
+      if (tick % TICKS_PER_YEAR === 0) {
+        lastYear = { year: Math.floor(exactYear) - 1, maxDHW: yearMaxDHW, eventYear: yearEventYear };
+        yearMaxDHW = 0; yearEventYear = null;
+      }
 
       if (ewsActive) {
         // Triggers at NOAA CRW Alert Level 1 (DHW ≥ 4), stands down when heat stress fades
@@ -2804,23 +2816,31 @@
       document.getElementById('ap-protected').textContent = protectedNowPct + '%';
       if (apProj) apProj.textContent = document.getElementById('val-proj2100').textContent;
       if (startHealthyPct === null && res1.colonyCount) startHealthyPct = res1.colonyHealthy / res1.colonyCount * 100;
-      if (!window._skipChartUpdate && tick % LOG_INTERVAL === 0) updateNarrative();
+      // Rewritten once per simulated year, not every tick
+      if (!window._skipChartUpdate && tick % TICKS_PER_YEAR === 0) updateNarrative();
     }
 
     // ── Written run summary: a few plain sentences under the numbers ──
     function updateNarrative() {
       const el = document.getElementById('ap-narrative');
-      if (!el || !lastRes1 || !lastRes1.colonyCount) { if (el) el.textContent = ''; return; }
+      if (!el) return;
+      if (!lastRes1 || !lastRes1.colonyCount) { el.textContent = ''; return; }
       const healthy = Math.round(lastRes1.colonyHealthy / lastRes1.colonyCount * 100);
-      const date = `${t('monthsLong').split(',')[Math.floor(monthInYear) % 12]} ${Math.min(Math.floor(exactYear), 2100)}`;
+      const start = Math.round(startHealthyPct ?? healthy);
+      const year = Math.min(Math.floor(exactYear), 2100);
       const parts = [];
-      parts.push(t('n.status', { date, region: I18N.regionName(region), pct: healthy, start: Math.round(startHealthyPct ?? healthy) })
+      parts.push(t(healthy === start ? 'n.status.same' : 'n.status', { year, region: I18N.regionName(region), pct: healthy, start })
         + (exactYear >= PROJECTION_START ? ' ' + t('n.projected') : ''));
 
-      const dhw = lastAvgDHW.toFixed(1);
-      let heat = lastAvgDHW < 1 ? t('n.heat.none') : lastAvgDHW < 4 ? t('n.heat.low', { dhw }) : lastAvgDHW < 8 ? t('n.heat.warn', { dhw }) : t('n.heat.severe', { dhw });
-      if (activeEventYear && eventSpike > 0.2) heat += ' ' + t('n.event', { event: eventLabel(activeEventYear) });
-      parts.push(heat);
+      if (lastYear) {
+        const dhw = lastYear.maxDHW.toFixed(1), y = lastYear.year;
+        let heat = lastYear.maxDHW < 1 ? t('n.heat.none', { year: y })
+          : lastYear.maxDHW < 4 ? t('n.heat.low', { year: y, dhw })
+          : lastYear.maxDHW < 8 ? t('n.heat.warn', { year: y, dhw })
+          : t('n.heat.severe', { year: y, dhw });
+        if (lastYear.eventYear) heat += ' ' + t('n.event', { event: eventLabel(lastYear.eventYear) });
+        parts.push(heat);
+      }
 
       if (apPeakBleach >= 5) parts.push(t('n.worst', { year: apWorstYear, pct: Math.round(apPeakBleach) }));
 
@@ -2828,7 +2848,11 @@
         const p = Math.round(proj2100Estimate);
         parts.push(t(p >= 40 ? 'n.out.good' : p >= 15 ? 'n.out.mid' : 'n.out.bad', { p }));
       }
-      el.innerHTML = parts.join(' ');
+      const html = parts.join(' ');
+      if (html === el.innerHTML) return;
+      // Short fade so a yearly rewrite reads as a calm update rather than a jump
+      el.classList.add('is-updating');
+      setTimeout(() => { el.innerHTML = html; el.classList.remove('is-updating'); }, el.innerHTML ? 180 : 0);
     }
 
 
@@ -3267,6 +3291,7 @@
       ['hv-temp', 'hv-coral', 'hv-prey', 'hv-pred'].forEach(id => { document.getElementById(id).textContent = ''; });
       apPeakBleach = 0; apWorstYear = 2013; apWorstBleach = 0;
       document.getElementById('ap-narrative').textContent = '';
+      setTimeout(updateNarrative, 0);
       ['ap-peak-bleach','ap-worst-year','ap-coral-now','ap-dead-total','ap-protected','ap-proj-2100'].forEach(id => { const el = document.getElementById(id); if(el) el.textContent = '—'; });
       initGrid();
       if (isCompareMode) initGrid2();
