@@ -944,6 +944,48 @@
     .info-text{font-size:.71rem;color:#a0c0d8;line-height:1.7;margin-bottom:16px}
     .info-text b{color:#00d4aa}
     .info-src{color:#4fc3f7;font-weight:600}
+
+    /* ── Phones and narrow tablets ── */
+    #reef-canvas{touch-action:none}
+    @media (max-width: 700px) {
+      /* Let the document scroll instead of <body>, so mobile browsers can collapse their address bar */
+      html, body { height: auto; overflow-y: visible; width: 100% }
+      .left-panel { padding: 10px; gap: 8px }
+      .right-panel { padding: 0 10px 70px }
+      h1 { font-size: 1.05rem; margin: 30px 0 0; line-height: 1.25 }
+      .lang-switch { top: 8px; right: 8px }
+      .top-row { flex-direction: column; align-items: stretch !important }
+      #mini-map-wrap { align-self: center }
+      .badges { gap: 5px }
+      .badge { padding: 4px 8px; font-size: 0.66rem }
+      #stat-cards { gap: 5px !important }
+      #stat-cards .badge { min-width: 0 !important; padding: 4px 8px !important; font-size: 0.64rem !important }
+      .controls { padding: 10px; gap: 8px }
+      .control-group { min-width: calc(50% - 8px) }
+      .btn-group { flex-wrap: wrap; gap: 5px }
+      .btn { padding: 6px 10px }
+      .policy-header { flex-wrap: wrap; gap: 6px }
+      .policy-summary { gap: 4px }
+      .policy-body { flex-direction: column; max-height: 1200px }
+      .p-row label { width: 120px }
+      .p-row input[type=range], .p-row select { flex: 1; min-width: 0; width: auto }
+      .grid-container { height: 340px; min-height: 340px }
+      .sst-legend-strip { gap: 6px; font-size: 0.55rem }
+      .charts-stack { flex-direction: column; height: auto; min-height: 0; max-height: none; overflow: visible }
+      .chart-card { flex: none; height: 290px; min-height: 290px; max-height: 290px }
+      .heatmap-overlay { height: 440px; min-height: 440px; max-height: 440px }
+      .hm-tab-bar { overflow-x: auto }
+      .hm-tab { flex: 0 0 auto; padding: 0 10px; font-size: 10px }
+      .hm-explain { height: auto; flex-direction: column; align-items: flex-start; gap: 4px }
+      .hm-explain-left { flex-wrap: wrap; white-space: normal }
+      .hm-explain-right { text-align: left }
+      .corner-actions { bottom: 10px; right: 10px }
+      .tour-btn { padding: 7px 14px; font-size: 0.75rem }
+      .welcome-body { padding: 18px 16px 18px }
+      .welcome-body h2 { font-size: 1.1rem }
+      #info-panel > div { padding: 20px 16px !important }
+      .info-table { font-size: 0.6rem }
+    }
   </style>
 </head>
 
@@ -957,7 +999,7 @@
       </div>
       <h1 data-i18n="app.title">🪸 Mercan Resifi Stres & Ağarma Monitörü</h1>
       <p class="subtitle" id="region-subtitle">American Samoa</p>
-      <div style="display:flex;gap:8px;align-items:flex-start;">
+      <div class="top-row" style="display:flex;gap:8px;align-items:flex-start;">
         <div style="flex:1;min-width:0;">
       <div class="badges" id="badges">
         <div class="badge" data-i18n-title="badge.year.tip"><span
@@ -3508,6 +3550,39 @@
       }
     });
     canvas.dataset.i18nTitle = 'map.canvas.tip';
+
+    // Touch: drag to draw a protected area (same as the mouse), long-press an area to remove it
+    let longPressTimer = null;
+    function touchAsMouse(type, touch) {
+      canvas.dispatchEvent(new MouseEvent(type, { clientX: touch.clientX, clientY: touch.clientY, button: 0 }));
+    }
+    canvas.addEventListener('touchstart', (e) => {
+      if (e.touches.length !== 1) return;
+      e.preventDefault();
+      const touch = e.touches[0];
+      touchAsMouse('mousemove', touch); // finds the protected area under the finger, if any
+      const pressedArea = hoveredRectIndex;
+      touchAsMouse('mousedown', touch);
+      clearTimeout(longPressTimer);
+      if (pressedArea >= 0) {
+        longPressTimer = setTimeout(() => {
+          isDrawingProtection = false; startCell = null; currentPreviewRect = null;
+          hoveredRectIndex = pressedArea;
+          canvas.dispatchEvent(new MouseEvent('contextmenu'));
+        }, 600);
+      }
+    }, { passive: false });
+    canvas.addEventListener('touchmove', (e) => {
+      if (e.touches.length !== 1) return;
+      e.preventDefault();
+      clearTimeout(longPressTimer);
+      touchAsMouse('mousemove', e.touches[0]);
+    }, { passive: false });
+    canvas.addEventListener('touchend', (e) => {
+      clearTimeout(longPressTimer);
+      const touch = e.changedTouches[0];
+      if (touch) touchAsMouse('mouseup', touch);
+    });
 
     const btnClearMpa = document.getElementById('btn-clear-mpa');
     if (btnClearMpa) {

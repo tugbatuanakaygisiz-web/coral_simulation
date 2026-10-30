@@ -146,7 +146,7 @@
     'map.warnAll': [`⚠ BÜYÜK İKLİM ANLAŞMALARI ÇÖKTÜ`, `⚠ MAJOR CLIMATE AGREEMENTS COLLAPSED`],
     'map.warnUs': [`⚠ ABD İKLİM POLİTİKASINDAN ÇEKİLDİ — ISINMA HIZLANIYOR`, `⚠ US CLIMATE POLICY WITHDRAWN — ACCELERATED WARMING`],
     'map.colorbar': [`Mercan Sağlığı`, `Coral Health`],
-    'map.canvas.tip': [`Koruma alanı çizmek için sürükle. Silmek için alanın üstüne gel ve sağ tıkla.`, `Drag to draw a protected area. Hover over an area and right-click to delete it.`],
+    'map.canvas.tip': [`Koruma alanı çizmek için sürükle. Silmek için alanın üstüne gel ve sağ tıkla (telefonda basılı tut).`, `Drag to draw a protected area. Hover over an area and right-click to delete it (long-press on a phone).`],
     'state.healthy': [`Sağlıklı`, `Healthy`],
     'state.stressed': [`Stresli`, `Stressed`],
     'state.bleached': [`Ağarmış`, `Bleached`],
@@ -295,7 +295,7 @@
     'tour.3.title': [`🌍 Politikalar`, `🌍 Policies`],
     'tour.3.desc': [`Solda emisyon kaynakları: gelecekteki ısınmayı belirler (etkisi 2024'ten sonra yavaş yavaş görülür). Sağda iklim anlaşmaları ve resif önlemleri: alkalinite, turizm ve balıkçılık kuralları, koruma fonu ve erken uyarı.`, `Left: emission sources, which set future warming (their effect builds up gradually after 2024). Right: climate agreements and reef measures — alkalinity, tourism and fishing rules, protection funding and early warning.`],
     'tour.4.title': [`🪸 Resif Haritası`, `🪸 Reef Map`],
-    'tour.4.desc': [`Her kare bir mercan kolonisi; renklerin anlamı haritanın altında. Fareyle <b>sürükleyerek</b> deniz koruma alanı (MPA) çiz, <b>sağ tıkla</b> sil. Alttaki çubukla zamanda ileri geri git.`, `Each square is a coral colony; the colors are explained under the map. <b>Drag</b> with the mouse to draw a marine protected area (MPA), <b>right-click</b> to remove it. Use the bar below to move through time.`],
+    'tour.4.desc': [`Her kare bir mercan kolonisi; renklerin anlamı haritanın altında. Fareyle veya parmakla <b>sürükleyerek</b> deniz koruma alanı (MPA) çiz; silmek için alana <b>sağ tıkla</b> (telefonda <b>basılı tut</b>). Alttaki çubukla zamanda ileri geri git.`, `Each square is a coral colony; the colors are explained under the map. <b>Drag</b> with the mouse or your finger to draw a marine protected area (MPA); <b>right-click</b> it to remove it (<b>long-press</b> on a phone). Use the bar below to move through time.`],
     'tour.5.title': [`📈 Grafikler`, `📈 Charts`],
     'tour.5.desc': [`Sıcaklık ve ısı stresi, sağlıklı koloniler (⭐ = gerçek NOAA ölçümü) ve balıklar. Grafik başlığına tıklayınca ısı haritası açılır; açık sekmeye tekrar tıklayınca grafiklere dönülür.`, `Temperature and heat stress, healthy colonies (⭐ = real NOAA survey) and fish. Click a chart title to open its heat map; click the open tab again to return to the charts.`],
     'tour.6.title': [`🌐 Dil ve Yardım`, `🌐 Language and Help`],
@@ -304,11 +304,11 @@
     // MPA tutorial
     'mpa.title': [`🏝️ Koruma Alanı (MPA) Çizme`, `🏝️ Drawing a Protected Area (MPA)`],
     'mpa.step1': [`1 — Sürükle`, `1 — Drag`],
-    'mpa.step1.text': [`Harita üzerinde fareyi basılı tutup sürükle; dikdörtgen bir koruma alanı oluşur.`, `Hold the mouse button and drag on the map to create a rectangular protected area.`],
+    'mpa.step1.text': [`Harita üzerinde fareyi (veya parmağını) basılı tutup sürükle; dikdörtgen bir koruma alanı oluşur.`, `Hold and drag on the map with the mouse (or your finger) to create a rectangular protected area.`],
     'mpa.step2': [`2 — Etkisi`, `2 — Effect`],
     'mpa.step2.text': [`Korunan alanda ısı stresi daha yavaş birikir, iyileşme yaklaşık 1.8 kat hızlanır. Haritanın en fazla %40'ı korunabilir.`, `Inside a protected area heat stress builds up more slowly and recovery is about 1.8× faster. Up to 40% of the map can be protected.`],
     'mpa.step3': [`3 — Kaldır`, `3 — Remove`],
-    'mpa.step3.text': [`Bir alanı sağ tıklayarak, hepsini "Tümünü Sil" ile kaldır.`, `Right-click an area to remove it, or use "Clear All" to remove them all.`],
+    'mpa.step3.text': [`Bir alanı sağ tıklayarak (telefonda basılı tutarak), hepsini "Tümünü Sil" ile kaldır.`, `Right-click an area to remove it (long-press on a phone), or use "Clear All" to remove them all.`],
     'mpa.ok': [`Anladım →`, `Got it →`],
 
     // Info panel

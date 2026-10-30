@@ -249,16 +249,19 @@ restorationChance = (budget/100) × 0.003 × (1 + gefFund/100)
 10. Ağartma olay etiketi
 
 ### 6.3 Isı Haritası Modu (`renderHeatmap`)
-4 farklı görünüm, her biri özel paletli:
+5 katman, hepsi sabit ölçekli (`HEATMAP_CONFIG`: palet, renk çubuğu işaretleri, eksen etiketi):
 
-| Mod | Palet | Aralık |
+| Mod | Palet | Aralık / İşaretler |
 |-----|-------|--------|
-| SST | Mor→Mavi→Yeşil→Sarı→Kırmızı→Beyaz | Bölge MMM'sinin ±3°C'si |
-| Coral | Mavi→Teal→Sarı→Kırmızı→Siyah | Sağlıklı→Ölü |
-| Prey | Siyah→Lacivert→Mavi→Cyan | Yok→Yoğun |
-| Predator | Siyah→Mor→Leylak→Pembe | Yok→Yüksek |
+| SST | Mor→Mavi→Yeşil→Sarı→Kırmızı→Beyaz | Bölge MMM'sinin ±3°C'si; MMM işaretli |
+| DHW | Lacivert→Yeşil→Sarı→Turuncu→Kırmızı→Bordo | 0–16 °C-hafta; 4 (ağarma) ve 8 (ölüm riski) işaretli |
+| Coral | Mavi→Teal→Sarı→Kırmızı→Siyah | Stres 0–1; durak noktaları durum eşiklerinde (0.25/0.55/0.82) |
+| Prey | Siyah→Lacivert→Mavi→Cyan | Mutlak 0–1 (karekök ile görünürlük) |
+| Predator | Siyah→Mor→Leylak→Pembe | Mutlak 0–1 (karekök ile görünürlük) |
 
-Balık haritalarında min-max normalizasyon + gamma düzeltme uygulanır.
+- Piksel görüntüsü yalnızca tick, katman, boyut, dil veya bölge değişince yeniden hesaplanır (`hmCacheKey`);
+  üst bilgi, MPA çerçeveleri ve fare/dokunma ile değer okuma her karede önbellekteki görüntünün üstüne çizilir.
+- Türbülans 4–6 px ile sınırlıdır; lekeler hücrelerle örtüşür.
 
 ### 6.4 Grafikler (Chart.js)
 4 zaman serisi grafiği ortak sayısal yıl eksenini (`setTimeAxisEnd`) paylaşır ve 2013'ten itibaren tüm geçmişi tutar

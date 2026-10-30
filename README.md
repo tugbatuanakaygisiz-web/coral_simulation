@@ -81,7 +81,15 @@ anlık değer bulunur.
 
 ### 🗺️ Isı Haritası Modu
 Her grafik başlığına tıklandığında grid üzerinde ilgili metriğin ısı haritasını görselleştirir. Grafiklere dönmek için
-açık sekmenin başlığına tekrar tıklamak (📈) veya "← CHARTS" düğmesi yeterlidir.
+açık sekmenin başlığına tekrar tıklamak (📈) veya "← GRAFİKLER" düğmesi yeterlidir.
+- **5 katman:** Deniz sıcaklığı, **Isı stresi (DHW)**, Mercan sağlığı, Av ve Avcı balık yoğunluğu (tahmini).
+- **Değer okuma:** Fareyi (telefonda parmağı) harita üzerinde gezdirince o hücrenin sıcaklığı, DHW'si, durumu, stresi ve balık yoğunlukları görünür.
+- **Üst bilgi:** Katman, tarih, bölge ve özet (ortalama/en düşük/en yüksek, ağarma riskindeki alan, sağlıklı/ağarmış/ölü oranı).
+- **Sabit ölçekler ve eşikler:** Renk çubuğunda MMM, DHW 4/8 ve mercan durum eşikleri (0.25/0.55/0.82) işaretlidir; koruma alanları kesikli çerçeveyle gösterilir.
+
+### 📱 Mobil Uyum
+Telefon ve dar ekranlarda düzen tek sütuna geçer (rozetler satırlara yayılır, politikalar ve grafikler alt alta).
+Haritada koruma alanı parmakla sürükleyerek çizilir, alana **basılı tutarak** silinir.
 
 ### 🌍 Bölge Desteği (5 Bölge)
 | Bölge | Koordinat | Veri Yılları |
