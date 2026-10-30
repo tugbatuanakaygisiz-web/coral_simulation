@@ -63,7 +63,7 @@ Bu simülasyon, **NOAA NCRMP** ve **NOAA NCEI** veri setlerinden beslenen gerçe
 
 ### 📊 Gerçek Zamanlı Grafikler
 - **SST & DHW**: Deniz yüzey sıcaklığı ve Derece Isıtma Haftası
-- **Coral Cover**: Mercan örtüsü yüzdesi (Seçilen bölgenin gerçek NOAA NCRMP gözlem verileri altın yıldız noktaları [⭐] şeklinde grafik üzerinde gösterilir)
+- **Healthy Colonies**: Sağlıklı koloni yüzdesi — ağarmamış ve ölmemiş kolonilerin tüm mercan kolonilerine oranı (çıplak zemin hariç). NOAA NCRMP'nin `healthy_pct` değeriyle aynı tanımdır; seçilen bölgenin gerçek gözlemleri altın yıldız [⭐] olarak aynı grafikte gösterilir. Grafik 2013'ten itibaren tüm çalıştırmayı gösterir.
 - **Prey Fish**: Av balık popülasyonu (Lotka-Volterra modeli)
 - **Predator Fish**: Avcı balık popülasyonu
 
@@ -275,6 +275,7 @@ Simülasyon sırasında **⬇ CSV** butonuna tıklayarak tüm simülasyon verile
 | `dead_pct` | Ölü hücre yüzdesi |
 | `bleached_pct` | Ağarmış hücre yüzdesi |
 | `recovering_pct` | İyileşen hücre yüzdesi |
+| `colony_healthy_pct` / `colony_bleached_pct` / `colony_dead_pct` | Kolonilerin sağlıklı/ağarmış/ölü oranı (NOAA `healthy_pct`/`bleached_pct`/`dead_pct` ile doğrudan karşılaştırılabilir) |
 | `prey_population` | Av balık popülasyonu |
 | `predator_population` | Avcı balık popülasyonu |
 | `protected_pct` | Korunan alan yüzdesi |

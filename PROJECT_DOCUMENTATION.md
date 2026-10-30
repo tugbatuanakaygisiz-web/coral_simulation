@@ -29,7 +29,7 @@ Bu uygulama, mercan resiflerinin iklim değişikliği altındaki davranışını
 - **Simülasyon Sonu Değerlendirmesi** — Türkçe puan ve sonuç ekranı
 - **Anlık Analiz Paneli** — En yüksek ağarma yüzdesi, kritik yıl ve korunan alan oranını canlı izleyen panel
 - **Senaryo Seçim Butonları** — Hızlı başlangıç için 3 hazır politika senaryosu (BAU, Optimal, MPA Only)
-- **Gerçek NOAA Veri Entegrasyonu** — Coral Cover grafiği üzerinde altın yıldız şeklinde gösterilen gözlemlenmiş NOAA verileri
+- **Gerçek NOAA Veri Entegrasyonu** — Healthy Colonies grafiği üzerinde altın yıldız şeklinde gösterilen gözlemlenmiş NOAA verileri
 - **Veri Kaynağı Footer** — NOAA NCRMP · NOAA NCEI · IPCC SSP2-4.5
 
 ---
@@ -161,6 +161,7 @@ Spike değerleri, mevsimsel döngünün üstündeki tepe SST anomalisidir ve her
 - **Her hücre:** `{ state, stressLevel, localTemp, dhw, hs, regrowing }`
   - `hs`: son 7 tick'in HotSpot katkıları (12 haftalık DHW halka tamponu)
   - `regrowing`: ölmüş ve larva yerleşimiyle yeniden büyüyen hücre
+  - `substrate`: henüz koloni olmayan çıplak zemin; üzerine mercan yerleşince (veya restorasyonla) koloniye dönüşür. Koloni istatistiklerine dahil edilmez.
 - **Durumlar:** HEALTHY → STRESSED → BLEACHED → DEAD → RECOVERING
 
 ### 5.2 Durum Geçiş Eşikleri
@@ -246,7 +247,7 @@ Balık haritalarında min-max normalizasyon + gamma düzeltme uygulanır.
 ### 6.4 Grafikler (Chart.js)
 4 zaman serisi grafiği, her biri 120 veri noktası geçmişi tutar:
 - **SST & DHW** — Çift dataset + olay üçgenleri
-- **Coral Cover** — Yüzde bazlı
+- **Healthy Colonies** — Sağlıklı koloni oranı (NOAA tanımı), sayısal yıl ekseninde 2013–2100 tüm geçmiş (her 3 tick'te bir nokta); NOAA ölçümleri yıl ortasına (`year + 0.5`) yerleştirilir
 - **Prey Fish** — Popülasyon
 - **Predator Fish** — Popülasyon
 
@@ -357,7 +358,8 @@ Her 3 tick'te bir (aylık) `simLog[]` dizisine kayıt eklenir.
 ```
 tick, seed, year, month, region, sst, dhw, avg_stress,
 coral_cover_pct, healthy_pct, bleached_pct, dead_pct,
-recovering_pct, prey_population, predator_population,
+recovering_pct, colony_healthy_pct, colony_bleached_pct,
+colony_dead_pct, prey_population, predator_population,
 protected_pct, budget_million_usd, us_policy, china_policy,
 eu_policy, active_policies, industrial_co2, transport_emissions,
 agricultural_ch4, deforestation_rate, renewable_share,

@@ -1186,9 +1186,9 @@
           </div>
           <canvas id="chart-temp"></canvas>
         </div>
-        <div class="chart-card" title="Mercan Örtüsü yüzdesi. Sağlıklı mercan oranını gösterir. %50 altı kritik seviye, %20 altı ekosistem çöküşü anlamına gelir. Harita moduna geçmek için başlığa tıklayın.">
+        <div class="chart-card" title="Sağlıklı koloni yüzdesi: ağarmamış ve ölmemiş mercan kolonilerinin tüm kolonilere oranı (çıplak zemin hariç). NOAA NCRMP ile aynı tanım; ⭐ noktalar bölgenin gerçek NOAA ölçümleridir. 2013–2100 tüm çalıştırmayı gösterir. Harita moduna geçmek için başlığa tıklayın.">
           <div class="chart-header" onclick="openHeatmap('coral')">
-            <span class="chart-header-title">🪸 Coral Cover</span>
+            <span class="chart-header-title">🪸 Healthy Colonies</span>
             <span class="chart-header-icon">🗺️</span>
           </div>
           <canvas id="chart-coral"></canvas>
@@ -1759,7 +1759,9 @@
         else if (r < cF * (hF + bF + dF)) { state = 'DEAD'; stressLevel = 0.9; }
         else if (r < cF) { state = 'STRESSED'; stressLevel = 0.35; }
         else { state = 'DEAD'; stressLevel = 0.9; }
-        cells.push({ state, stressLevel, localTemp: temperature, dhw: 0, hs: new Float32Array(DHW_WINDOW), regrowing: state === 'DEAD' });
+        // substrate: bare rock with no colony yet; it stops being substrate once corals settle on it
+        const substrate = r >= cF;
+        cells.push({ state, stressLevel, localTemp: temperature, dhw: 0, hs: new Float32Array(DHW_WINDOW), regrowing: state === 'DEAD', substrate });
       }
       return cells;
     }
@@ -1825,12 +1827,12 @@
         return o;
       })()
     });
+    // Healthy share of coral colonies over the whole 2013–2100 run, on the same definition as the NOAA survey stars
     const chartCoral = new Chart(document.getElementById('chart-coral'), {
       type: 'line',
       data: {
-        labels: [],
         datasets: [
-          makeDataset('Coral Cover', '#00D4AA', 'rgba(0,212,170,0.15)'),
+          Object.assign(makeDataset('Healthy Colonies', '#00D4AA', 'rgba(0,212,170,0.15)'), { tension: 0 }),
           {
             label: 'NOAA Observed',
             data: [],
@@ -1845,10 +1847,17 @@
         ]
       },
       options: (() => {
-        const o = chartOpts('Cover %', '#00D4AA');
+        const o = chartOpts('Healthy %', '#00D4AA');
+        o.parsing = false;
+        o.scales.x = Object.assign(o.scales.x, {
+          type: 'linear', min: 2013, max: 2030,
+          ticks: Object.assign(o.scales.x.ticks, { callback: v => Math.round(v), stepSize: 1 })
+        });
+        o.scales.y = Object.assign(o.scales.y, { min: 0, max: 100 });
         o.plugins.tooltip.callbacks = {
+          title: (items) => items.length ? String(Math.floor(items[0].parsed.x)) : '',
           label: (ctx) => {
-            if (ctx.datasetIndex === 1) return `NOAA Observed ${ctx.parsed.x}: ${ctx.parsed.y}%`;
+            if (ctx.datasetIndex === 1) return `NOAA Observed: ${ctx.parsed.y}%`;
             return `${ctx.dataset.label}: ${ctx.parsed.y?.toFixed(1) ?? ''}%`;
           }
         };
@@ -2533,6 +2542,8 @@
         const nextStress = new Float32Array(ROWS * COLS);
         let totalTemp = 0, totalStress = 0, healthyCount = 0, totalAlive = 0, totalDHW = 0;
         let deadCount = 0, bleachedCount = 0, recoveringCount = 0;
+        // Colony condition as NOAA NCRMP reports it: healthy / bleached / dead share of coral colonies (bare substrate excluded)
+        let colonyCount = 0, colonyHealthy = 0, colonyBleached = 0, colonyDead = 0;
         // Slowly drifting within-reef temperature pattern
         const drift = tick * 0.004;
 
@@ -2623,6 +2634,13 @@
           if (c.state === 'DEAD') deadCount++;
           if (c.state === 'BLEACHED') bleachedCount++;
           if (c.state === 'RECOVERING') recoveringCount++;
+          if (c.substrate && c.state !== 'DEAD') c.substrate = false;
+          if (!c.substrate) {
+            colonyCount++;
+            if (c.state === 'DEAD') colonyDead++;
+            else if (c.state === 'BLEACHED') colonyBleached++;
+            else colonyHealthy++;
+          }
         }
 
         const zones = { 'NE': [0, 0], 'NW': [0, 0], 'SE': [0, 0], 'SW': [0, 0], 'CENTER': [0, 0] };
@@ -2646,7 +2664,7 @@
           }
         }
 
-        return { totalTemp, totalStress, totalDHW, healthyCount, deadCount, bleachedCount, recoveringCount, hotZone };
+        return { totalTemp, totalStress, totalDHW, healthyCount, deadCount, bleachedCount, recoveringCount, hotZone, colonyCount, colonyHealthy, colonyBleached, colonyDead };
       }
 
       const res1 = processGrid(grid, finalTemp, mmmOf(region), 0);
@@ -2673,6 +2691,15 @@
               grid[i].regrowing = true;
               res1.deadCount--;
               res1.recoveringCount++;
+              if (grid[i].substrate) {
+                // Outplanting onto bare rock creates a new colony
+                grid[i].substrate = false;
+                res1.colonyCount++;
+                res1.colonyHealthy++;
+              } else {
+                res1.colonyDead--;
+                res1.colonyHealthy++;
+              }
             }
           }
         }
@@ -2849,6 +2876,9 @@
           bleached_pct: ((res1.bleachedCount / totalCellsLog) * 100).toFixed(1),
           dead_pct: ((res1.deadCount / totalCellsLog) * 100).toFixed(1),
           recovering_pct: ((res1.recoveringCount / totalCellsLog) * 100).toFixed(1),
+          colony_healthy_pct: res1.colonyCount ? (res1.colonyHealthy / res1.colonyCount * 100).toFixed(1) : '0.0',
+          colony_bleached_pct: res1.colonyCount ? (res1.colonyBleached / res1.colonyCount * 100).toFixed(1) : '0.0',
+          colony_dead_pct: res1.colonyCount ? (res1.colonyDead / res1.colonyCount * 100).toFixed(1) : '0.0',
           prey_population: prey.toFixed(1),
           predator_population: predator.toFixed(1),
           protected_pct: ((protectedCells.size / totalCellsLog) * 100).toFixed(1),
@@ -2875,7 +2905,13 @@
       }
 
       pushChart(chartTemp, lbl, avgTemp, avgDHW, eventPoint);
-      pushChart(chartCoral, lbl, (1 - avgStress) * 100);
+      const colonyHealthyPct = res1.colonyCount > 0 ? res1.colonyHealthy / res1.colonyCount * 100 : 0;
+      if (tick % LOG_INTERVAL === 0) {
+        chartCoral.data.datasets[0].data.push({ x: exactYear, y: colonyHealthyPct });
+        // Show the observation era at first, then widen with the run
+        chartCoral.options.scales.x.max = Math.max(2030, Math.ceil(exactYear));
+        if (!window._skipChartUpdate) chartCoral.update('none');
+      }
       pushChart(chartPrey, lbl, prey);
       pushChart(chartPred, lbl, predator);
 
@@ -3234,8 +3270,9 @@
     }
 
     function updateCoralRealPoints() {
+      // NOAA surveys are plotted mid-year
       const realPoints = DATA.filter(d => d.region === region).map(d => ({
-        x: String(d.year),
+        x: d.year + 0.5,
         y: d.healthy_pct
       }));
       if (chartCoral.data.datasets[1]) {
@@ -3259,6 +3296,7 @@
       if (b) b.remove();
       coralCover = parseInt($coverSlider.value);
       allCharts.forEach(c => { c.data.labels = []; c.data.datasets.forEach(ds => ds.data = []); c.update('none'); });
+      chartCoral.options.scales.x.max = 2030;
       apPeakBleach = 0; apWorstYear = 2013; apWorstBleach = 0;
       ['ap-peak-bleach','ap-worst-year','ap-coral-now','ap-dead-total','ap-protected','ap-proj-2100'].forEach(id => { const el = document.getElementById(id); if(el) el.textContent = '—'; });
       initGrid();
@@ -3319,7 +3357,9 @@
         step();
       }
 
-      // Force chart redraw
+      // Force chart redraw (the NOAA stars were cleared with the other datasets)
+      if (targetTick <= 0) chartCoral.options.scales.x.max = 2030;
+      updateCoralRealPoints();
       allCharts.forEach(c => c.update('none'));
     });
 
@@ -3536,7 +3576,7 @@ eşik = 4 DHW + alkalinite bonusu (en fazla +3)
       {sel:'#policy-body .policy-col:last-child',title:'🌊 10/13 — Okyanus & Resif Politikaları',desc:'<b>Alkalinite Güçlendirme</b>: Deniz suyuna alkalin mineral ekleyerek pH\'ı yükseltir, ağarma eşiğini ~0.5°C artırabilir. <b>Turizm Düzenleme</b>: Kontrolsüz turizm fiziksel hasar ve kirlilik yaratır. <b>Balıkçılık Kotası</b>: Aşırı avlanma alg büyümesini tetikler, mercanları boğar. <b>GEF Reef Finance</b>: BM mercan koruma fonu. <b>Erken Uyarı</b>: Bölgesel DHW≥4 olunca otomatik MPA genişletme tetikler.'},
       {sel:'#grid-container',wide:true,title:'🪸 11/13 — Mercan Haritası',desc:'24×18 ızgara = 432 bağımsız mercan koloni hücresi. Her hücrenin kendi stres değeri her tick güncellenir. <b>5 durum</b>: Healthy (stres 0–0.25), Stressed (0.25–0.55), Bleached (0.55–0.82), Dead (0.82–1.00), Recovering. Stres bulaşması: her hücre 8 komşusundan IDW ağırlıklı stres alır. 3 okyanus akıntı merkezi ısı dağılımını etkiler. Korunan hücreler (MPA) stresi %77 daha yavaş biriktirir. <b>Sürükleyerek kendi MPA\'nızı çizin!</b>'},
       {sel:'#heatmap-overlay,.chart-header',title:'🌡️ 12/13 — Isı Haritası Modu',desc:'Herhangi bir grafik başlığına tıklayarak canvas\'ı ısı haritasına geçirin. SST ısı haritası okyanus akıntılarından etkilenen sıcaklık gradyanını gösterir. Stres ısı haritası termal basıncın en yüksek olduğu yerleri gösterir. Geri dönmek için "← CHARTS" butonuna tıklayın.'},
-      {sel:'#analysis-panel,#charts-stack',title:'📈 13/13 — Veri Grafikleri & Gerçek NOAA Verileri',desc:'<b>SST/DHW</b>: 2013–2023 NOAA NCRMP gözlem bazçizgisi, 2024 sonrası IPCC SSP2-4.5 projeksiyonu. <b>Coral Cover</b>: Simülasyon çizgisinin üzerindeki <b style="color:#FFD700">⭐ altın yıldız noktalar</b> seçili bölgenin gerçek NOAA ölçümleridir — modelin gerçek veriye ne kadar yakın kaldığını gösterir. <b>Prey/Predator Fish</b>: Lotka-Volterra av-avcı dinamiği, taşıma kapasitesi mercan örtüsüne bağlı.'}
+      {sel:'#analysis-panel,#charts-stack',title:'📈 13/13 — Veri Grafikleri & Gerçek NOAA Verileri',desc:'<b>SST/DHW</b>: 2013–2023 NOAA NCRMP gözlem bazçizgisi, 2024 sonrası IPCC SSP2-4.5 projeksiyonu. <b>Healthy Colonies</b>: Ağarmamış ve ölmemiş kolonilerin oranı (NOAA ile aynı tanım), 2013–2100 tüm çalıştırma. Simülasyon çizgisinin üzerindeki <b style="color:#FFD700">⭐ altın yıldız noktalar</b> seçili bölgenin gerçek NOAA ölçümleridir — modelin gerçek veriye ne kadar yakın kaldığını gösterir. <b>Prey/Predator Fish</b>: Lotka-Volterra av-avcı dinamiği, taşıma kapasitesi mercan örtüsüne bağlı.'}
     ];
     var tourIdx = 0, spotEl = null, popEl = null, overlayEl = null;
 
