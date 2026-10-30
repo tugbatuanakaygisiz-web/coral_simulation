@@ -1080,12 +1080,14 @@
       return { offCv, targetOffCtx };
     }
 
+    // Canvas boxes are sized by CSS; each frame only the drawing buffer is matched to the box (× devicePixelRatio).
+    // Never pin the box to a pixel size here, or the map stays at its first-measured width after a resize.
     function renderReef(timestamp) {
       renderT = timestamp || 0;
       noiseTime += 0.001;
       const cEl = canvas, dpr = window.devicePixelRatio || 1;
       const w = cEl.clientWidth, h = cEl.clientHeight;
-      if (cEl.width !== w * dpr || cEl.height !== h * dpr) { cEl.width = w * dpr; cEl.height = h * dpr; cEl.style.width = w + 'px'; cEl.style.height = h + 'px'; ctx.setTransform(dpr, 0, 0, dpr, 0, 0); }
+      if (cEl.width !== w * dpr || cEl.height !== h * dpr) { cEl.width = w * dpr; cEl.height = h * dpr; ctx.setTransform(dpr, 0, 0, dpr, 0, 0); }
       ctx.fillStyle = '#020810'; ctx.fillRect(0, 0, w, h);
       if (!grid.length) return;
 
@@ -1255,7 +1257,7 @@
         const cEl2 = document.getElementById('reef-canvas-2');
         const ctx2 = cEl2.getContext('2d');
         const w2 = cEl2.clientWidth, h2 = cEl2.clientHeight;
-        if (cEl2.width !== w2 * dpr || cEl2.height !== h2 * dpr) { cEl2.width = w2 * dpr; cEl2.height = h2 * dpr; cEl2.style.width = w2 + 'px'; cEl2.style.height = h2 + 'px'; ctx2.setTransform(dpr, 0, 0, dpr, 0, 0); }
+        if (cEl2.width !== w2 * dpr || cEl2.height !== h2 * dpr) { cEl2.width = w2 * dpr; cEl2.height = h2 * dpr; ctx2.setTransform(dpr, 0, 0, dpr, 0, 0); }
         ctx2.fillStyle = '#020810'; ctx2.fillRect(0, 0, w2, h2);
 
         const r2 = renderGridToCtx(grid2, ctx2, w2, h2, w2, offCanvas2, offCtx2, 1000);
@@ -1928,7 +1930,6 @@
       if (w === 0 || h === 0) return;
       if (cEl.width !== w * dpr || cEl.height !== h * dpr) {
         cEl.width = w * dpr; cEl.height = h * dpr;
-        cEl.style.width = w + 'px'; cEl.style.height = h + 'px';
         hmCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
         hmCacheKey = '';
       }
