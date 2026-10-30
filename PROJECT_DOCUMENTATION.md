@@ -1,10 +1,10 @@
 # 🪸 Coral Reef Stress & Bleaching Monitor — Proje Dokümantasyonu
 
-> **Dosya:** `coral_simulation_final.html`  
+> **Dosya:** `index.html` (+ `i18n.js`)  
 > **Teknolojiler:** HTML5, CSS3, JavaScript (vanilla), Chart.js 4.4.1, Google Fonts (Inter)  
 > **Toplam Satır:** ~3430  
 > **Tek dosya uygulaması** — harici bağımlılık yok (CDN hariç)  
-> **Ek Dosyalar:** `coral_simulation_dataset.csv`, `pacific_map_bg.png`, `README.md`
+> **Ek Dosyalar:** `i18n.js`, `coral_simulation_dataset.csv`, `pacific_map_bg.png`, `Corauxx.webp`, `README.md`
 
 ---
 
@@ -17,7 +17,8 @@ Bu uygulama, mercan resiflerinin iklim değişikliği altındaki davranışını
 - Gerçek zamanlı IDW (Inverse Distance Weighting) interpolasyonlu ısı haritası
 - Lotka-Volterra av-avcı balık popülasyonu dinamikleri
 - Kapsamlı iklim politikası kontrol paneli (14 kaldıraç)
-- 13 adımlı interaktif tanıtım turu (Senaryo butonları dahil)
+- Türkçe / İngilizce dil seçeneği (`i18n.js`)
+- İlk girişte karşılama ekranı + 6 adımlık kısa tanıtım turu
 - Deniz Koruma Alanları (MPA) çizim sistemi
 - Erken Uyarı Sistemi (EWS)
 - CSV veri dışa aktarma (canlı satır sayacı)
@@ -38,13 +39,14 @@ Bu uygulama, mercan resiflerinin iklim değişikliği altındaki davranışını
 
 ```
 mercanbeyaz/
-├── coral_simulation_final.html  # Ana simülasyon (monolitik HTML/CSS/JS, ~3430 satır)
+├── index.html                   # Ana simülasyon (HTML/CSS/JS)
+├── i18n.js                      # Dil sözlüğü (TR/EN) ve dil değiştirme
 ├── coral_simulation_dataset.csv # NOAA kaynak veri seti (21 kayıt, 5 bölge)
 ├── pacific_map_bg.png           # Mini harita uydu arka plan görseli
 ├── PROJECT_DOCUMENTATION.md     # Bu dosya
 └── README.md                    # Türkçe kullanıcı kılavuzu
 
-coral_simulation_final.html iç yapısı:
+index.html iç yapısı:
 ├── <head>
 │   ├── Meta bilgileri & SEO
 │   ├── Google Fonts (Inter) import
@@ -247,16 +249,19 @@ restorationChance = (budget/100) × 0.003 × (1 + gefFund/100)
 10. Ağartma olay etiketi
 
 ### 6.3 Isı Haritası Modu (`renderHeatmap`)
-4 farklı görünüm, her biri özel paletli:
+5 katman, hepsi sabit ölçekli (`HEATMAP_CONFIG`: palet, renk çubuğu işaretleri, eksen etiketi):
 
-| Mod | Palet | Aralık |
+| Mod | Palet | Aralık / İşaretler |
 |-----|-------|--------|
-| SST | Mor→Mavi→Yeşil→Sarı→Kırmızı→Beyaz | Bölge MMM'sinin ±3°C'si |
-| Coral | Mavi→Teal→Sarı→Kırmızı→Siyah | Sağlıklı→Ölü |
-| Prey | Siyah→Lacivert→Mavi→Cyan | Yok→Yoğun |
-| Predator | Siyah→Mor→Leylak→Pembe | Yok→Yüksek |
+| SST | Mor→Mavi→Yeşil→Sarı→Kırmızı→Beyaz | Bölge MMM'sinin ±3°C'si; MMM işaretli |
+| DHW | Lacivert→Yeşil→Sarı→Turuncu→Kırmızı→Bordo | 0–16 °C-hafta; 4 (ağarma) ve 8 (ölüm riski) işaretli |
+| Coral | Mavi→Teal→Sarı→Kırmızı→Siyah | Stres 0–1; durak noktaları durum eşiklerinde (0.25/0.55/0.82) |
+| Prey | Siyah→Lacivert→Mavi→Cyan | Mutlak 0–1 (karekök ile görünürlük) |
+| Predator | Siyah→Mor→Leylak→Pembe | Mutlak 0–1 (karekök ile görünürlük) |
 
-Balık haritalarında min-max normalizasyon + gamma düzeltme uygulanır.
+- Piksel görüntüsü yalnızca tick, katman, boyut, dil veya bölge değişince yeniden hesaplanır (`hmCacheKey`);
+  üst bilgi, MPA çerçeveleri ve fare/dokunma ile değer okuma her karede önbellekteki görüntünün üstüne çizilir.
+- Türbülans 4–6 px ile sınırlıdır; lekeler hücrelerle örtüşür.
 
 ### 6.4 Grafikler (Chart.js)
 4 zaman serisi grafiği ortak sayısal yıl eksenini (`setTimeAxisEnd`) paylaşır ve 2013'ten itibaren tüm geçmişi tutar
@@ -402,6 +407,24 @@ CSV butonunun sağ üst köşesinde yeşil badge ile toplam kayıt sayısı canl
   `events` (gelecekteki sıcak dalgalar), `sim` (restorasyon).
 - `initGrid()` tüm akışları tohumdan yeniden kurar; Reset, bölge değişimi ve timeline scrubber aynı geçmişi üretir.
 - Tohum `?seed=` URL parametresiyle okunur/yazılır, CSV'de `seed` sütunu olarak kaydedilir ve 2100 sonuç ekranında gösterilir.
+
+## 12.6 Dil Desteği (`i18n.js`)
+
+- Tüm kullanıcıya görünen metinler `STRINGS` sözlüğünde `anahtar: [Türkçe, English]` biçimindedir.
+- HTML öğeleri `data-i18n` (metin), `data-i18n-html` (HTML içerik) ve `data-i18n-title` (ipucu) ile bağlanır;
+  betikler `t(anahtar, { değişken })` kullanır.
+- `I18N.setLang('tr'|'en')` dili değiştirir, seçimi `localStorage`'a yazar ve `I18N.onLangChange` ile kayıtlı
+  fonksiyonları çağırır (grafik etiketleri, rozetler, ısı haritası açıklaması, mini harita, sonuç ekranı, açık tur adımı).
+- İlk dil: `?lang=` parametresi → kayıtlı seçim → tarayıcı dili.
+- Bölge seçeneklerinin `value` değerleri İngilizce kalır (veri anahtarı); görünen adlar `region.*` anahtarlarından gelir.
+- CSV sütun adları ve değerleri dil seçiminden bağımsızdır (analiz için sabit).
+
+## 12.7 Tanıtım Turu
+
+- Karşılama ekranı yalnızca ilk girişte (`localStorage.tourSeen`) açılır.
+- 6 adım: Durum paneli → Ayarlar ve oynatma → Politikalar → Resif haritası → Grafikler → Dil ve yardım.
+- Koruma alanı (MPA) çizim ipucu, fare haritaya ilk girdiğinde bir kez gösterilir (`localStorage.mpaTutorialSeen`).
+- Sağ alttaki `?` bilimsel ayrıntılar panelini, `❓ Tur` turu yeniden açar.
 
 ## 13. Simplex Noise Implementasyonu
 

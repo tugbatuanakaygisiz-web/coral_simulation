@@ -48,8 +48,14 @@ Bu simülasyon, **NOAA NCRMP** ve **NOAA NCEI** veri setlerinden beslenen gerçe
 - **Bulaşma modeli**: Isı stresi altında ağarmış komşular stresi artırır (hastalık yayılımı)
 - **3 okyanus akıntısı merkezi** sıcaklık dağılımını etkiler
 
-### 🎓 Kapsamlı Onboarding Sistemi
-- **13 Adımlı Tanıtım Turu:** Kullanıcıları tüm paneller, simülasyon mantığı ve metrikler hakkında bilgilendiren detaylı zorunlu rehber (Senaryo butonları turu dahil).
+### 🌐 Türkçe / English Dil Seçeneği
+- Sağ üstteki **TR | EN** düğmesiyle sayfadaki tüm yazılar (butonlar, ipuçları, grafikler, harita yazıları, tur, bilgi paneli, sonuç ekranı) anında değişir; simülasyon kaldığı yerden devam eder.
+- İlk girişte tarayıcı dili kullanılır (Türkçe tarayıcı → TR, diğerleri → EN); seçim tarayıcıda hatırlanır. `?lang=tr` veya `?lang=en` ile bağlantıda da belirtilebilir.
+- Tüm metinler `i18n.js` dosyasında `anahtar: [Türkçe, English]` biçiminde tek yerde durur.
+
+### 🎓 Tanıtım Turu
+- **Karşılama ekranı yalnızca ilk girişte** açılır; **6 kısa adımlık tur** her bölümün ne işe yaradığını anlatır.
+- Sağ alttaki **❓ Tur** turu istenildiği zaman yeniden açar, **?** bilimsel ayrıntıları gösterir.
 - **İnteraktif MPA Çizim Eğitimi:** Harita üzerine ilk gelindiğinde aktifleşen görsel yönlendirme ile deniz koruma alanı oluşturma öğreticisi.
 
 ### 📊 Anlık Analiz Paneli
@@ -75,7 +81,15 @@ anlık değer bulunur.
 
 ### 🗺️ Isı Haritası Modu
 Her grafik başlığına tıklandığında grid üzerinde ilgili metriğin ısı haritasını görselleştirir. Grafiklere dönmek için
-açık sekmenin başlığına tekrar tıklamak (📈) veya "← CHARTS" düğmesi yeterlidir.
+açık sekmenin başlığına tekrar tıklamak (📈) veya "← GRAFİKLER" düğmesi yeterlidir.
+- **5 katman:** Deniz sıcaklığı, **Isı stresi (DHW)**, Mercan sağlığı, Av ve Avcı balık yoğunluğu (tahmini).
+- **Değer okuma:** Fareyi (telefonda parmağı) harita üzerinde gezdirince o hücrenin sıcaklığı, DHW'si, durumu, stresi ve balık yoğunlukları görünür.
+- **Üst bilgi:** Katman, tarih, bölge ve özet (ortalama/en düşük/en yüksek, ağarma riskindeki alan, sağlıklı/ağarmış/ölü oranı).
+- **Sabit ölçekler ve eşikler:** Renk çubuğunda MMM, DHW 4/8 ve mercan durum eşikleri (0.25/0.55/0.82) işaretlidir; koruma alanları kesikli çerçeveyle gösterilir.
+
+### 📱 Mobil Uyum
+Telefon ve dar ekranlarda düzen tek sütuna geçer (rozetler satırlara yayılır, politikalar ve grafikler alt alta).
+Haritada koruma alanı parmakla sürükleyerek çizilir, alana **basılı tutarak** silinir.
 
 ### 🌍 Bölge Desteği (5 Bölge)
 | Bölge | Koordinat | Veri Yılları |
@@ -249,7 +263,8 @@ Harita üzerinde **sürükleyerek** koruma alanı çizilebilir. Korunan mercanla
 
 ```
 mercanbeyaz/
-├── coral_simulation_final.html  # Ana simülasyon dosyası (monolitik HTML/CSS/JS)
+├── index.html                   # Ana simülasyon dosyası (HTML/CSS/JS)
+├── i18n.js                      # Türkçe/İngilizce metinler ve dil değiştirme
 ├── coral_simulation_dataset.csv # NOAA kaynak veri seti (21 kayıt, 5 bölge)
 ├── pacific_map_bg.png           # Mini harita uydu arka plan görseli
 ├── PROJECT_DOCUMENTATION.md     # Proje dokümantasyonu
@@ -266,7 +281,7 @@ mercanbeyaz/
 
 ### Çalıştırma
 ```
-1. coral_simulation_final.html dosyasını tarayıcıda açın
+1. index.html dosyasını tarayıcıda açın
 2. Simülasyon otomatik olarak başlar (▶ Play)
 3. Sol panelden kontrolleri ayarlayın
 4. Harita üzerinde sürükleyerek koruma alanı çizin
