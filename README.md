@@ -62,13 +62,20 @@ Bu simülasyon, **NOAA NCRMP** ve **NOAA NCEI** veri setlerinden beslenen gerçe
   - 🏝️ **MPA Only**: Standart emisyon, maksimum yerel koruma, fon ve bütçe.
 
 ### 📊 Gerçek Zamanlı Grafikler
-- **SST & DHW**: Deniz yüzey sıcaklığı ve Derece Isıtma Haftası
-- **Healthy Colonies**: Sağlıklı koloni yüzdesi — ağarmamış ve ölmemiş kolonilerin tüm mercan kolonilerine oranı (çıplak zemin hariç). NOAA NCRMP'nin `healthy_pct` değeriyle aynı tanımdır; seçilen bölgenin gerçek gözlemleri altın yıldız [⭐] olarak aynı grafikte gösterilir. Grafik 2013'ten itibaren tüm çalıştırmayı gösterir.
-- **Prey Fish**: Av balık popülasyonu (Lotka-Volterra modeli)
-- **Predator Fish**: Avcı balık popülasyonu
+Dört grafik de aynı sayısal yıl eksenini paylaşır ve 2013'ten itibaren tüm çalıştırmayı gösterir; 2024 sonrası
+"Projeksiyon" olarak işaretlenir. Her kartta Türkçe başlık, tek cümlelik açıklama, eksen başlıkları/birimleri ve sağ üstte
+anlık değer bulunur.
+
+- **🌡️ Deniz Sıcaklığı & Isı Stresi**: Aylık SST (soluk) ve 12 aylık ortalama (kalın, ısınma eğilimi) sol eksende;
+  DHW (°C-hafta) sağ eksende. Kesikli çizgiler: bölgenin MMM değeri, DHW 4 (ağarma) ve DHW 8 (ölüm riski).
+  Kırmızı şeritler sıcak dalga (ağarma olayı) dönemleridir.
+- **🪸 Sağlıklı Mercan Kolonileri**: Sağlıklı koloni yüzdesi — ağarmamış ve ölmemiş kolonilerin tüm mercan kolonilerine oranı (çıplak zemin hariç). NOAA NCRMP'nin `healthy_pct` değeriyle aynı tanımdır; seçilen bölgenin gerçek gözlemleri altın yıldız [⭐] olarak aynı grafikte gösterilir. Grafik 2013'ten itibaren tüm çalıştırmayı gösterir.
+- **🐟 Av Balıkları**: Av balık popülasyonu (Lotka-Volterra, göreli indeks) ve kesikli çizgiyle mercan sağlığına bağlı taşıma kapasitesi (K)
+- **🦈 Avcı Balıklar**: Avcı balık popülasyonu (göreli indeks)
 
 ### 🗺️ Isı Haritası Modu
-Her grafik başlığına tıklandığında grid üzerinde ilgili metriğin ısı haritasını görselleştirir.
+Her grafik başlığına tıklandığında grid üzerinde ilgili metriğin ısı haritasını görselleştirir. Grafiklere dönmek için
+açık sekmenin başlığına tekrar tıklamak (📈) veya "← CHARTS" düğmesi yeterlidir.
 
 ### 🌍 Bölge Desteği (5 Bölge)
 | Bölge | Koordinat | Veri Yılları |

@@ -427,9 +427,9 @@
       flex-direction: row;
       gap: 8px;
       width: 100%;
-      height: 240px;
-      min-height: 240px;
-      max-height: 240px;
+      height: 300px;
+      min-height: 300px;
+      max-height: 300px;
       flex-shrink: 0;
       overflow: hidden;
     }
@@ -441,9 +441,9 @@
     .chart-card {
       flex: 1;
       min-width: 0;
-      height: 240px;
-      min-height: 240px;
-      max-height: 240px;
+      height: 300px;
+      min-height: 300px;
+      max-height: 300px;
       display: flex;
       flex-direction: column;
       background: transparent;
@@ -478,17 +478,42 @@
       transition: opacity 0.4s ease
     }
 
+    .chart-header-value {
+      margin-left: auto;
+      margin-right: 8px;
+      font-family: 'Courier New', monospace;
+      font-size: 11px;
+      font-weight: 700;
+      color: #00d4ff;
+      white-space: nowrap
+    }
+
     .chart-header-icon {
       font-size: 12px;
       color: #4A6FA5;
       pointer-events: none
     }
 
-    .chart-card canvas {
-      width: 100%;
+    .chart-sub {
+      flex-shrink: 0;
+      padding: 4px 10px 2px;
+      font-size: 0.62rem;
+      line-height: 1.35;
+      color: #7a9ab5;
+      min-height: 2.7em
+    }
+
+    .chart-canvas-wrap {
       flex: 1;
       min-height: 0;
-      max-height: 210px;
+      position: relative
+    }
+
+    .chart-canvas-wrap canvas {
+      position: absolute;
+      inset: 0;
+      width: 100% !important;
+      height: 100% !important;
       display: block;
     }
 
@@ -549,6 +574,13 @@
       background: #0F2A45;
       color: #fff;
       border-bottom-color: var(--tab-accent)
+    }
+
+    .hm-tab.active::after {
+      content: '📈';
+      margin-left: 4px;
+      font-size: 10px;
+      opacity: 0.7
     }
 
     .hm-back-btn {
@@ -1179,45 +1211,53 @@
         </div>
       </div>
       <div class="charts-stack" id="charts-stack">
-        <div class="chart-card" title="Deniz Yüzey Sıcaklığı (SST) ve Derece Isıtma Haftası (DHW) grafiği. Sıcaklık arttıkça mercanlar strese girer. ▲ işaretleri gerçek ağarma olaylarını gösterir. Harita moduna geçmek için başlığa tıklayın.">
+        <div class="chart-card" title="Deniz yüzey sıcaklığı (SST, sol eksen) ve Derece Isıtma Haftası (DHW, sağ eksen). DHW, sıcaklığın bölgenin en sıcak ay ortalamasını (MMM, kesikli turuncu çizgi) en az 1°C aştığı haftaların son 12 haftadaki toplamıdır. Kırmızı şeritler sıcak dalga (ağarma olayı) dönemleridir. Harita moduna geçmek için başlığa tıklayın.">
           <div class="chart-header" onclick="openHeatmap('sst')">
-            <span class="chart-header-title">🌡️ SST & DHW</span>
-            <span class="chart-header-icon">🗺️</span>
+            <span class="chart-header-title">🌡️ Deniz Sıcaklığı & Isı Stresi</span>
+            <span class="chart-header-value" id="hv-temp"></span>
+            <span class="chart-header-icon" title="Haritayı aç">🗺️</span>
           </div>
-          <canvas id="chart-temp"></canvas>
+          <div class="chart-sub">Turuncu: deniz sıcaklığı (kalın çizgi 12 aylık ortalama). Kırmızı alan: biriken ısı stresi (DHW) — 4 üstü ağarma, 8 üstü ölüm riski. Kırmızı şeritler: sıcak dalgalar.</div>
+          <div class="chart-canvas-wrap"><canvas id="chart-temp"></canvas></div>
         </div>
-        <div class="chart-card" title="Sağlıklı koloni yüzdesi: ağarmamış ve ölmemiş mercan kolonilerinin tüm kolonilere oranı (çıplak zemin hariç). NOAA NCRMP ile aynı tanım; ⭐ noktalar bölgenin gerçek NOAA ölçümleridir. 2013–2100 tüm çalıştırmayı gösterir. Harita moduna geçmek için başlığa tıklayın.">
+        <div class="chart-card" title="Sağlıklı koloni yüzdesi: ağarmamış ve ölmemiş mercan kolonilerinin tüm kolonilere oranı (çıplak zemin hariç). NOAA NCRMP ile aynı tanım; ⭐ noktalar bölgenin gerçek NOAA ölçümleridir. Harita moduna geçmek için başlığa tıklayın.">
           <div class="chart-header" onclick="openHeatmap('coral')">
-            <span class="chart-header-title">🪸 Healthy Colonies</span>
-            <span class="chart-header-icon">🗺️</span>
+            <span class="chart-header-title">🪸 Sağlıklı Mercan Kolonileri</span>
+            <span class="chart-header-value" id="hv-coral"></span>
+            <span class="chart-header-icon" title="Haritayı aç">🗺️</span>
           </div>
-          <canvas id="chart-coral"></canvas>
+          <div class="chart-sub">Ağarmamış ve ölmemiş kolonilerin oranı (%). ⭐ Aynı bölgede NOAA dalgıçlarının gerçek ölçümü.</div>
+          <div class="chart-canvas-wrap"><canvas id="chart-coral"></canvas></div>
         </div>
-        <div class="chart-card" title="Av Balık Popülasyonu (Lotka-Volterra modeli). Mercan sağlığı taşıma kapasitesini belirler. Balıkçılık kotası ve resif durumu popülasyonu etkiler. Harita moduna geçmek için başlığa tıklayın.">
+        <div class="chart-card" title="Av balık popülasyonu (Lotka-Volterra modeli, göreli indeks). Taşıma kapasitesi (K) sağlıklı mercan oranına bağlıdır: mercan öldükçe K düşer ve av balıkları azalır. Balıkçılık kotası da etkiler. Harita moduna geçmek için başlığa tıklayın.">
           <div class="chart-header" onclick="openHeatmap('prey')">
-            <span class="chart-header-title">🐟 Prey Fish</span>
-            <span class="chart-header-icon">🗺️</span>
+            <span class="chart-header-title">🐟 Av Balıkları</span>
+            <span class="chart-header-value" id="hv-prey"></span>
+            <span class="chart-header-icon" title="Haritayı aç">🗺️</span>
           </div>
-          <canvas id="chart-prey"></canvas>
+          <div class="chart-sub">Resifte yaşayan küçük balıklar. Kesikli çizgi: resifin besleyebileceği en fazla balık (taşıma kapasitesi, mercan sağlığına bağlı).</div>
+          <div class="chart-canvas-wrap"><canvas id="chart-prey"></canvas></div>
         </div>
-        <div class="chart-card" title="Avcı Balık Popülasyonu (Lotka-Volterra modeli). Av balık sayısına bağlıdır. Mercan çöküşü av balıklarını azaltır, bu da avcıları etkiler. Harita moduna geçmek için başlığa tıklayın.">
+        <div class="chart-card" title="Avcı balık popülasyonu (Lotka-Volterra modeli, göreli indeks). Av balıklarına bağlıdır; mercan çöküşü av balıklarını, o da gecikmeyle avcıları azaltır. Harita moduna geçmek için başlığa tıklayın.">
           <div class="chart-header" onclick="openHeatmap('predator')">
-            <span class="chart-header-title">🦈 Predator Fish</span>
-            <span class="chart-header-icon">🗺️</span>
+            <span class="chart-header-title">🦈 Avcı Balıklar</span>
+            <span class="chart-header-value" id="hv-pred"></span>
+            <span class="chart-header-icon" title="Haritayı aç">🗺️</span>
           </div>
-          <canvas id="chart-pred"></canvas>
+          <div class="chart-sub">Av balıklarıyla beslenen büyük balıklar (orfoz, köpekbalığı). Av azaldıkça gecikmeyle düşer.</div>
+          <div class="chart-canvas-wrap"><canvas id="chart-pred"></canvas></div>
         </div>
       </div>
       <!-- MODE 2: Heatmap Overlay -->
       <div class="heatmap-overlay" id="heatmap-overlay">
         <div class="hm-tab-bar">
-          <button class="hm-tab active" data-hm="sst" style="--tab-accent:#FF6B2B" onclick="switchHmTab(this)">🌡️
+          <button class="hm-tab active" data-hm="sst" title="Açık sekmeye tekrar tıklayınca grafiklere dönülür" style="--tab-accent:#FF6B2B" onclick="switchHmTab(this)">🌡️
             SST</button>
-          <button class="hm-tab" data-hm="coral" style="--tab-accent:#00D4AA" onclick="switchHmTab(this)">🪸
+          <button class="hm-tab" data-hm="coral" title="Açık sekmeye tekrar tıklayınca grafiklere dönülür" style="--tab-accent:#00D4AA" onclick="switchHmTab(this)">🪸
             Coral</button>
-          <button class="hm-tab" data-hm="prey" style="--tab-accent:#00AAFF" onclick="switchHmTab(this)">🐟
+          <button class="hm-tab" data-hm="prey" title="Açık sekmeye tekrar tıklayınca grafiklere dönülür" style="--tab-accent:#00AAFF" onclick="switchHmTab(this)">🐟
             Prey</button>
-          <button class="hm-tab" data-hm="predator" style="--tab-accent:#AA44FF" onclick="switchHmTab(this)">🦈
+          <button class="hm-tab" data-hm="predator" title="Açık sekmeye tekrar tıklayınca grafiklere dönülür" style="--tab-accent:#AA44FF" onclick="switchHmTab(this)">🦈
             Predator</button>
           <button class="hm-back-btn" onclick="closeHeatmap()">← CHARTS</button>
         </div>
@@ -1421,8 +1461,6 @@
     let prey = 50, predator = 10;
     let region = 'American Samoa';
     let dataIdx = 0;
-    const histLen = 120;
-    let hist = { t: [], sst: [], dhw: [], coral: [], prey: [], pred: [] };
 
     // ── Data logging for CSV export ──
     let simLog = [];
@@ -1800,98 +1838,212 @@
       }
     }
 
-    const chartOpts = (yLabel, color) => ({
-      responsive: true, maintainAspectRatio: false, animation: { duration: 0 },
-      scales: {
-        x: { display: true, ticks: { color: '#3a5a7a', font: { size: 9 }, maxTicksLimit: 6 }, grid: { color: '#0D2137', lineWidth: 0.5 } },
-        y: { display: true, ticks: { color: '#3a5a7a', font: { size: 9 }, maxTicksLimit: 4 }, grid: { color: '#0D2137', lineWidth: 0.5 }, title: { display: false }, border: { display: false } }
-      },
-      plugins: {
-        legend: { display: false },
-        tooltip: {
-          backgroundColor: '#050F1F',
-          titleColor: '#aaa',
-          bodyColor: color,
-          borderColor: '#1A3355',
-          borderWidth: 1,
-          cornerRadius: 8,
-          padding: 10,
-          titleFont: { size: 10 },
-          bodyFont: { size: 12, weight: 'bold' }
-        }
-      },
-      elements: { point: { radius: 0 }, line: { borderWidth: 2 } },
-      layout: { padding: { top: 8, right: 8, bottom: 4, left: 4 } }
-    });
+    // ── Time-series charts ──
+    // All four charts share one numeric year axis covering the whole run (2013 → current year),
+    // with one point per LOG_INTERVAL ticks (~monthly).
+    const MONTHS_TR = ['Oca', 'Şub', 'Mar', 'Nis', 'May', 'Haz', 'Tem', 'Ağu', 'Eyl', 'Eki', 'Kas', 'Ara'];
+    const PROJECTION_START = 2024;
+    const AXIS_MIN_SPAN_END = 2030;
+    function formatYearMonth(x) {
+      const y = Math.floor(x);
+      return `${MONTHS_TR[Math.min(11, Math.floor((x - y) * 12))]} ${y}`;
+    }
 
-    function makeDataset(label, borderColor, fillColor) {
-      return { label, data: [], borderColor, backgroundColor: fillColor, fill: true, tension: 0.3 };
+    // Marine heatwave periods seen so far for the main region ({ start, end, label }), shaded on the SST chart
+    let eventBands = [];
+
+    // Draws the projection divider, event bands and dashed reference lines (options.plugins.timeDecor)
+    const timeDecorPlugin = {
+      id: 'timeDecor',
+      beforeDatasetsDraw(chart, args, opts) {
+        const { ctx: c, chartArea: a, scales: { x } } = chart;
+        c.save();
+        // Projection period: light tint after 2024
+        const px = x.getPixelForValue(PROJECTION_START);
+        if (px < a.right) {
+          c.fillStyle = 'rgba(255,136,0,0.05)';
+          c.fillRect(Math.max(px, a.left), a.top, a.right - Math.max(px, a.left), a.bottom - a.top);
+        }
+        if (opts.events) {
+          for (const b of eventBands) {
+            const x1 = Math.max(a.left, x.getPixelForValue(b.start)), x2 = Math.min(a.right, x.getPixelForValue(b.end));
+            if (x2 <= x1) continue;
+            c.fillStyle = 'rgba(255,60,60,0.16)';
+            c.fillRect(x1, a.top, x2 - x1, a.bottom - a.top);
+          }
+        }
+        c.restore();
+      },
+      afterDatasetsDraw(chart, args, opts) {
+        const { ctx: c, chartArea: a, scales } = chart;
+        c.save();
+        c.font = '9px "Courier New", monospace';
+        // Projection divider
+        const px = scales.x.getPixelForValue(PROJECTION_START);
+        if (px > a.left && px < a.right) {
+          c.strokeStyle = 'rgba(255,136,0,0.6)'; c.setLineDash([2, 3]); c.lineWidth = 1;
+          c.beginPath(); c.moveTo(px, a.top); c.lineTo(px, a.bottom); c.stroke();
+          c.setLineDash([]); c.fillStyle = 'rgba(255,136,0,0.85)'; c.textAlign = 'left'; c.textBaseline = 'top';
+          c.fillText('Projeksiyon →', px + 3, a.top + 2);
+        }
+        // Event labels (only where the band is wide enough)
+        if (opts.events) {
+          c.fillStyle = 'rgba(255,120,120,0.9)'; c.textAlign = 'center'; c.textBaseline = 'bottom';
+          for (const b of eventBands) {
+            const x1 = scales.x.getPixelForValue(b.start), x2 = scales.x.getPixelForValue(b.end);
+            if (x2 - x1 > 16 && x1 >= a.left && x2 <= a.right) c.fillText('▲', (x1 + x2) / 2, a.bottom - 1);
+          }
+        }
+        // Horizontal reference lines
+        for (const ref of opts.refLines || []) {
+          const scale = scales[ref.axis];
+          const v = typeof ref.value === 'function' ? ref.value() : ref.value;
+          if (!scale || v == null || v < scale.min || v > scale.max) continue;
+          const py = scale.getPixelForValue(v);
+          c.strokeStyle = ref.color; c.setLineDash([4, 3]); c.lineWidth = 1;
+          c.beginPath(); c.moveTo(a.left, py); c.lineTo(a.right, py); c.stroke();
+          c.setLineDash([]); c.fillStyle = ref.color; c.textBaseline = 'bottom';
+          c.textAlign = ref.axis === 'y2' ? 'right' : 'left';
+          const label = typeof ref.label === 'function' ? ref.label() : ref.label;
+          c.fillText(label, ref.axis === 'y2' ? a.right - 3 : a.left + 3, py - 1);
+        }
+        c.restore();
+      }
+    };
+
+    function axisTitle(text, color = '#5a7fa5') {
+      return { display: true, text, color, font: { size: 9 }, padding: { top: 0, bottom: 2 } };
+    }
+
+    // Options shared by every time chart; `extra` tweaks scales and plugins per chart
+    function timeChartOpts({ yTitle, yMin, yMax, ySuffix = '', unit = '', legend = false, timeDecor = {} }) {
+      return {
+        responsive: true, maintainAspectRatio: false, animation: { duration: 0 }, parsing: false, normalized: true,
+        interaction: { mode: 'nearest', axis: 'x', intersect: false },
+        scales: {
+          x: {
+            type: 'linear', min: 2013, max: AXIS_MIN_SPAN_END,
+            ticks: { color: '#5a7fa5', font: { size: 9 }, maxTicksLimit: 7, callback: v => Math.round(v), precision: 0 },
+            grid: { color: '#0D2137', lineWidth: 0.5 }
+          },
+          y: {
+            min: yMin, max: yMax,
+            title: axisTitle(yTitle),
+            ticks: { color: '#5a7fa5', font: { size: 9 }, maxTicksLimit: 5, callback: v => `${+v.toFixed(1)}${ySuffix}` },
+            grid: { color: '#0D2137', lineWidth: 0.5 }, border: { display: false }
+          }
+        },
+        plugins: {
+          legend: legend ? { display: true, position: 'top', align: 'end', labels: { color: '#8ab4d0', font: { size: 9 }, boxWidth: 10, boxHeight: 6, padding: 6 } } : { display: false },
+          tooltip: {
+            backgroundColor: '#050F1F', titleColor: '#aaa', borderColor: '#1A3355', borderWidth: 1,
+            cornerRadius: 8, padding: 8, titleFont: { size: 10 }, bodyFont: { size: 11, weight: 'bold' },
+            callbacks: {
+              title: items => items.length ? formatYearMonth(items[0].parsed.x) : '',
+              label: c => `${c.dataset.label}: ${c.parsed.y.toFixed(1)}${c.dataset.unit ?? unit}`
+            }
+          },
+          timeDecor
+        },
+        elements: { point: { radius: 0, hoverRadius: 3 }, line: { borderWidth: 1.6, tension: 0 } },
+        layout: { padding: { top: 4, right: 6, bottom: 2, left: 2 } }
+      };
+    }
+
+    function makeDataset(label, borderColor, fillColor, extra = {}) {
+      return Object.assign({ label, data: [], borderColor, backgroundColor: fillColor, fill: !!fillColor }, extra);
     }
 
     const chartTemp = new Chart(document.getElementById('chart-temp'), {
       type: 'line',
       data: {
-        labels: [], datasets: [
-          makeDataset('SST', '#FF6B2B', 'rgba(255,107,43,0.15)'),
-          makeDataset('DHW', '#FF2200', 'rgba(255,34,0,0.10)'),
-          { label: '⚠ Event', data: [], borderColor: 'rgba(255,50,50,0.9)', backgroundColor: 'rgba(255,50,50,0.9)', pointRadius: 6, pointHoverRadius: 8, pointStyle: 'triangle', showLine: false, fill: false, tension: 0 }
+        datasets: [
+          makeDataset('Sıcaklık (aylık)', 'rgba(255,138,61,0.35)', null, { yAxisID: 'y', unit: '°C', borderWidth: 1, order: 1 }),
+          makeDataset('Isı stresi (DHW)', '#FF2D2D', 'rgba(255,45,45,0.22)', { yAxisID: 'y2', unit: ' °C-hafta', fill: 'origin', order: 2 }),
+          makeDataset('Sıcaklık (12 ay ort.)', '#FFB070', null, { yAxisID: 'y', unit: '°C', borderWidth: 2.2, order: 0 })
         ]
       },
       options: (() => {
-        const o = chartOpts('°C / DHW', '#FF6B2B');
-        o.plugins.legend = { display: true, labels: { color: '#7a9ab5', font: { size: 10 }, boxWidth: 12 } };
-        o.plugins.tooltip.bodyColor = '#FF6B2B';
+        const o = timeChartOpts({
+          yTitle: 'Sıcaklık (°C)', ySuffix: '°', legend: true,
+          timeDecor: {
+            events: true,
+            refLines: [
+              { axis: 'y', value: () => mmmOf(region), label: () => `MMM ${mmmOf(region).toFixed(1)}°C`, color: 'rgba(255,170,90,0.75)' },
+              { axis: 'y2', value: 4, label: 'DHW 4 · ağarma', color: 'rgba(255,214,0,0.75)' },
+              { axis: 'y2', value: 8, label: 'DHW 8 · ölüm riski', color: 'rgba(255,70,70,0.85)' }
+            ]
+          }
+        });
+        o.scales.y.grace = '5%';
+        o.scales.y2 = {
+          position: 'right', min: 0, suggestedMax: 12,
+          title: axisTitle('DHW (°C-hafta)', '#c46a6a'),
+          ticks: { color: '#c46a6a', font: { size: 9 }, maxTicksLimit: 5, precision: 0 },
+          grid: { drawOnChartArea: false }, border: { display: false }
+        };
         return o;
-      })()
+      })(),
+      plugins: [timeDecorPlugin]
     });
-    // Healthy share of coral colonies over the whole 2013–2100 run, on the same definition as the NOAA survey stars
+
+    // Healthy share of coral colonies, on the same definition as the NOAA survey stars
     const chartCoral = new Chart(document.getElementById('chart-coral'), {
       type: 'line',
       data: {
         datasets: [
-          Object.assign(makeDataset('Healthy Colonies', '#00D4AA', 'rgba(0,212,170,0.15)'), { tension: 0 }),
+          makeDataset('Model', '#00D4AA', 'rgba(0,212,170,0.15)'),
           {
-            label: 'NOAA Observed',
-            data: [],
-            borderColor: '#FFD700',
-            backgroundColor: '#FFD700',
-            pointRadius: 6,
-            pointHoverRadius: 8,
-            pointStyle: 'star',
-            showLine: false,
-            fill: false
+            label: 'NOAA ölçümü', data: [], borderColor: '#FFD700', backgroundColor: '#FFD700',
+            pointRadius: 6, pointHoverRadius: 8, pointStyle: 'star', showLine: false, fill: false
           }
         ]
       },
-      options: (() => {
-        const o = chartOpts('Healthy %', '#00D4AA');
-        o.parsing = false;
-        o.scales.x = Object.assign(o.scales.x, {
-          type: 'linear', min: 2013, max: 2030,
-          ticks: Object.assign(o.scales.x.ticks, { callback: v => Math.round(v), stepSize: 1 })
-        });
-        o.scales.y = Object.assign(o.scales.y, { min: 0, max: 100 });
-        o.plugins.tooltip.callbacks = {
-          title: (items) => items.length ? String(Math.floor(items[0].parsed.x)) : '',
-          label: (ctx) => {
-            if (ctx.datasetIndex === 1) return `NOAA Observed: ${ctx.parsed.y}%`;
-            return `${ctx.dataset.label}: ${ctx.parsed.y?.toFixed(1) ?? ''}%`;
-          }
-        };
-        return o;
-      })()
+      options: timeChartOpts({
+        yTitle: 'Sağlıklı koloni (%)', yMin: 0, yMax: 100, ySuffix: '%', unit: '%', legend: true,
+        timeDecor: { refLines: [{ axis: 'y', value: 50, label: '%50 kritik', color: 'rgba(255,214,0,0.5)' }] }
+      }),
+      plugins: [timeDecorPlugin]
     });
+
     const chartPrey = new Chart(document.getElementById('chart-prey'), {
       type: 'line',
-      data: { labels: [], datasets: [makeDataset('Prey', '#00AAFF', 'rgba(0,170,255,0.15)')] },
-      options: chartOpts('Population', '#00AAFF')
+      data: {
+        datasets: [
+          makeDataset('Av balığı', '#00AAFF', 'rgba(0,170,255,0.15)'),
+          makeDataset('Taşıma kapasitesi', 'rgba(160,200,230,0.6)', null, { borderDash: [4, 3], borderWidth: 1 })
+        ]
+      },
+      options: timeChartOpts({ yTitle: 'Popülasyon indeksi', yMin: 0, legend: true }),
+      plugins: [timeDecorPlugin]
     });
+
     const chartPred = new Chart(document.getElementById('chart-pred'), {
       type: 'line',
-      data: { labels: [], datasets: [makeDataset('Predator', '#AA44FF', 'rgba(170,68,255,0.15)')] },
-      options: chartOpts('Population', '#AA44FF')
+      data: {
+        datasets: [
+          makeDataset('Avcı balık', '#AA44FF', 'rgba(170,68,255,0.15)')
+        ]
+      },
+      options: timeChartOpts({ yTitle: 'Popülasyon indeksi', yMin: 0 }),
+      plugins: [timeDecorPlugin]
     });
     const allCharts = [chartTemp, chartCoral, chartPrey, chartPred];
+
+    // Starts every chart's time axis at 2013 and widens it as the run goes on
+    function setTimeAxisEnd(year) {
+      const end = Math.max(AXIS_MIN_SPAN_END, Math.ceil(year));
+      allCharts.forEach(c => { c.options.scales.x.max = end; });
+    }
+    // Last 12 months of monthly SST samples, for the smoothed trend line
+    const SAMPLES_PER_YEAR = Math.round(30 / LOG_INTERVAL);
+    let sstWindow = [];
+    function clearTimeCharts() {
+      allCharts.forEach(c => { c.data.datasets.forEach(ds => { ds.data = []; }); });
+      sstWindow = [];
+      eventBands = [];
+      setTimeAxisEnd(2013);
+    }
 
     // ── Panel mode switching ──
     let panelMode = 'charts'; // 'charts' or 'heatmap'
@@ -1915,11 +2067,13 @@
       panelMode = 'charts';
       document.getElementById('heatmap-overlay').classList.remove('visible');
       document.getElementById('charts-stack').classList.remove('hidden');
-      // Resize all charts since they were hidden
-      allCharts.forEach(c => c.resize());
+      // Resize and redraw all charts: they were hidden and not updated meanwhile
+      allCharts.forEach(c => { c.resize(); c.update('none'); });
     }
 
     function switchHmTab(btn) {
+      // Clicking the tab that is already open returns to the charts (mirrors clicking a chart title to open the map)
+      if (btn.classList.contains('active')) { closeHeatmap(); return; }
       activeHeatmapType = btn.dataset.hm;
       document.querySelectorAll('.hm-tab').forEach(t => t.classList.remove('active'));
       btn.classList.add('active');
@@ -2240,19 +2394,6 @@
       // Color bar legend
       drawHeatmapColorBar(hmCtx, cfg, mapW + 14, 30, 14, h - 60);
     }
-
-    function pushChart(chart, label, ...vals) {
-      if (window._skipChartUpdate) return;
-      chart.data.labels.push(label);
-      vals.forEach((v, i) => { if (chart.data.datasets[i]) chart.data.datasets[i].data.push(v); });
-      if (chart.data.labels.length > histLen) {
-        chart.data.labels.shift();
-        chart.data.datasets.forEach(ds => ds.data.shift());
-      }
-      chart.update('none');
-    }
-
-
 
     // ── FEATURE: Region Coordinates (from NOAA NCRMP CSV) ──
     const REGION_COORDS = {
@@ -2840,8 +2981,6 @@
       }
 
       // Push to charts
-      const lbl = Math.floor(exactYear).toString();
-      const eventPoint = eventSpike > 0.1 ? avgTemp : null;
 
       // Update Policy Summary Bar
       const pTempBadge = document.getElementById('ps-temp-val');
@@ -2923,16 +3062,33 @@
         if (badge) badge.textContent = simLog.length;
       }
 
-      pushChart(chartTemp, lbl, avgTemp, avgDHW, eventPoint);
+      // ── Time charts: recorded every LOG_INTERVAL ticks (also while fast-forwarding), redrawn only when visible ──
       const colonyHealthyPct = res1.colonyCount > 0 ? res1.colonyHealthy / res1.colonyCount * 100 : 0;
-      if (tick % LOG_INTERVAL === 0) {
-        chartCoral.data.datasets[0].data.push({ x: exactYear, y: colonyHealthyPct });
-        // Show the observation era at first, then widen with the run
-        chartCoral.options.scales.x.max = Math.max(2030, Math.ceil(exactYear));
-        if (!window._skipChartUpdate) chartCoral.update('none');
+      if (eventSpike > 0.2) {
+        const last = eventBands[eventBands.length - 1];
+        if (last && last.label === activeEventLabel && exactYear - last.end < 0.1) last.end = exactYear;
+        else eventBands.push({ start: exactYear, end: exactYear, label: activeEventLabel });
       }
-      pushChart(chartPrey, lbl, prey);
-      pushChart(chartPred, lbl, predator);
+      if (tick % LOG_INTERVAL === 0) {
+        const x = exactYear;
+        chartTemp.data.datasets[0].data.push({ x, y: avgTemp });
+        chartTemp.data.datasets[1].data.push({ x, y: avgDHW });
+        sstWindow.push(avgTemp);
+        if (sstWindow.length > SAMPLES_PER_YEAR) sstWindow.shift();
+        chartTemp.data.datasets[2].data.push({ x, y: sstWindow.reduce((a, v) => a + v, 0) / sstWindow.length });
+        chartCoral.data.datasets[0].data.push({ x, y: colonyHealthyPct });
+        chartPrey.data.datasets[0].data.push({ x, y: prey });
+        chartPrey.data.datasets[1].data.push({ x, y: K });
+        chartPred.data.datasets[0].data.push({ x, y: predator });
+        setTimeAxisEnd(x);
+        if (!window._skipChartUpdate) {
+          if (panelMode === 'charts') allCharts.forEach(c => c.update('none'));
+          document.getElementById('hv-temp').textContent = `${avgTemp.toFixed(1)}°C · DHW ${avgDHW.toFixed(1)}`;
+          document.getElementById('hv-coral').textContent = `${colonyHealthyPct.toFixed(0)}%`;
+          document.getElementById('hv-prey').textContent = `${prey.toFixed(0)} / K ${K.toFixed(0)}`;
+          document.getElementById('hv-pred').textContent = predator.toFixed(1);
+        }
+      }
 
       // Analysis panel update
       const { healthyCount, bleachedCount, deadCount, recoveringCount } = res1;
@@ -3314,8 +3470,9 @@
       const b = document.getElementById('sim-complete-banner');
       if (b) b.remove();
       coralCover = parseInt($coverSlider.value);
-      allCharts.forEach(c => { c.data.labels = []; c.data.datasets.forEach(ds => ds.data = []); c.update('none'); });
-      chartCoral.options.scales.x.max = 2030;
+      clearTimeCharts();
+      allCharts.forEach(c => c.update('none'));
+      ['hv-temp', 'hv-coral', 'hv-prey', 'hv-pred'].forEach(id => { document.getElementById(id).textContent = ''; });
       apPeakBleach = 0; apWorstYear = 2013; apWorstBleach = 0;
       ['ap-peak-bleach','ap-worst-year','ap-coral-now','ap-dead-total','ap-protected','ap-proj-2100'].forEach(id => { const el = document.getElementById(id); if(el) el.textContent = '—'; });
       initGrid();
@@ -3351,10 +3508,7 @@
 
       // Disable chart updates during fast-forward for performance
       window._skipChartUpdate = true;
-      allCharts.forEach(c => {
-        c.data.labels = [];
-        c.data.datasets.forEach(ds => ds.data = []);
-      });
+      clearTimeCharts();
 
       // Full reset
       tick = 0; dhw = 0; prey = 50; predator = 10; exactYear = 2013;
@@ -3377,7 +3531,6 @@
       }
 
       // Force chart redraw (the NOAA stars were cleared with the other datasets)
-      if (targetTick <= 0) chartCoral.options.scales.x.max = 2030;
       updateCoralRealPoints();
       allCharts.forEach(c => c.update('none'));
     });
@@ -3594,8 +3747,8 @@ eşik = 4 DHW + alkalinite bonusu (en fazla +3)
       {sel:'#btn-us-policy,#btn-cn-policy,#btn-eu-policy',title:'🌍 9/13 — İklim Anlaşmaları',desc:'<b>US</b>: Paris Anlaşması/IRA katılımı. <b>CN</b>: Çin\'in 2060 karbon nötrlük taahhüdü. <b>EU</b>: Avrupa Yeşil Mutabakat hedefleri. Kapatıldığında ısınma hızı o bloğun modellenen katkısı kadar artar. Üçü birden kapatılırsa 2100\'e kadar ~+0.8°C ek ısınma oluşur.'},
       {sel:'#policy-body .policy-col:last-child',title:'🌊 10/13 — Okyanus & Resif Politikaları',desc:'<b>Alkalinite Güçlendirme</b>: Deniz suyuna alkalin mineral ekleyerek pH\'ı yükseltir, ağarma eşiğini ~0.5°C artırabilir. <b>Turizm Düzenleme</b>: Kontrolsüz turizm fiziksel hasar ve kirlilik yaratır. <b>Balıkçılık Kotası</b>: Aşırı avlanma alg büyümesini tetikler, mercanları boğar. <b>GEF Reef Finance</b>: BM mercan koruma fonu. <b>Erken Uyarı</b>: Bölgesel DHW≥4 olunca otomatik MPA genişletme tetikler.'},
       {sel:'#grid-container',wide:true,title:'🪸 11/13 — Mercan Haritası',desc:'24×18 ızgara = 432 bağımsız mercan koloni hücresi. Her hücrenin kendi stres değeri her tick güncellenir. <b>5 durum</b>: Healthy (stres 0–0.25), Stressed (0.25–0.55), Bleached (0.55–0.82), Dead (0.82–1.00), Recovering. Stres bulaşması: her hücre 8 komşusundan IDW ağırlıklı stres alır. 3 okyanus akıntı merkezi ısı dağılımını etkiler. Korunan hücreler (MPA) stresi %77 daha yavaş biriktirir. <b>Sürükleyerek kendi MPA\'nızı çizin!</b>'},
-      {sel:'#heatmap-overlay,.chart-header',title:'🌡️ 12/13 — Isı Haritası Modu',desc:'Herhangi bir grafik başlığına tıklayarak canvas\'ı ısı haritasına geçirin. SST ısı haritası okyanus akıntılarından etkilenen sıcaklık gradyanını gösterir. Stres ısı haritası termal basıncın en yüksek olduğu yerleri gösterir. Geri dönmek için "← CHARTS" butonuna tıklayın.'},
-      {sel:'#analysis-panel,#charts-stack',title:'📈 13/13 — Veri Grafikleri & Gerçek NOAA Verileri',desc:'<b>SST/DHW</b>: 2013–2023 NOAA NCRMP gözlem bazçizgisi, 2024 sonrası IPCC SSP2-4.5 projeksiyonu. <b>Healthy Colonies</b>: Ağarmamış ve ölmemiş kolonilerin oranı (NOAA ile aynı tanım), 2013–2100 tüm çalıştırma. Simülasyon çizgisinin üzerindeki <b style="color:#FFD700">⭐ altın yıldız noktalar</b> seçili bölgenin gerçek NOAA ölçümleridir — modelin gerçek veriye ne kadar yakın kaldığını gösterir. <b>Prey/Predator Fish</b>: Lotka-Volterra av-avcı dinamiği, taşıma kapasitesi mercan örtüsüne bağlı.'}
+      {sel:'#heatmap-overlay,.chart-header',title:'🌡️ 12/13 — Isı Haritası Modu',desc:'Herhangi bir grafik başlığına tıklayarak canvas\'ı ısı haritasına geçirin. SST ısı haritası okyanus akıntılarından etkilenen sıcaklık gradyanını gösterir. Stres ısı haritası termal basıncın en yüksek olduğu yerleri gösterir. Grafiklere dönmek için açık sekmenin başlığına tekrar tıklayın (veya "← CHARTS").'},
+      {sel:'#analysis-panel,#charts-stack',title:'📈 13/13 — Veri Grafikleri & Gerçek NOAA Verileri',desc:'Dört grafik aynı yıl eksenini paylaşır; 2024 sonrası turuncu ayraçla <b>Projeksiyon</b> olarak işaretlenir. <b>Deniz Sıcaklığı & Isı Stresi</b>: kalın çizgi 12 aylık ortalama sıcaklık, kırmızı alan DHW; kesikli çizgiler MMM, DHW 4 (ağarma) ve 8 (ölüm riski), kırmızı şeritler sıcak dalgalar. <b>Sağlıklı Mercan Kolonileri</b>: ağarmamış ve ölmemiş kolonilerin oranı (NOAA ile aynı tanım). Simülasyon çizgisinin üzerindeki <b style="color:#FFD700">⭐ altın yıldız noktalar</b> seçili bölgenin gerçek NOAA ölçümleridir — modelin gerçek veriye ne kadar yakın kaldığını gösterir. <b>Av/Avcı Balıklar</b>: Lotka-Volterra av-avcı dinamiği; kesikli çizgi mercan sağlığına bağlı taşıma kapasitesidir.'}
     ];
     var tourIdx = 0, spotEl = null, popEl = null, overlayEl = null;
 

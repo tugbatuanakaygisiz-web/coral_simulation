@@ -259,11 +259,15 @@ restorationChance = (budget/100) × 0.003 × (1 + gefFund/100)
 Balık haritalarında min-max normalizasyon + gamma düzeltme uygulanır.
 
 ### 6.4 Grafikler (Chart.js)
-4 zaman serisi grafiği, her biri 120 veri noktası geçmişi tutar:
-- **SST & DHW** — Çift dataset + olay üçgenleri
-- **Healthy Colonies** — Sağlıklı koloni oranı (NOAA tanımı), sayısal yıl ekseninde 2013–2100 tüm geçmiş (her 3 tick'te bir nokta); NOAA ölçümleri yıl ortasına (`year + 0.5`) yerleştirilir
-- **Prey Fish** — Popülasyon
-- **Predator Fish** — Popülasyon
+4 zaman serisi grafiği ortak sayısal yıl eksenini (`setTimeAxisEnd`) paylaşır ve 2013'ten itibaren tüm geçmişi tutar
+(her `LOG_INTERVAL` = 3 tick'te bir nokta; ileri sarma sırasında da kaydedilir, yalnızca görünürken yeniden çizilir).
+`timeDecorPlugin` 2024 projeksiyon ayracını, sıcak dalga şeritlerini (`eventBands`) ve kesikli referans çizgilerini çizer.
+- **Deniz Sıcaklığı & Isı Stresi** — aylık SST + 12 aylık ortalama (sol eksen), DHW (sağ eksen `y2`); referanslar MMM, DHW 4, DHW 8
+- **Sağlıklı Mercan Kolonileri** — Sağlıklı koloni oranı (NOAA tanımı); NOAA ölçümleri yıl ortasına (`year + 0.5`) yerleştirilir; %50 referansı
+- **Av Balıkları** — Popülasyon + taşıma kapasitesi K (kesikli)
+- **Avcı Balıklar** — Popülasyon
+
+Kart başlıklarında anlık değer (`hv-*`) gösterilir. Isı haritası modunda açık sekmeye tekrar tıklamak grafiklere döner.
 
 ---
 
