@@ -38,7 +38,7 @@ Bu uygulama, mercan resiflerinin iklim değişikliği altındaki davranışını
 ## 2. Dosya Yapısı (Tek HTML İçinde)
 
 ```
-mercanbeyaz/
+coral_simulation/
 ├── index.html                   # Ana simülasyon (HTML/CSS/JS)
 ├── i18n.js                      # Dil sözlüğü (TR/EN) ve dil değiştirme
 ├── coral_simulation_dataset.csv # NOAA kaynak veri seti (21 kayıt, 5 bölge)
